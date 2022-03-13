@@ -3,25 +3,26 @@
 #include <stdint.h> 
 #include <stdio.h> 
 
-namespace objectflow
-
 #define time_t uint32_t
 
-/* Well-known reusable Resource Types, should be in a header made from the SDF translator */
-  // Free resource range 26231-32768
-  // Free object range 42769-65535 (?)
-
-  // link types for pull and push data transfer
+/* 
+Well-known reusable Resource Types, should be in a header made from the SDF translator 
+*/
+// Free resource range 26231-32768
+// Free object range 42769-65535 (?)
+// link types for pull and push data transfer
 #define InputLinkType 27000
 #define OutputLinkType 27001
-  // Value types for data connection endpoints
+// Value types for data connection endpoints
 #define InputValueType 27002
 #define CurrentValueType 27003
 #define OutputValueType 27004
-  // Timer data types for wrap-around-safe interval activation 
+// Timer data types for wrap-around-safe interval activation 
 #define CurrentTimeType 27005
 #define IntervalTimeType 27006
 #define LastActivationTimeType 27007
+
+namespace ObjectFlow
 
 {
   /* common types */

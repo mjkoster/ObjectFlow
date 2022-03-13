@@ -1,8 +1,6 @@
-/* objectflow contains the base types and flow extensions */
-
 #include "objectflow.h"
 
-using namespace objectflow;
+using namespace ObjectFlow;
 
 int main() {
   ObjectList rtu;

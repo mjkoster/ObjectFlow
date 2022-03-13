@@ -2,7 +2,7 @@
 
 #include "objectflow.h"
 
-using namespace objectflow;
+using namespace ObjectFlow;
 
 /* Resource: expose values and chain together into a linked list for each object*/
 
@@ -298,7 +298,7 @@ void ObjectList::displayObjects() {
   };
 };
 
-
+/*
 int main() {
   ObjectList rtu;
   Object* object = rtu.newObject(9999,1);
@@ -315,4 +315,5 @@ int main() {
   rtu.displayObjects();
   return(0);
 };
+  */
 
