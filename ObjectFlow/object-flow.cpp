@@ -5,6 +5,22 @@
 
 #define time_t uint32_t
 
+/* Well-known reusable Resource Types, should be in a header made from the SDF translator */
+  // Free resource range 26231-32768
+  // Free object range 42769-65535 (?)
+
+  // link types for pull and push data transfer
+#define InputLinkType 27000
+#define OutputLinkType 27001
+  // Value types for data connection endpoints
+#define InputValueType 27002
+#define CurrentValueType 27003
+#define OutputValueType 27004
+  // Timer data types for wrap-around-safe interval activation 
+#define CurrentTimeType 27005
+#define IntervalTimeType 27006
+#define LastActivationTimeType 27007
+
 /* common types */
 
 struct InstanceLink {
@@ -22,22 +38,6 @@ union AnyValueType {
   InstanceLink linkType;
   time_t timeType;
 };
-
-/* Well-known reusable Resource Types, should be in a header made from the SDF translator */
-  // Free resource range 26231-32768
-  // Free object range 42769-65535 (?)
-
-  // link types for pull and push data transfer
-  const uint16_t InputLinkType = 27000;
-  const uint16_t OutputLinkType = 27001;
-  // Value types for data connection endpoints
-  const uint16_t InputValueType = 27002;
-  const uint16_t CurrentValueType = 27003;
-  const uint16_t OutputValueType = 27004;
-  // Timer data types for wrap-around-safe interval activation 
-  const uint16_t CurrentTimeType = 27005;
-  const uint16_t IntervalTimeType = 27006;
-  const uint16_t LastActivationTimeType = 27007;
 
 /* base classes */
 
