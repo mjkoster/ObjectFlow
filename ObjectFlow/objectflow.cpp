@@ -4,8 +4,6 @@
 
 using namespace objectflow;
 
-/* base classes */
-
 /* Resource: expose values and chain together into a linked list for each object*/
 
 Resource::Resource(uint16_t type, uint16_t instance, ValueType vtype) {
@@ -236,7 +234,12 @@ void Object::onDefaultValueUpdate() {};
 AnyValueType Object::onInputSync() {
   return readDefaultValue(); // Default read value, override for e.g. gpio read
 }; 
-  
+
+// construct with an empty object list
+ObjectList::ObjectList() {
+  firstObject = NULL;
+};
+
 Object* ObjectList::newObject(uint16_t type, uint16_t instance) {
   // find the last object in the chain, has a null nextobject pointer
   // FIXME check if it already exists?
@@ -295,10 +298,6 @@ void ObjectList::displayObjects() {
   };
 };
 
-// construct with an empty object list
-ObjectList::ObjectList() {
-  firstObject = NULL;
-};
 
 int main() {
   ObjectList rtu;
