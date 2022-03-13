@@ -27,6 +27,13 @@ namespace ObjectFlow
 {
   /* common types */
 
+  struct InstanceTemplate {
+    uint16_t objectTypeID;
+    uint16_t objectInstanceID;
+    uint16_t resourceTypeID;
+    uint16_t resourceInstanceID;
+  };
+
   struct InstanceLink {
     uint16_t typeID;
     uint16_t instanceID;

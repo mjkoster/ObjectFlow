@@ -1,4 +1,5 @@
 #include "objectflow.h"
+#include "instances.h"
 
 using namespace ObjectFlow;
 
