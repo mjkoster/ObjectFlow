@@ -4,4 +4,5 @@
 using namespace ObjectFlow;
 
 void TestObjectType::onDefaultValueUpdate(AnyValueType value) {
+  syncToOutputLink();
 };

@@ -1,6 +1,6 @@
 namespace ObjectFlow
 {
-  class TestObjectType {
+  class TestObjectType: Object {
     public:
       void onDefaultValueUpdate(AnyValueType value);
   };
