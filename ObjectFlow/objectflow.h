@@ -4,6 +4,8 @@
 #include <stdio.h> 
 
 #define time_t uint32_t
+#define true 1
+#define false 0
 
 /* 
 Well-known reusable Resource Types, should be in a header made from the SDF translator 
@@ -42,7 +44,7 @@ namespace ObjectFlow
     InstanceLink linkType;
     time_t timeType;
   };
-  
+
   struct InstanceTemplate {
     uint16_t objectTypeID;
     uint16_t objectInstanceID;
