@@ -1,6 +1,8 @@
 /* objectflow contains the base types and flow extensions */
 
 #include "objectflow.h"
+#include "instances.h"
+#include "handlers.h"
 
 using namespace ObjectFlow;
 
@@ -257,7 +259,14 @@ Object* ObjectList::newObject(uint16_t type, uint16_t instance) {
     return object -> nextObject; 
   };     
 };
-
+/*
+Object* ObjectList::applicationObject(uint16_t type, uint16_t instance, Object* firstObject) {
+  switch (type) {
+    case 43000: return new TestObjectType(type, instance, firstObject);
+    default: return new Object(type, instance, firstObject);
+  }
+};
+*/
 // return a pointer to the first object that matches the type and instance
 Object* ObjectList::getObjectByID(uint16_t type, uint16_t instance) {
   Object* object = firstObject;

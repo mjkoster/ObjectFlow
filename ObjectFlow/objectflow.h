@@ -180,9 +180,12 @@ namespace ObjectFlow
       ObjectList();
       // Linked list of Objects
       Object* firstObject; 
+
       // make a new object and add it to the list
-      
       Object* newObject(uint16_t type, uint16_t instance);
+      
+      // return an application-specialized object based on typeID
+      //Object* applicationObject(uint16_t type, uint16_t instance, Object* firstObject);
 
       // return a pointer to the first object that matches the type and instance
       Object* getObjectByID(uint16_t type, uint16_t instance);
