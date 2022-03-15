@@ -1,6 +1,6 @@
 namespace ObjectFlow
 {
-  const InstanceTemplate instance_list[] = {
+  const InstanceTemplate instanceList[] = {
     {43000, 0, InputLinkType, 0, linkType, (AnyValueType){.linkType={43001,0}} },
     {43000, 0, CurrentValueType ,0, integerType, (AnyValueType){.integerType=0} },
     {43000, 0, OutputLinkType, 0, linkType, (AnyValueType){.linkType={43002,0}} },

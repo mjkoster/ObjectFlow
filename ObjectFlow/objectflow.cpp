@@ -281,7 +281,16 @@ Object* ObjectList::getObjectByID(uint16_t type, uint16_t instance) {
 };
 
 // build all of the objects and resources that appear in instances.h
-void ObjectList::buildObjectList() {
+void ObjectList::buildInstances() {
+  Object* object;
+  for(int instance=0; instance < sizeof(instanceList)/sizeof(InstanceTemplate);instance++){
+    object=getObjectByID(instanceList[instance].objectTypeID, instanceList[instance].objectInstanceID);
+    if (NULL == object) {
+      object = newObject(instanceList[instance].objectTypeID, instanceList[instance].objectInstanceID);
+    }
+    object -> newResource(instanceList[instance].resourceTypeID, instanceList[instance].resourceInstanceID, instanceList[instance].valueType);
+    object -> updateValueByID(instanceList[instance].resourceTypeID, instanceList[instance].resourceInstanceID, instanceList[instance].value);
+  };
 };
 
 void ObjectList::displayObjects() {

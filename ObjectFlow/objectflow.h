@@ -191,7 +191,7 @@ namespace ObjectFlow
       // return a pointer to the first object that matches the type and instance
       Object* getObjectByID(uint16_t type, uint16_t instance);
       
-      void buildObjectList();
+      void buildInstances();
 
       void displayObjects();
   };
