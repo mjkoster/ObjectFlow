@@ -315,6 +315,22 @@ void ObjectList::displayObjects() {
           printf ( "%f\n", resource -> value.floatType);
           break;
         }
+        case stringType: {
+          printf ( "%s\n", resource -> value.stringType);
+          break;
+        }
+        case linkType: {
+          printf ("[");
+          printf ( "%d", resource -> value.linkType.typeID);
+          printf (",");
+          printf ( "%d", resource -> value.linkType.instanceID);
+          printf ("]\n");
+          break;
+        }
+        case timeType: {
+          printf ( "%d\n", resource -> value.timeType);
+          break;
+        }
         default:
           printf ("\n");
       }
