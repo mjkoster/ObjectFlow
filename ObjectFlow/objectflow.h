@@ -185,10 +185,13 @@ namespace ObjectFlow
       Object* newObject(uint16_t type, uint16_t instance);
       
       // return an application-specialized object based on typeID
-      //Object* applicationObject(uint16_t type, uint16_t instance, Object* firstObject);
+      // The implementation for this is in handlers.cpp, code gen with applicationtypes
+      Object* applicationObject(uint16_t type, uint16_t instance, Object* firstObject);
 
       // return a pointer to the first object that matches the type and instance
       Object* getObjectByID(uint16_t type, uint16_t instance);
+      
+      void buildObjectList();
 
       void displayObjects();
   };

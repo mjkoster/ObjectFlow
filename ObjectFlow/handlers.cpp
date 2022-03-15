@@ -2,7 +2,19 @@
 #include "handlers.h"
 
 using namespace ObjectFlow;
-//TestObjectType::TestObjectType(uint16_t type, uint16_t instance, Object* listFirstObject){ObjectFlow::Object(type, instance, listFirstObject)};
-void TestObjectType::onDefaultValueUpdate(AnyValueType value) {
+
+// Select an application Object based on its typeID
+Object* ObjectList::applicationObject(uint16_t type, uint16_t instance, Object* firstObject) {
+  switch (type) {
+    case 43000: return new TestObject(type, instance, firstObject);
+    default: return new Object(type, instance, firstObject);
+  }
+};
+
+TestObject::TestObject(uint16_t type, uint16_t instance, Object* listFirstObject) : Object(type, instance, listFirstObject){}; // constructor calls the base class constructor, could initialize additional state
+
+// test by calling syncInputLink, which updates the default value, calling this handler to sync the output link
+void TestObject::onDefaultValueUpdate(AnyValueType value) {
   syncToOutputLink();
 };
+

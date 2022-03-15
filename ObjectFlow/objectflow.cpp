@@ -246,7 +246,8 @@ Object* ObjectList::newObject(uint16_t type, uint16_t instance) {
   // find the last object in the chain, has a null nextobject pointer
   // FIXME check if it already exists?
   if (NULL == firstObject) { // make first object and add to the list (sets property of the ObjectList)
-    this -> firstObject = new Object(type, instance, firstObject);
+    //this -> firstObject = new Object(type, instance, firstObject);
+    this -> firstObject = applicationObject(type, instance, firstObject);
     return firstObject;
   }
   else { // already have the first object, find the end of the list 
@@ -255,18 +256,21 @@ Object* ObjectList::newObject(uint16_t type, uint16_t instance) {
       object = object -> nextObject;
     };
     // make instance and add the new resource (sets property of the last Object)
-    object -> nextObject = new Object(type, instance, firstObject);
+    //object -> nextObject = new Object(type, instance, firstObject);
+    object -> nextObject = applicationObject(type, instance, firstObject);
     return object -> nextObject; 
   };     
 };
-/*
+
+/* The implementation for this is in handlers.cpp due to dependency on types
+// Select an application Object based on its typeID
 Object* ObjectList::applicationObject(uint16_t type, uint16_t instance, Object* firstObject) {
   switch (type) {
-    case 43000: return new TestObjectType(type, instance, firstObject);
     default: return new Object(type, instance, firstObject);
   }
 };
 */
+
 // return a pointer to the first object that matches the type and instance
 Object* ObjectList::getObjectByID(uint16_t type, uint16_t instance) {
   Object* object = firstObject;
@@ -274,6 +278,10 @@ Object* ObjectList::getObjectByID(uint16_t type, uint16_t instance) {
     object = object -> nextObject;
   };
   return object; // returns NULL if doesn't exist
+};
+
+// build all of the objects and resources that appear in instances.h
+void ObjectList::buildObjectList() {
 };
 
 void ObjectList::displayObjects() {
@@ -306,5 +314,3 @@ void ObjectList::displayObjects() {
     object = object -> nextObject;
   };
 };
-
-
