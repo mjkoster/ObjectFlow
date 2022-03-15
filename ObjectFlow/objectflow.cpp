@@ -48,13 +48,8 @@ Resource* Object::newResource(uint16_t type, uint16_t instance, ValueType vtype)
 
 // return a pointer to the first resource in this object that matches the type and instance
 Resource* Object::getResourceByID(uint16_t type, uint16_t instance) {
-  printf("getResourceByID\n");  
-  printf("%d\n", typeID);
-  printf("here\n");
   Resource* resource = firstResource;
-  printf("first resource\n");  
   while ( (resource != NULL) && (resource -> typeID != type || resource -> instanceID != instance) ) {
-    printf("next resource\n");    
     resource = resource -> nextResource;
   };
   return resource; // returns NULL if resource doesn't exist
@@ -141,12 +136,10 @@ CurrentValue   ==|   (no CurrentValue)
 void Object::syncFromInputLink() {
   // readDefaultValue from InputLink
   // updateDefaultValue on this object
-  printf("syncFromInputLink\n");
   Resource* inputLink = getResourceByID(InputLinkType,0);
   if (inputLink != NULL) {
     Object* sourceObject = getObjectByID(inputLink -> value.linkType.typeID, inputLink -> value.linkType.instanceID);
     updateDefaultValue(sourceObject -> onInputSync()); // call onInputSync of the source object to get dynamic values and update the local default value
-    printf("syncFromInputLink done\n");
   }
 }; 
 
@@ -154,7 +147,6 @@ void Object::syncFromInputLink() {
 void Object::syncToOutputLink() {
   // readDefaultValue from this object
   // updateDefaultValue to OutputLink(s)
-  printf("syncToOutputLink\n");
   AnyValueType value = readDefaultValue();
   Resource* resource = firstResource;
     while ( (resource != NULL) ) {
@@ -169,7 +161,6 @@ void Object::syncToOutputLink() {
 // extended interface for default value sync
 AnyValueType Object::readDefaultValue() {
   AnyValueType returnValue;
-  printf("readDefaultValue\n");  
   Resource* resource = getResourceByID(OutputValueType,0);
   if (resource != NULL) {
     return(resource -> value);
@@ -239,14 +230,11 @@ void Object::onInterval() {};
 
 // Handler for DefaultValue update, called from either input or output sync
 void Object::onDefaultValueUpdate() {
-  printf("Object::onDefaultValueUpdate\n");
 }; 
 
 // Handler to return value in response to input sync from another object
 AnyValueType Object::onInputSync() {
-  printf("onInputSync\n");
   AnyValueType value = readDefaultValue(); // Default read value, override for e.g. gpio
-  printf("onInputSync done\n");
   return value;
 }; 
 
@@ -313,8 +301,6 @@ void ObjectList::displayObjects() {
     Resource* resource = object -> firstResource;
     while ( resource != NULL) {
       printf ( "  [%d, %d] : ", resource -> typeID, resource -> instanceID);
-      //printf ( "valueType: %d, ", resource -> valueType);
-      //printf ( "value: ");
       switch(resource -> valueType) {
         case booleanType: {
           printf ( "%s\n", resource -> value.booleanType ? "true": "false");
