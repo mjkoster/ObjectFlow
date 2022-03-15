@@ -5,7 +5,7 @@ namespace ObjectFlow
     {43000, 0, CurrentValueType ,0, integerType, (AnyValueType){.integerType=0} },
     {43000, 0, OutputLinkType, 0, linkType, (AnyValueType){.linkType={43002,0}} },
 
-    {43001, 0, OutputValueType ,0, integerType, (AnyValueType){.integerType=0} },
+    {43001, 0, OutputValueType ,0, integerType, (AnyValueType){.integerType=101} },
     
     {43002, 0, InputValueType ,0, integerType, (AnyValueType){.integerType=0} },
   };
