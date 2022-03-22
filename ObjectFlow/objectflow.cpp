@@ -23,7 +23,8 @@ Object::Object(uint16_t type, uint16_t instance, Object* listFirstObject) {
       instanceID = instance;
       firstResource = NULL;
       nextObject = NULL;
-      firstObject = listFirstObject;
+      // if listFirstObject is NULL, that means I am firstObject
+      firstObject = (NULL==listFirstObject?this:listFirstObject);
 };   
 
 // Interface to create a new resource in this object
