@@ -13,9 +13,7 @@ Object* ObjectList::applicationObject(uint16_t type, uint16_t instance, Object* 
 
 TestObject::TestObject(uint16_t type, uint16_t instance, Object* listFirstObject) : Object(type, instance, listFirstObject){}; // constructor calls the base class constructor, could initialize additional state
 
-// test by calling syncFromInputLink, which updates the default value, calling this handler to sync the output link
 void TestObject::onDefaultValueUpdate() {
-  printf("TestObject::onDefaultValueUpdate\n");
   syncToOutputLink();
 };
 

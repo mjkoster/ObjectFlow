@@ -103,7 +103,7 @@ namespace ObjectFlow
 
       void updateValueByID(uint16_t type, uint16_t instance, AnyValueType value);
 
-      // Application logic extends this method
+      // Application logic overrides this method
       void onValueUpdate(uint16_t type, uint16_t instance, AnyValueType value); 
 
       /* 
@@ -165,13 +165,13 @@ namespace ObjectFlow
       */
 
       // Handler for Timer Interval
-      void onInterval(); 
+      virtual void onInterval(); 
 
       // Handler for DefaultValue update, called from either input or output sync
-      void onDefaultValueUpdate(); 
+      virtual void onDefaultValueUpdate(); 
 
       // Handler to return value in response to input sync from another object
-      AnyValueType onInputSync(); 
+      virtual AnyValueType onInputSync(); 
   };
 
   class ObjectList {
