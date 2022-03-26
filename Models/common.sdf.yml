@@ -28,7 +28,7 @@ sdfData:
       FloatType: { type: float }
       StringType: { type: string }
       TimeType: { type: integer }
-      LinkType: { sdfRef: "#/sdfData/LinkType" }
+      InstanceLinkType: { sdfRef: "#/sdfData/InstanceLinkType" }
       SemanticType: { sdfRef: "#/sdfData/SemanticType" } // for named types including structured types
 
   ValueType:
@@ -40,7 +40,7 @@ sdfData:
       FloatType: {}
       StringType: {}
       TimeType: {}
-      LinkType: {}
+      InstanceLinkType: {}
       SemanticType: {}
 
   IDRange:
@@ -49,8 +49,8 @@ sdfData:
       minimum: 0
       maximum: 65535
 
-  LinkType:
-    description: Data type to represent a selector of an ObjectFlow object or resource, for application use
+  InstanceLinkType:
+    description: Data type to represent a selector of an ObjectFlow object or resource instance , for application use (LWM2M Object Link, also a resource link within an object )
     type: object
     properties: 
       TypeID:
@@ -68,7 +68,7 @@ sdfData:
       OutputLink: { const: 27004 }
       CurrentTime: { const: 27005 }
       IntervalTime: { const: 27006 }
-      LastactivationTime: { const: 27007 }
+      LastActivationTime: { const: 27007 }
 
 sdfThing:
 
@@ -123,7 +123,7 @@ sdfThing:
       sdfRef: /#/sdfData/TypeID/ResourceType/InputLink
     sdfProperty:
       ValueType: 
-        sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
+        sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
@@ -132,7 +132,7 @@ sdfThing:
       sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink
     sdfProperty:
       ValueType: 
-        sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
+        sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
 
   CurrentTime:
     description: Time value updated from the timer service
