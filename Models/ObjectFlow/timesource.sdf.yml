@@ -9,3 +9,9 @@ namespace: objectflow: https://onedm.org/objectflow
 
 defaultnamespace: objectflow
 
+sdfObject:
+  TimeSource:
+    sdfObject:
+      CurrentValue:
+        ValueType:
+          sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"

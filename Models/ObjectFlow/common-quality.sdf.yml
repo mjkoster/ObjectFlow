@@ -71,33 +71,38 @@ sdfProperty:
     description: Link to another object for obtaining an input or present value from an output or present value
     sdfRef: #/sdfObject/ObjectFlowResource
     objectflow:TypeID: 27003 
-    sdfChoice: #/sdfData/Value/sdfChoice/LinkType
-    minItems: 0
+    objectflow:valuetype: "LinkType"
+    sdfChoice: 
+      sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
     sdfRef: #/sdfObject/ObjectFlowResource
     objectflow:TypeID: 27004 
-    sdfChoice: #/sdfData/Value/sdfChoice/LinkType
-    minItems: 0
+    sdfChoice: 
+      sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
 
   CurrentTime:
     description: Time value updated from the timer service
     sdfRef: #/sdfObject/ObjectFlowResource
-    sdfChoice: #/sdfData/Value/sdfChoice/TimeType
     objectflow:TypeID: 27005 
+    sdfChoice: 
+      sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
 
   IntervalTime:
     description: Time value between activations
     sdfRef: #/sdfObject/ObjectFlowResource
-    sdfChoice: #/sdfData/Value/sdfChoice/TimeType
     objectflow:TypeID: 27006 
+    sdfChoice: 
+      sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
     sdfRef: #/sdfObject/ObjectFlowResource
-    sdfChoice: #/sdfData/Value/sdfChoice/TimeType
     objectflow:TypeID: 27007 
+    sdfChoice:
+      sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
+
 
 sdfObject:
 
@@ -110,8 +115,6 @@ sdfObject:
       Description: 
         type: string
         default: ObjectFlow Base Object Template
-        readable: false
-        writable: false
 
     sdfProperty:
       CurrentValue:

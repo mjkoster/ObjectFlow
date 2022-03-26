@@ -101,35 +101,40 @@ sdfObject:
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27003 
     sdfProperty:
-      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType" }
+      ValueType: 
+        sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27004 
     sdfProperty:
-      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType" }
+      ValueType: 
+        sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
 
   CurrentTime:
     description: Time value updated from the timer service
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27005 
     sdfProperty:
-      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType" }
+      ValueType: 
+        sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
 
   IntervalTime:
     description: Time value between activations
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27006 
     sdfProperty:
-      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType" }
+      ValueType: 
+        sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27007 
     sdfProperty:
-      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType" }
+      ValueType:
+        sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
 
 
   # Template for ObjectFlow Object class
