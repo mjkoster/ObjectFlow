@@ -10,8 +10,34 @@ namespace: objectflow: https://onedm.org/objectflow
 defaultnamespace: objectflow
 
 sdfObject:
+  # Timer Source Object
   TimeSource:
+    sdfRef: /#/sdfObject/ObjectFlowObject
+    TypeID: 43000
+
+    # Timer Source Object Resources
     sdfObject:
-      CurrentValue:
+      InputTime:
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/InputValue
         ValueType:
-          sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
+          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
+
+      OutputTime:
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/OutputValue
+        ValueType:
+          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
+
+      CurrentTime:
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/CurrentTime
+ 
+      IntervalTime:
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/IntervalTime
+
+      LastActivationTime:
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/LastActivationTime
+
+      TimerLinks:
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/OutputLink
+
+  sdfAction:
+    onUpdateDefaultValue: Divide the InputValue by the time base and update CurrentTime, then perform the interval check and conditionally update the outputvalue and lastActivationTime, and finally call SyncToCurrentTime

@@ -63,6 +63,12 @@ sdfObject:
 
   # Template for ObjectFlow Resource class
   ObjectFlowResource:
+    sdfRequired:
+      - #/sdfObject/ObjectFlowResource/sdfData/TypeID
+      - #/sdfObject/ObjectFlowResource/sdfData/InstanceID
+      - #/sdfObject/ObjectFlowResource/sdfProperty/ValueType
+      - #/sdfObject/ObjectFlowResource/sdfProperty/Value
+
     description: definitions for the properties of an ObjectFlow Resource
     # Meta data is not part of the API and not exposed
     sdfData:
@@ -140,6 +146,9 @@ sdfObject:
   # Template for ObjectFlow Object class
   ObjectFlowObject:
     description: definitions common to all objects in the ObjectFlow framework
+    sdfRequired:
+      - #/sdfObject/ObjectFlowObject/sdfData/TypeID
+      - #/sdfObject/ObjectFlowObject/sdfData/InstanceID
 
     # Meta data is not part of the API and not exposed
     sdfData:
@@ -159,7 +168,7 @@ sdfObject:
         readable: false
         writable: false
 
-    # ObjectFlow Resources are sdfObjects within ObjectFlow Objects
+    # ObjectFlow Resources are sdfObjects within ObjectFlow Objects and wrap exposed state
     sdfObject: 
       CurrentValue:
         sdfRef: #/sdfObject/CurrentValue
@@ -190,7 +199,7 @@ sdfObject:
 
       LastActivationTime:
         sdfRef: #/sdfObject/LastActivationTime
-        description: Time value when the last activatoin occurred
+        description: Time value when the last activation occurred
 
     # ObjectFlow internal logic and communication handlers are defined as sdfAction types
     sdfAction:
