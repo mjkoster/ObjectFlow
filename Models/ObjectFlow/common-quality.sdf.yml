@@ -13,9 +13,9 @@ defaultnamespace: objectflow
 
 # Application object types are identified by TypeID and extend this definition by providing resource definitions and the underlying embedded code implementations of the necessary handler types.
 
-# OpenFLow application nodes are constructed from this template and the application object definitions, and then used to automatically generate the instance graph for the target platform.
+# ObjectFLow application nodes are constructed from this template and the application object definitions, and then used to automatically generate the instance graph for the target platform.
 
-# An OpenFlow application consists of a directed graph of application objects connected by input and output links, which communicate state and time updates. 
+# An ObjectFlow application consists of a directed graph of application objects connected by input and output links, which communicate state and time updates. 
 
 # common data types
 
