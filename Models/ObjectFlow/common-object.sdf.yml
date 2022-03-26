@@ -9,11 +9,13 @@ namespace: objectflow: https://onedm.org/objectflow
 
 defaultnamespace: objectflow
 
-# these definitions are templates for ObjectFlow application objects, and are matched with an underlying embedded code libraries for the supported target platforms. 
+# This definition is a template for ObjectFlow application objects, and is matched with underlying embedded code libraries that implement ObjectFlow on the supported target platforms. 
 
-# New application types extend this definition and provide the underlying embedded code implementations of the necessary handler types.
+# Application object types are identified by TypeID and extend this definition by providing resource definitions and the underlying embedded code implementations of the necessary handler types.
 
-# OpenFLow applications are constructed from this SDF template and the application object definitions, and then used to automatically generate the instance graph for the target platform.
+# OpenFLow application nodes are constructed from this template and the application object definitions, and then used to automatically generate the instance graph for the target platform.
+
+# An OpenFlow application consists of a directed graph of application objects connected by input and output links, which communicate state and time updates. 
 
 # common data types
 
@@ -130,6 +132,7 @@ sdfObject:
     description: definitions common to all objects in the ObjectFlow framework
 
     # Properties of ObjectFlowObject 
+    # Only resources of an object are exposed in the API, so these properties are marked not readable and not writable
     sdfProperty:
       Description: 
         type: string
