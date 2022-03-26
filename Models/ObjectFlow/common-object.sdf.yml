@@ -1,0 +1,221 @@
+---
+info: 
+  title: ObjectFlow models common definitions 
+  version: 2022-03-25
+  copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
+  license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
+
+namespace: objectflow: https://onedm.org/objectflow
+
+defaultnamespace: objectflow
+
+# these definitions are templates for ObjectFlow application objects, and are matched with an underlying embedded code libraries for the supported target platforms. 
+
+# New application types extend this definition and provide the underlying embedded code implementations of the necessary handler types.
+
+# OpenFLow applications are constructed from this SDF template and the application object definitions, and then used to automatically generate the instance graph for the target platform.
+
+# common data types
+
+sdfData:
+  Value:
+    description: Data types to represent ObjectFlow values
+    sdfChoice:
+      BooleanType: { type: boolean }
+      IntegerType: { type: integer }
+      FloatType: { type: float }
+      StringType: { type: string }
+      LinkType: { sdfRef: "#/sdfData/LinkType" }
+      SemanticType: { objectflow:name: string } // for named types including structured typees
+
+  ValueType:
+    description: Metadata for applications to test for unknown data type
+    sdfChoice:
+      # let the underlying implementation choose its own internal enum coding  
+      BooleanType: {}
+      IntegerType: {}
+      FloatType: {}
+      StringType: {}
+      LinkType: {}
+      SemanticType: {}
+
+  IDType:
+    description: integer ID for the object and resource addressing and selection scheme (LWM2M)
+    type: integer
+      minimum: 0
+      maximum: 65535
+
+  LinkType:
+    description: Data type to represent a selector of an ObjectFlow object or resource, for application use
+    type: object
+    properties: 
+      TypeID:
+        sdfRef: #/sdfData/IDType
+      InstanceID:
+        sdfRef: #/sdfData/IDType
+
+
+sdfObject:
+
+  # Template for ObjectFlow Resource class
+  ObjectFlowResource:
+    description: definitions for the properties of an ObjectFlow Resource
+
+      sdfProperty:
+        Description: 
+          type: string
+          default: ObjectFlow Base Object Template
+          readable: false
+          writable: false
+
+        TypeID:
+          sdfRef: #/sdfData/IDType
+          readable: false
+          writable: false
+
+        InstanceID:
+          sdfRef: #/sdfData/IDType
+          readable: false
+          writable: false
+
+        ValueType:
+          sdfRef: #/sdfData/ValueType
+
+        Value:
+          sdfRef: #/sdfData/Value
+
+  # Reusable sdfObject types for resources
+  CurrentValue:
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27000 
+
+  InputValue:
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27001 
+
+  OutputValue:
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27002 
+
+  InputLink:
+    description: Link to another object for obtaining an input or present value from an output or present value
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27003 
+    minItems: 0
+
+  OutputLink:
+    description: Link to another object for updating an input or present value from an output or present value
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27004 
+    minItems: 0
+
+  CurrentTime:
+    description: Time value updated from the timer service
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27005 
+
+  IntervalTime:
+    description: Time value between activations
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27006 
+
+  LastActivationTime:
+    description: Time value when the last activatoin occurred
+    sdfRef: #/sdfObject/ObjectFlowResource
+    TypeID: const: 27007 
+
+
+  # Template for ObjectFlow Object class
+  ObjectFlowObject:
+    description: definitions common to all objects in the ObjectFlow framework
+
+    # Properties of ObjectFlowObject 
+    sdfProperty:
+      Description: 
+        type: string
+        default: ObjectFlow Base Object Template
+        readable: false
+        writable: false
+
+      TypeID:
+        sdfRef: #/sdfData/IDType
+        readable: false
+        writable: false
+
+      InstanceID:
+        sdfRef: #/sdfData/IDType
+        readable: false
+        writable: false
+
+    # ObjectFlow Resources are sdfObjects within ObjectFlow Objects
+    sdfObject: 
+      CurrentValue:
+        sdfRef: #/sdfObject/CurrentValue
+
+      InputValue:
+        sdfRef: #/sdfObject/InputValue
+
+      OutputValue:
+        sdfRef: #/sdfObject/OutputValue
+
+      InputLink:
+        description: Link to another object for obtaining an input or present value from an output or present value
+        sdfRef: #/sdfData/ObjectLink
+        minItems: 0
+
+      OutputLink:
+        description: Link to another object for updating an input or present value from an output or present value
+        sdfRef: #/sdfData/ObjectLink
+        minItems: 0
+
+      CurrentTime:
+        description: Time value updated from the timer service
+        sdfRef: #/sdfObject/CurrentTime
+
+      IntervalTime:
+        description: Time value between activations
+        sdfRef: #/sdfObject/IntervalTime
+
+      LastActivationTime:
+        sdfRef: #/sdfObject/LastActivationTime
+        description: Time value when the last activatoin occurred
+
+    # ObjectFlow internal logic and communication handlers are defined as sdfAction types
+    sdfAction:
+
+      SyncFromInputLink:
+        description: Copy the default value of the object selected by the input link to the default value of this object. The default source value is determined by priority ranking of Output Value, Current Value, Input Value. The default destination value is selected by priority ranking of Input Value, Current Value, Output Value.
+
+      SyncToOutputLink:
+        description: Copy the default value of this object to the default value of the object selected by the output link. The default source value is determined by priority ranking of Output Value, Current Value, Input Value. The default destination value is selected by priority ranking of Input Value, Current Value, Output Value.
+
+      SyncMultiInputs:
+        description: Copy the default values from objects selected by one or more instances of Input Link, to corresponding instances of Default Values, selected by matching Instance ID from each Input Link to the Instance ID of the corresponding Default Value. Only one default value will be selected for each instance number.
+
+      SyncMultiOutputs:
+        description: Copy values from Default Value instances to Default Values in corresponding objects pointed to by Output Link instances, selected by matching Output Link instance numbers with Default value instance numbers. ONly one default value will be selected for each Output Link.
+
+      SyncMultiFromMulti:
+        description: Pull pattern sync of multiple default values from one object to another, matching all instance numbers and default values as in SyncMultipleInputs and SyncMultipleOutputs.
+
+      SyncMultiToMulti:
+        description: Push pattern sync of multiple default values from one object to another, matching all instance numbers and default values as in SyncMultipleInputs and SyncMultipleOutputs.
+
+      UpdateTimeValue:
+        description: update the time value from a value from a time source and see if the interval has elapsed for the next activation to take place. If the activation time is reached, call the OnInterval Action. if (CurrentTime - LastActivationTime >= IntervalTime) then call OnInterval. This is wrap-around safe and will work as an unconditional trigger if IntervalTime is set at 0 with constant or increasing time value, including all 0 values.
+
+      ReadDefaultValue:
+        description: Operation used to obtain the default value for use by internal application logic and external sync operations.
+
+      UpdateDefaultValue:
+        description: Operation used to update the default value for use by internal application logic and external sync operations.
+
+      OnInputSync:
+        description: Handler to return the default value to another object in response to SyncFromInputLink. Normalli to would return the Default Value but can be used to retun GPIO pin state, etc.
+
+      OnValueUpdate: 
+        description: Handler for application processing of value updates resulting from sync operations.
+
+      OnInterval:
+        description: Handler for timer interval application trigger
+

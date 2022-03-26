@@ -104,7 +104,7 @@ namespace ObjectFlow
       void updateValueByID(uint16_t type, uint16_t instance, AnyValueType value);
 
       // Application logic overrides this method
-      void onValueUpdate(uint16_t type, uint16_t instance, AnyValueType value); 
+      virtual void onValueUpdate(uint16_t type, uint16_t instance, AnyValueType value); 
 
       /* 
 

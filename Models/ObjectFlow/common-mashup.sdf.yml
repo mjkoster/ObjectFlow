@@ -1,0 +1,177 @@
+---
+info: 
+  title: ObjectFlow models common definitions 
+  version: 2022-03-25
+  copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
+  license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
+
+namespace: objectflow: https://onedm.org/objectflow
+
+defaultnamespace: objectflow
+
+sdfObject:
+
+  Resource:
+    description: definitions for the aspects of an ObjectFlow Resource
+      sdfProperty:
+        Description: 
+        TypeID:
+        InstanceID:
+        ValueType:
+        Value:
+          sdfRef: #/value
+          
+  CurrentValue:
+    sdfRef: #/sdfObject/Resource
+    objectflow:typeid: 27000
+    TypeID: const: 27000 
+
+  InputValue:
+    sdfRef: #/sdfObject/Resource
+    objectflow:typeid: 27001
+    TypeID: const: 27001 
+
+  OutputValue:
+    sdfRef: #/sdfObject/Resource
+    objectflow:typeid: 27002
+    TypeID: const: 27002 
+
+
+  Object:
+    description: definitions common to all objects in the ObjectFlow framework
+
+    sdfObject: 
+      CurrentValue:
+        sdfRef: #/sdfObject/CurrentValue
+
+      InputValue:
+        sdfRef: #/sdfObject/InputValue
+
+      OutputValue:
+        sdfRef: #/sdfObject/OutputValue
+
+    sdfProperty:
+      Description: 
+        type: string
+        default: ObjectFlow Base Object Template
+
+      TypeID:
+        type: Integer
+        minimum: 0
+        maximum: 65535
+        readable: false
+        writable: false
+
+      InstanceID:
+        type: Integer
+        minimum: 0
+        maximum: 65535
+        readable: false
+        writable: false
+
+      CurrentValue:
+        description: Primary internal state value of the enclosing object
+        sdfRef: #/sdfData/Value
+        objectflow:TypeID: 27000
+
+      InputValue:
+        description: Value to derive PresentValue, incoming from another object 
+        sdfRef: #/sdfData/Value
+        objectflow:TypeID: 27001
+
+      OutputValue:
+        description: Value derived from PresentValue, outgoing to another object 
+        sdfRef: #/sdfData/Value
+        objectflow:TypeID: 27002
+
+      InputLink:
+        description: Link to another object for obtaining an input or present value from an output or present value
+        items: sdfRef: #/sdfData/ObjectLink
+
+      OutputLink:
+        description: Link to another object for updating an input or present value from an output or present value
+        items: sdfRef: #/sdfData/ObjectLink
+
+      CurrentTime:
+        description: Time value updated from the timer service
+
+      IntervalTime:
+        description: Time value between activations
+
+      LastActivationTime:
+        description: Time value when the last activatoin occurred
+
+
+sdfAction:
+
+  SyncFromInputLink:
+    description: Copy the default value of the object selected by the input link to the default value of this object. The default source value is determined by priority ranking of Output Value, Current Value, Input Value. The default destination value is selected by priority ranking of Input Value, Current Value, Output Value.
+
+  SyncToOutputLink:
+    description: Copy the default value of this object to the default value of the object selected by the output link. The default source value is determined by priority ranking of Output Value, Current Value, Input Value. The default destination value is selected by priority ranking of Input Value, Current Value, Output Value.
+
+  SyncMultiInputs:
+    description: Copy the default values from objects selected by one or more instances of Input Link, to corresponding instances of Default Values, selected by matching Instance ID from each Input Link to the Instance ID of the corresponding Default Value. Only one default value will be selected for each instance number.
+
+  SyncMultiOutputs:
+    description: Copy values from Default Value instances to Default Values in corresponding objects pointed to by Output Link instances, selected by matching Output Link instance numbers with Default value instance numbers. ONly one default value will be selected for each Output Link.
+
+  SyncMultiFromMulti:
+    description: Pull pattern sync of multiple default values from one object to another, matching all instance numbers and default values as in SyncMultipleInputs and SyncMultipleOutputs.
+
+  SyncMultiToMulti:
+    description: Push pattern sync of multiple default values from one object to another, matching all instance numbers and default values as in SyncMultipleInputs and SyncMultipleOutputs.
+
+  UpdateTimeValue:
+    description: update the time value from a value from a time source and see if the interval has elapsed for the next activation to take place. If the activation time is reached, call the OnInterval Action. if (CurrentTime - LastActivationTime >= IntervalTime) then call OnInterval. This is wrap-around safe and will work as an unconditional trigger if IntervalTime is set at 0 with constant or increasing time value, including all 0 values.
+
+  ReadDefaultValue:
+    description: Operation used to obtain the default value for use by internal application logic and external sync operations.
+
+  UpdateDefaultValue:
+    description: Operation used to update the default value for use by internal application logic and external sync operations.
+
+  OnInputSync:
+    description: Handler to return the default value to another object in response to SyncFromInputLink. Normalli to would return the Default Value but can be used to retun GPIO pin state, etc.
+
+  OnValueUpdate: 
+    description: Handler for application processing of value updates resulting from sync operations.
+
+  OnInterval:
+    description: Handler for timer interval application trigger
+
+
+sdfData:
+
+  Value:
+    description: Data types to represent ObjectFlow values
+    sdfChoice:
+      BooleanType: { type: boolean }
+      IntegerType: { type: integer }
+      FloatType: { type: float }
+      StringType: { type: string }
+      LinkType: { sdfRef: ObjectLink }
+      SemanticType: { objectflow:name: string } // for named types including structured typees
+
+   ValueType:
+    description: Metadata for applications to test for unknown data type
+    sdfChoice:
+      BooleanType: {}
+      IntegerType: {}
+      FloatType: {}
+      StringType: {}
+      LinkType: {}
+      SemanticType: {}
+
+  ObjectLink:
+    description: Data type to represent a selector of an ObjectFlow object, for application use
+    type: object
+    properties: 
+      TypeID:
+        type: Integer
+        minimum: 0
+        maximum: 65535
+      InstanceID:
+        type: Integer
+        minimum: 0
+        maximum: 65535
