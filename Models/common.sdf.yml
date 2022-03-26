@@ -43,7 +43,7 @@ sdfData:
       LinkType: {}
       SemanticType: {}
 
-  IDType:
+  IDRange:
     description: integer ID for the object and resource addressing and selection scheme (LWM2M)
     type: integer
       minimum: 0
@@ -54,9 +54,9 @@ sdfData:
     type: object
     properties: 
       TypeID:
-        sdfRef: #/sdfData/IDType
+        sdfRef: #/sdfData/IDRange
       InstanceID:
-        sdfRef: #/sdfData/IDType
+        sdfRef: #/sdfData/IDRange
 
 
 sdfThing:
@@ -77,10 +77,10 @@ sdfThing:
         default: ObjectFlow Base Object Template
 
       TypeID:
-        sdfRef: #/sdfData/IDType
+        sdfRef: #/sdfData/IDRange
 
       InstanceID:
-        sdfRef: #/sdfData/IDType
+        sdfRef: #/sdfData/IDRange
 
     sdfProperty:
       ValueType:
@@ -159,12 +159,12 @@ sdfThing:
         writable: false
 
       TypeID:
-        sdfRef: #/sdfData/IDType
+        sdfRef: #/sdfData/IDRange
         readable: false
         writable: false
 
       InstanceID:
-        sdfRef: #/sdfData/IDType
+        sdfRef: #/sdfData/IDRange
         readable: false
         writable: false
 
