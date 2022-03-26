@@ -1,0 +1,11 @@
+---
+info: 
+  title: ObjectFlow models common definitions 
+  version: 2022-03-25
+  copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
+  license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
+
+namespace: objectflow: https://onedm.org/objectflow
+
+defaultnamespace: objectflow
+

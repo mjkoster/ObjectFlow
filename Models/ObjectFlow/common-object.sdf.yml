@@ -27,6 +27,7 @@ sdfData:
       IntegerType: { type: integer }
       FloatType: { type: float }
       StringType: { type: string }
+      TimeType: { type: integer }
       LinkType: { sdfRef: "#/sdfData/LinkType" }
       SemanticType: { objectflow:name: string } // for named types including structured typees
 
@@ -38,6 +39,7 @@ sdfData:
       IntegerType: {}
       FloatType: {}
       StringType: {}
+      TimeType: {}
       LinkType: {}
       SemanticType: {}
 
@@ -98,28 +100,36 @@ sdfObject:
     description: Link to another object for obtaining an input or present value from an output or present value
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27003 
-    minItems: 0
+    sdfProperty:
+      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType" }
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27004 
-    minItems: 0
+    sdfProperty:
+      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType" }
 
   CurrentTime:
     description: Time value updated from the timer service
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27005 
+    sdfProperty:
+      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType" }
 
   IntervalTime:
     description: Time value between activations
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27006 
+    sdfProperty:
+      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType" }
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
     sdfRef: #/sdfObject/ObjectFlowResource
     TypeID: const: 27007 
+    sdfProperty:
+      ValueType: { sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType" }
 
 
   # Template for ObjectFlow Object class
@@ -157,12 +167,12 @@ sdfObject:
 
       InputLink:
         description: Link to another object for obtaining an input or present value from an output or present value
-        sdfRef: #/sdfData/ObjectLink
+        sdfRef: #/sdfObject/InputLink
         minItems: 0
 
       OutputLink:
         description: Link to another object for updating an input or present value from an output or present value
-        sdfRef: #/sdfData/ObjectLink
+        sdfRef: #/sdfObject/OutputLink
         minItems: 0
 
       CurrentTime:

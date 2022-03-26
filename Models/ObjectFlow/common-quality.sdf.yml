@@ -27,6 +27,7 @@ sdfData:
       IntegerType: { type: integer }
       FloatType: { type: float }
       StringType: { type: string }
+      TimeType: { type: integer }
       LinkType: { sdfRef: "#/sdfData/LinkType" }
       SemanticType: { objectflow:name: string } // for named types including structured typees
 
@@ -53,7 +54,7 @@ sdfProperty:
     description: Template definition for an ObjectFlow Resource
     sdfRef: #/sdfData/Value
 
-  # Reusable sdfObject types for resources
+  # Reusable resource types
   CurrentValue:
     sdfRef: #/sdfObject/ObjectFlowResource
     objectflow:TypeID: 27000 
