@@ -5,12 +5,13 @@ info:
   copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
   license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
 
-namespace: objectflow: https://onedm.org/objectflow
+namespace: 
+  objectflow: https://onedm.org/objectflow
 
 defaultnamespace: objectflow
 
 sdfData:
-  # add this Object ID to the TypeID registry
+  # add this ObjectType ID to the TypeID registry
   TypeID:
     ObjectType:
       TimeSource: { const: 43000 }
@@ -38,7 +39,7 @@ sdfThing:
       LastActivationTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/LastActivationTime
 
-      TimerLinks:
+      TimerOutputLinks:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
 
     sdfAction:

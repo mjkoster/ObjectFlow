@@ -5,7 +5,8 @@ info:
   copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
   license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
 
-namespace: objectflow: https://onedm.org/objectflow
+namespace: 
+  objectflow: https://onedm.org/objectflow
 
 defaultnamespace: objectflow
 
@@ -29,7 +30,7 @@ sdfData:
       StringType: { type: string }
       TimeType: { type: integer }
       InstanceLinkType: { sdfRef: "#/sdfData/InstanceLinkType" }
-      SemanticType: { sdfRef: "#/sdfData/SemanticType" } // for named types including structured types
+      SemanticType: { sdfRef: "#/sdfData/SemanticType" } 
 
   ValueType:
     description: Metadata for applications to test for unknown data type
@@ -46,8 +47,8 @@ sdfData:
   IDRange:
     description: integer ID for the object and resource addressing and selection scheme (LWM2M)
     type: integer
-      minimum: 0
-      maximum: 65535
+    minimum: 0
+    maximum: 65535
 
   InstanceLinkType:
     description: Data type to represent a selector of an ObjectFlow object or resource instance , for application use (LWM2M Object Link, also a resource link within an object )
@@ -161,7 +162,6 @@ sdfThing:
       ValueType:
         sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
 
-sdfThing:
   # Template for ObjectFlow Object class
   ObjectFlowObject:
     description: definitions common to all objects in the ObjectFlow framework
