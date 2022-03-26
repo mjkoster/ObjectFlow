@@ -62,29 +62,24 @@ sdfObject:
   # Template for ObjectFlow Resource class
   ObjectFlowResource:
     description: definitions for the properties of an ObjectFlow Resource
+    # Meta data is not part of the API and not exposed
+    sdfData:
+      Description: 
+        type: string
+        default: ObjectFlow Base Object Template
 
-      sdfProperty:
-        Description: 
-          type: string
-          default: ObjectFlow Base Object Template
-          readable: false
-          writable: false
+      TypeID:
+        sdfRef: #/sdfData/IDType
 
-        TypeID:
-          sdfRef: #/sdfData/IDType
-          readable: false
-          writable: false
+      InstanceID:
+        sdfRef: #/sdfData/IDType
 
-        InstanceID:
-          sdfRef: #/sdfData/IDType
-          readable: false
-          writable: false
+    sdfProperty:
+      ValueType:
+        sdfRef: #/sdfData/ValueType
 
-        ValueType:
-          sdfRef: #/sdfData/ValueType
-
-        Value:
-          sdfRef: #/sdfData/Value
+      Value:
+        sdfRef: #/sdfData/Value
 
   # Reusable sdfObject types for resources
   CurrentValue:
@@ -131,9 +126,8 @@ sdfObject:
   ObjectFlowObject:
     description: definitions common to all objects in the ObjectFlow framework
 
-    # Properties of ObjectFlowObject 
-    # Only resources of an object are exposed in the API, so these properties are marked not readable and not writable
-    sdfProperty:
+    # Meta data is not part of the API and not exposed
+    sdfData:
       Description: 
         type: string
         default: ObjectFlow Base Object Template
