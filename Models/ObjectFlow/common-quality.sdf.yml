@@ -30,17 +30,6 @@ sdfData:
       LinkType: { sdfRef: "#/sdfData/LinkType" }
       SemanticType: { objectflow:name: string } // for named types including structured typees
 
-  ValueType:
-    description: Metadata for applications to test for unknown data type
-    sdfChoice:
-      # let the underlying implementation choose its own internal enum coding  
-      BooleanType: {}
-      IntegerType: {}
-      FloatType: {}
-      StringType: {}
-      LinkType: {}
-      SemanticType: {}
-
   IDType:
     description: integer ID for the object and resource addressing and selection scheme (LWM2M)
     type: integer
@@ -57,75 +46,59 @@ sdfData:
         sdfRef: #/sdfData/IDType
 
 
-sdfObject:
+sdfProperty:
 
   # Template for ObjectFlow Resource class
   ObjectFlowResource:
-    description: definitions for the properties of an ObjectFlow Resource
-
-      sdfProperty:
-        Description: 
-          type: string
-          default: ObjectFlow Base Object Template
-          readable: false
-          writable: false
-
-        TypeID:
-          sdfRef: #/sdfData/IDType
-          readable: false
-          writable: false
-
-        InstanceID:
-          sdfRef: #/sdfData/IDType
-          readable: false
-          writable: false
-
-        ValueType:
-          sdfRef: #/sdfData/ValueType
-
-        Value:
-          sdfRef: #/sdfData/Value
+    description: Template definition for an ObjectFlow Resource
+    sdfRef: #/sdfData/Value
 
   # Reusable sdfObject types for resources
   CurrentValue:
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27000 
+    objectflow:TypeID: 27000 
 
   InputValue:
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27001 
+    objectflow:TypeID: 27001 
 
   OutputValue:
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27002 
+    objectflow:TypeID: 27002 
 
   InputLink:
     description: Link to another object for obtaining an input or present value from an output or present value
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27003 
+    objectflow:TypeID: 27003 
+    sdfChoice: #/sdfData/Value/sdfChoice/LinkType
     minItems: 0
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27004 
+    objectflow:TypeID: 27004 
+    sdfChoice: #/sdfData/Value/sdfChoice/LinkType
     minItems: 0
 
   CurrentTime:
     description: Time value updated from the timer service
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27005 
+    sdfChoice: #/sdfData/Value/sdfChoice/TimeType
+    objectflow:TypeID: 27005 
 
   IntervalTime:
     description: Time value between activations
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27006 
+    sdfChoice: #/sdfData/Value/sdfChoice/TimeType
+    objectflow:TypeID: 27006 
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
     sdfRef: #/sdfObject/ObjectFlowResource
-    TypeID: const: 27007 
+    sdfChoice: #/sdfData/Value/sdfChoice/TimeType
+    objectflow:TypeID: 27007 
 
+sdfObject:
 
   # Template for ObjectFlow Object class
   ObjectFlowObject:
@@ -140,18 +113,6 @@ sdfObject:
         readable: false
         writable: false
 
-      TypeID:
-        sdfRef: #/sdfData/IDType
-        readable: false
-        writable: false
-
-      InstanceID:
-        sdfRef: #/sdfData/IDType
-        readable: false
-        writable: false
-
-    # ObjectFlow Resources are sdfObjects within ObjectFlow Objects
-    sdfObject: 
       CurrentValue:
         sdfRef: #/sdfObject/CurrentValue
 
