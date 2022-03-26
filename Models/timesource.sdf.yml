@@ -9,11 +9,18 @@ namespace: objectflow: https://onedm.org/objectflow
 
 defaultnamespace: objectflow
 
+sdfData:
+  # add this Object ID to the TypeID registry
+  TypeID:
+    ObjectType:
+      TimeSource: { const: 43000 }
+
 sdfThing:
   # Timer Source Object
   TimeSource:
     sdfRef: /#/sdfThing/ObjectFlowObject
-    TypeID: 43000
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource
 
     # Timer Source Object Resources
     sdfThing:

@@ -29,7 +29,7 @@ sdfData:
       StringType: { type: string }
       TimeType: { type: integer }
       LinkType: { sdfRef: "#/sdfData/LinkType" }
-      SemanticType: { objectflow:name: string } // for named types including structured typees
+      SemanticType: { sdfRef: "#/sdfData/SemanticType" } // for named types including structured types
 
   ValueType:
     description: Metadata for applications to test for unknown data type
@@ -54,20 +54,31 @@ sdfData:
     type: object
     properties: 
       TypeID:
-        sdfRef: #/sdfData/IDRange
+        sdfRef: /#/sdfData/IDRange
       InstanceID:
-        sdfRef: #/sdfData/IDRange
+        sdfRef: /#/sdfData/IDRange
 
+  TypeID:
+    ObjectType:
+    ResourceType:
+      CurrentValue: { const: 27000 }
+      Inputvalue: { const: 27001 }
+      OutputValue: { const: 27002 }
+      InputLink: { const: 27003 }
+      OutputLink: { const: 27004 }
+      CurrentTime: { const: 27005 }
+      IntervalTime: { const: 27006 }
+      LastactivationTime: { const: 27007 }
 
 sdfThing:
 
   # Template for ObjectFlow Resource class
   ObjectFlowResource:
     sdfRequired:
-      - #/sdfThing/ObjectFlowResource/sdfData/TypeID
-      - #/sdfThing/ObjectFlowResource/sdfData/InstanceID
-      - #/sdfThing/ObjectFlowResource/sdfProperty/ValueType
-      - #/sdfThing/ObjectFlowResource/sdfProperty/Value
+      - /#/sdfThing/ObjectFlowResource/sdfData/TypeID
+      - /#/sdfThing/ObjectFlowResource/sdfData/InstanceID
+      - /#/sdfThing/ObjectFlowResource/sdfProperty/ValueType
+      - /#/sdfThing/ObjectFlowResource/sdfProperty/Value"
 
     description: definitions for the properties of an ObjectFlow Resource
     # Meta data is not part of the API and not exposed
@@ -77,78 +88,86 @@ sdfThing:
         default: ObjectFlow Base Object Template
 
       TypeID:
-        sdfRef: #/sdfData/IDRange
+        sdfRef: /#/sdfData/IDRange
 
       InstanceID:
-        sdfRef: #/sdfData/IDRange
+        sdfRef: /#/sdfData/IDRange
 
     sdfProperty:
       ValueType:
-        sdfRef: #/sdfData/ValueType
+        sdfRef: /#/sdfData/ValueType
 
       Value:
-        sdfRef: #/sdfData/Value
+        sdfRef: /#/sdfData/Value
 
   # Reusable sdfThing types for resources
   CurrentValue:
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27000 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue
 
   InputValue:
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27001 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID:  
+      sdfRef: /#/sdfData/TypeID/ResourceType/InputValue
 
   OutputValue:
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27002 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue
 
   InputLink:
     description: Link to another object for obtaining an input or present value from an output or present value
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27003 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ResourceType/InputLink
     sdfProperty:
       ValueType: 
         sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27004 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink
     sdfProperty:
       ValueType: 
         sdfRef: "#/sdfData/ValueType/sdfChoice/LinkType"
 
   CurrentTime:
     description: Time value updated from the timer service
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27005 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime
     sdfProperty:
       ValueType: 
         sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
 
   IntervalTime:
     description: Time value between activations
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27006 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime
     sdfProperty:
       ValueType: 
-        sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
+        sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
-    sdfRef: #/sdfThing/ObjectFlowResource
-    TypeID: const: 27007 
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    TypeID: 
+      sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime
     sdfProperty:
       ValueType:
-        sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
+        sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
 
 sdfThing:
   # Template for ObjectFlow Object class
   ObjectFlowObject:
     description: definitions common to all objects in the ObjectFlow framework
     sdfRequired:
-      - #/sdfThing/ObjectFlowObject/sdfData/TypeID
-      - #/sdfThing/ObjectFlowObject/sdfData/InstanceID
+      - /#/sdfThing/ObjectFlowObject/sdfData/TypeID
+      - /#/sdfThing/ObjectFlowObject/sdfData/InstanceID
 
     # Meta data is not part of the API and not exposed
     sdfData:
@@ -159,46 +178,46 @@ sdfThing:
         writable: false
 
       TypeID:
-        sdfRef: #/sdfData/IDRange
+        sdfRef: /#/sdfData/IDRange
         readable: false
         writable: false
 
       InstanceID:
-        sdfRef: #/sdfData/IDRange
+        sdfRef: /#/sdfData/IDRange
         readable: false
         writable: false
 
     # ObjectFlow Resources are sdfThings within ObjectFlow Objects and wrap exposed state
     sdfThing: 
       CurrentValue:
-        sdfRef: #/sdfThing/CurrentValue
+        sdfRef: /#/sdfThing/CurrentValue
 
       InputValue:
-        sdfRef: #/sdfThing/InputValue
+        sdfRef: /#/sdfThing/InputValue
 
       OutputValue:
-        sdfRef: #/sdfThing/OutputValue
+        sdfRef: /#/sdfThing/OutputValue
 
       InputLink:
         description: Link to another object for obtaining an input or present value from an output or present value
-        sdfRef: #/sdfThing/InputLink
+        sdfRef: /#/sdfThing/InputLink
         minItems: 0
 
       OutputLink:
         description: Link to another object for updating an input or present value from an output or present value
-        sdfRef: #/sdfThing/OutputLink
+        sdfRef: /#/sdfThing/OutputLink
         minItems: 0
 
       CurrentTime:
         description: Time value updated from the timer service
-        sdfRef: #/sdfThing/CurrentTime
+        sdfRef: /#/sdfThing/CurrentTime
 
       IntervalTime:
         description: Time value between activations
-        sdfRef: #/sdfThing/IntervalTime
+        sdfRef: /#/sdfThing/IntervalTime
 
       LastActivationTime:
-        sdfRef: #/sdfThing/LastActivationTime
+        sdfRef: /#/sdfThing/LastActivationTime
         description: Time value when the last activation occurred
 
     # ObjectFlow internal logic and communication handlers are defined as sdfAction types
@@ -222,8 +241,8 @@ sdfThing:
       SyncMultiToMulti:
         description: Push pattern sync of multiple default values from one object to another, matching all instance numbers and default values as in SyncMultipleInputs and SyncMultipleOutputs.
 
-      UpdateTimeValue:
-        description: update the time value from a value from a time source and see if the interval has elapsed for the next activation to take place. If the activation time is reached, call the OnInterval Action. if (CurrentTime - LastActivationTime >= IntervalTime) then call OnInterval. This is wrap-around safe and will work as an unconditional trigger if IntervalTime is set at 0 with constant or increasing time value, including all 0 values.
+      UpdateCurrentTime:
+        description: update the current time value of the CurrentTime resource from a value from a time source and see if the interval has elapsed for the next activation to take place. If the activation time is reached, call the OnInterval Action. if (CurrentTime - LastActivationTime >= IntervalTime) then call OnInterval. This is wrap-around safe and will work as an unconditional trigger if IntervalTime is set at 0 with constant or increasing time value, including all 0 values.
 
       ReadDefaultValue:
         description: Operation used to obtain the default value for use by internal application logic and external sync operations.
@@ -244,5 +263,5 @@ sdfThing:
   ObjectList:
     sdfThing:
       Object:
-        sdfRef: #/sdfThing/ObjectFlowObject
+        sdfRef: /#/sdfThing/ObjectFlowObject
         minItems: 0
