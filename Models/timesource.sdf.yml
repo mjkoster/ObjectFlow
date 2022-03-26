@@ -9,35 +9,30 @@ namespace: objectflow: https://onedm.org/objectflow
 
 defaultnamespace: objectflow
 
-sdfObject:
+sdfThing:
   # Timer Source Object
   TimeSource:
-    sdfRef: /#/sdfObject/ObjectFlowObject
+    sdfRef: /#/sdfThing/ObjectFlowObject
     TypeID: 43000
 
     # Timer Source Object Resources
-    sdfObject:
-      InputTime:
-        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/InputValue
-        ValueType:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
-
+    sdfThing:
       OutputTime:
-        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/OutputValue
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputValue
         ValueType:
           sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
 
       CurrentTime:
-        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/CurrentTime
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentTime
  
       IntervalTime:
-        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/IntervalTime
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/IntervalTime
 
       LastActivationTime:
-        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/LastActivationTime
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/LastActivationTime
 
       TimerLinks:
-        sdfRef: /#/sdfObject/ObjectFlowObject/sdfObject/OutputLink
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
 
-  sdfAction:
-    onUpdateDefaultValue: Divide the InputValue by the time base and update CurrentTime, then perform the interval check and conditionally update the outputvalue and lastActivationTime, and finally call SyncToCurrentTime
+    sdfAction:
+      OnInterval: update the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
