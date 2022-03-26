@@ -226,5 +226,5 @@ sdfThing:
   ObjectList:
     sdfObject:
       Object:
-        sdfRef: #/sdfObject/OpenFlowObject
+        sdfRef: #/sdfObject/ObjectFlowObject
         minItems: 0
