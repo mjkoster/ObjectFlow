@@ -1,0 +1,57 @@
+---
+ObjectFlowObject:
+  TimeSource: 
+    Type: TimeSource
+    ObjectFlowResource:
+      IntervalTime:
+        Type: IntervalTime 
+        Value: 1000 
+      OutputLink:
+        Type: OutputLink 
+        Value: /#/ObjectFlowObject/AnalogInput 
+
+  AnalogInput: 
+    Type: AnalogInput
+    ObjectFlowResource:
+      GpioPinID:
+        Type: GpioPinID 
+        Value: 0 
+      OutputLink: 
+        Type: OutputLink 
+        Value: /#/ObjectFlowObject/ScaleMapper 
+    
+  ScaleMapper: 
+    Type: ValueMap
+    ObjectFlowResource:
+      InputLowScale: 
+        Type: FloatValue 
+        Value: 0 
+      InputHighScale: 
+        Type: FloatValue 
+        Value: 1023 
+      CurrentLowScale: 
+        Type: FloatValue 
+        Value: 0 
+      CurrentHighScale: 
+        Type: FloatValue 
+        Value: 100 
+      CurrentValueMinimum: 
+        Type: MinimumScaleValue 
+        Value: 0 
+      CurrentValueMaximum: 
+        Type: MaximumScaleValue 
+        Value: 100 
+      CurrentValueUnit: 
+        Type: Unit 
+        Value: C 
+      OutputLink:
+        Type: OutputLink 
+        Value: /#/ObjectFlowObject/Display 
+    
+  Display: 
+    Type: Publisher
+    ObjectFlowResource:
+      InputValue: 
+        Type: InputValue
+        ValueType: IntegerType
+    
