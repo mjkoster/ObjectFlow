@@ -21,6 +21,16 @@ defaultnamespace: objectflow
 # common data types
 
 sdfData:
+  sdfLink: 
+    type: object
+    properties: 
+      EntityPointer: 
+        # JSON Pointer to the object instance definition to make an application link to
+        type: string
+      EntityType:
+        # JSON Pointer to the entity type definition to check for in sdfRef resolution
+        type: string
+      
   Value:
     description: Data types to represent ObjectFlow values
     sdfChoice:
@@ -29,7 +39,7 @@ sdfData:
       FloatType: { type: float }
       StringType: { type: string }
       TimeType: { type: integer }
-      InstanceLinkType: { sdfRef: "#/sdfData/InstanceLinkType" }
+      InstanceLinkType: { sdfRef: "#/sdfData/InstanceLinkData" }
       SemanticType: { sdfRef: "#/sdfData/SemanticType" } 
 
   ValueType:
@@ -50,7 +60,7 @@ sdfData:
     minimum: 0
     maximum: 65535
 
-  InstanceLinkType:
+  InstanceLinkData:
     description: Data type to represent a selector of an ObjectFlow object or resource instance , for application use (LWM2M Object Link, also a resource link within an object )
     type: object
     properties: 
@@ -104,24 +114,31 @@ sdfThing:
   # Reusable sdfThing types for resources
   CurrentValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue
 
   InputValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID:  
-      sdfRef: /#/sdfData/TypeID/ResourceType/InputValue
+    sdfData:
+      TypeID:  
+        sdfRef: /#/sdfData/TypeID/ResourceType/InputValue
 
   OutputValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue
 
   InputLink:
     description: Link to another object for obtaining an input or present value from an output or present value
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ResourceType/InputLink
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ResourceType/InputLink
+      # sdfLink to the sdfThing instance this link will point to
+      InstanceGraphLink: 
+        sdfRef: /#/sdfData/sdfLink
     sdfProperty:
       ValueType: 
         sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
@@ -129,8 +146,12 @@ sdfThing:
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink
+      # sdfLink to the sdfThing instance this link will point to
+      InstanceGraphLink: 
+        sdfRef: /#/sdfData/sdfLink
     sdfProperty:
       ValueType: 
         sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
@@ -138,8 +159,9 @@ sdfThing:
   CurrentTime:
     description: Time value updated from the timer service
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime
     sdfProperty:
       ValueType: 
         sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
@@ -147,8 +169,9 @@ sdfThing:
   IntervalTime:
     description: Time value between activations
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime
     sdfProperty:
       ValueType: 
         sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
@@ -156,8 +179,9 @@ sdfThing:
   LastActivationTime:
     description: Time value when the last activatoin occurred
     sdfRef: /#/sdfThing/ObjectFlowResource
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime
     sdfProperty:
       ValueType:
         sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType

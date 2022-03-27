@@ -1,6 +1,6 @@
 ---
 info: 
-  title: ObjectFlow models common definitions 
+  title: Time source object 
   version: 2022-03-25
   copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
   license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
@@ -20,8 +20,9 @@ sdfThing:
   # Timer Source Object
   TimeSource:
     sdfRef: /#/sdfThing/ObjectFlowObject
-    TypeID: 
-      sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource
 
     # Timer Source Object Resources
     sdfThing:
