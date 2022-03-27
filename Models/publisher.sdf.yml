@@ -31,4 +31,4 @@ sdfThing:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/InputValue
 
     sdfAction:
-      OnDefaultValueUpdate: Publish the data to the endpoint (printf for now)
+      OnDefaultValueUpdate: Publish the data to the endpoint (printf for prototype)

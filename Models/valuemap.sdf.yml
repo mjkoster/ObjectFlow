@@ -17,8 +17,8 @@ sdfData:
       ValueMap: { const: 43010 }
     ResourceType:
       FloatValue: { const: 27008 }
-      MinimumValue: { const: 27009 }
-      MaximumValue: { const: 27010 }
+      ScaleMinimum: { const: 27009 }
+      ScaleMaximum: { const: 27010 }
       Unit: { const: 27011 }
 
 sdfThing:
@@ -31,22 +31,25 @@ sdfThing:
         sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
     minInstances: 0
 
-  MinimumValue:
+  # Resource to hold the Minimum value for the scale referred to in Unit
+  ScaleMinimum:
     sdfRef: /#/sdfThing/ObjectFlowResource
     sdfData:
       TypeID:  
-        sdfRef: /#/sdfData/TypeID/ResourceType/MinimumValue
+        sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum
       ValueType: 
         sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
 
-  MaximumValue:
+  # Resource to hold the Maximum value for the scale referred to in Unit
+  ScaleMaximum:
     sdfRef: /#/sdfThing/ObjectFlowResource
     sdfData:
       TypeID:  
-        sdfRef: /#/sdfData/TypeID/ResourceType/MaximumValue
+        sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum
       ValueType: 
         sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
 
+  # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
     sdfRef: /#/sdfThing/ObjectFlowResource
     sdfData:
