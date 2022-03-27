@@ -31,6 +31,9 @@ sdfThing:
 
       InputValue:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/InputValue
+        ValueType: 
+          sdfChoice: 
+            default: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
 
     sdfAction:
       OnDefaultValueUpdate: Publish the data to the endpoint (printf for prototype)
