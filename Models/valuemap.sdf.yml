@@ -70,6 +70,17 @@ sdfThing:
         sdfRef: /#/sdfData/TypeID/ObjectType/ValueMap
 
     # ValueMap Object Resources
+    sdfRequired:
+      - /#/sdfThing/ValueMap/sdfThing/InputValue
+      - /#/sdfThing/ValueMap/sdfThing/CurrentValue
+      - /#/sdfThing/ValueMap/sdfThing/InputLowScale
+      - /#/sdfThing/ValueMap/sdfThing/InputHighScale
+      - /#/sdfThing/ValueMap/sdfThing/CurrentLowScale
+      - /#/sdfThing/ValueMap/sdfThing/CurrentHighScale
+      - /#/sdfThing/ValueMap/sdfThing/CurrentValueMinimum
+      - /#/sdfThing/ValueMap/sdfThing/CurrentValueMaximum
+      - /#/sdfThing/ValueMap/sdfThing/CurrentValueUnit
+
     sdfThing:
       InputValue:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/InputValue

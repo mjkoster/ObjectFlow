@@ -25,6 +25,8 @@ sdfThing:
         sdfRef: /#/sdfData/TypeID/ObjectType/Publisher
 
     # Publisher Object Resources
+    sdfRequired:
+      - /#/sdfThing/Publisher/sdfThing/InputValue
     sdfThing:
 
       InputValue:

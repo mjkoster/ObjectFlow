@@ -25,6 +25,12 @@ sdfThing:
         sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource
 
     # Timer Source Object Resources
+    sdfRequired:
+      - /#/sdfThing/TimeSource/sdfThing/OutputTime
+      - /#/sdfThing/TimeSource/sdfThing/CurrentTime
+      - /#/sdfThing/TimeSource/sdfThing/IntervalTime
+      - /#/sdfThing/TimeSource/sdfThing/LastActivationTime
+
     sdfThing:
       OutputTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputValue
@@ -41,8 +47,10 @@ sdfThing:
       LastActivationTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/LastActivationTime
 
-      TimerOutputLinks:
+      TimerOutputLink:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
 
     sdfAction:
-      OnInterval: update the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
+      OnInterval: update the curent time values at the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
+
+      syncOutputTime: could be another method instead of override, etc.
