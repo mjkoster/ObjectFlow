@@ -1,0 +1,30 @@
+---
+info: 
+  title: InstanceGraph Definition 
+  version: 2022-03-25
+  copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
+  license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
+
+namespace: 
+  objectflow: https://onedm.org/objectflow
+
+defaultnamespace: objectflow
+
+sdfThing:
+  # Instance Graph
+  InstanceGraph:
+    sdfRef: /#/sdfThing/ObjectList
+    # Objects in the graph
+    sdfThing:
+      TimeSource:
+        sdfRef: /#/sdfThing/TimeSource
+        
+      AnalogInput:
+        sdfRef: /#/sdfThing/AnalogInput
+        
+      ScaleMapper:
+        sdfRef: /#/sdfThing/ValueMap
+        
+      Display:
+        sdfRef: /#/sdfThing/Publisher
+        

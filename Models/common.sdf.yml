@@ -46,13 +46,13 @@ sdfData:
     description: Metadata for applications to test for unknown data type
     sdfChoice:
       # let the underlying implementation choose its own internal enum coding  
-      BooleanType: {}
-      IntegerType: {}
-      FloatType: {}
-      StringType: {}
-      TimeType: {}
-      InstanceLinkType: {}
-      SemanticType: {}
+      BooleanType:
+      IntegerType:
+      FloatType:
+      StringType:
+      TimeType: 
+      InstanceLinkType:
+      SemanticType:
 
   IDRange:
     description: integer ID for the object and resource addressing and selection scheme (LWM2M)
@@ -68,6 +68,7 @@ sdfData:
         sdfRef: /#/sdfData/IDRange
       InstanceID:
         sdfRef: /#/sdfData/IDRange
+        default: 0 
 
   TypeID:
     ObjectType:
@@ -89,7 +90,7 @@ sdfThing:
       - /#/sdfThing/ObjectFlowResource/sdfData/TypeID
       - /#/sdfThing/ObjectFlowResource/sdfData/InstanceID
       - /#/sdfThing/ObjectFlowResource/sdfProperty/ValueType
-      - /#/sdfThing/ObjectFlowResource/sdfProperty/Value"
+      - /#/sdfThing/ObjectFlowResource/sdfProperty/Value
 
     description: definitions for the properties of an ObjectFlow Resource
     # Meta data is not part of the API and not exposed
@@ -103,6 +104,7 @@ sdfThing:
 
       InstanceID:
         sdfRef: /#/sdfData/IDRange
+        default: 0
 
     sdfProperty:
       ValueType:
@@ -198,18 +200,13 @@ sdfThing:
       Description: 
         type: string
         default: ObjectFlow Base Object Template
-        readable: false
-        writable: false
 
       TypeID:
         sdfRef: /#/sdfData/IDRange
-        readable: false
-        writable: false
 
       InstanceID:
         sdfRef: /#/sdfData/IDRange
-        readable: false
-        writable: false
+        default: 0 
 
     # ObjectFlow Resources are sdfThings within ObjectFlow Objects and wrap exposed state
     sdfThing: 
