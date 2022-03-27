@@ -1,0 +1,93 @@
+---
+info: 
+  title: Value Mapping object 
+  version: 2022-03-25
+  copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
+  license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
+
+namespace: 
+  objectflow: https://onedm.org/objectflow
+
+defaultnamespace: objectflow
+
+sdfData:
+  # add this ObjectType ID to the TypeID registry
+  TypeID:
+    ObjectType:
+      ValueMap: { const: 43010 }
+    ResourceType:
+      FloatValue: { const: 27008 }
+      MinimumValue: { const: 27009 }
+      MaximumValue: { const: 27010 }
+      Unit: { const: 27011 }
+
+sdfThing:
+  FloatValue:
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfData:
+      TypeID:  
+        sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue
+      ValueType: 
+        sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+    minInstances: 0
+
+  MinimumValue:
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfData:
+      TypeID:  
+        sdfRef: /#/sdfData/TypeID/ResourceType/MinimumValue
+      ValueType: 
+        sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+
+  MaximumValue:
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfData:
+      TypeID:  
+        sdfRef: /#/sdfData/TypeID/ResourceType/MaximumValue
+      ValueType: 
+        sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+
+  Unit:
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfData:
+      TypeID:  
+        sdfRef: /#/sdfData/TypeID/ResourceType/Unit
+      ValueType: 
+        sdfRef: /#/sdfData/ValueType/sdfChoice/StringType
+
+  # ValueMap Object
+  ValueMap:
+    sdfRef: /#/sdfThing/ObjectFlowObject
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ObjectType/ValueMap
+
+    # ValueMap Object Resources
+    sdfThing:
+      InputValue:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/InputValue
+      CurrentValue:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentValue
+      InputLowScale:
+        sdfRef: /#/sdfThing/FloatValue
+      InputHighScale:
+        sdfRef: /#/sdfThing/FloatValue
+      CurrentLowScale:
+        sdfRef: /#/sdfThing/FloatValue
+      CurrentHighScale:
+        sdfRef: /#/sdfThing/FloatValue
+      CurrentValueMinimum:
+        sdfRef: /#/sdfThing/MinimumValue
+      CurrentValueMaximum:
+        sdfRef: /#/sdfThing/MaximumValue
+      CurrentValueUnit:
+        sdfRef: /#/sdfThing/Unit
+
+
+    sdfAction:
+      OnDefaultValueUpdate: "Apply the dual slope-intercept conversion:
+       CurrentValue = 
+          ( InputValue - InputLowScale ) 
+          * ( CurrentHighScale - CurrentLowScale ) / ( InputHighScale - InputLowScale )
+          - CurrentLowScale
+       clip the value between minimum and maximum, inclusive, update CurrentValue, call SyncToOutput"
