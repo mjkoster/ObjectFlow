@@ -5,15 +5,15 @@ InstanceGraph:
       Type: TimeSource
       Resource:
         IntervalTime: 1000 
-        TimerOutputLink: /#/ObjectFlowObject/AnalogInput 
+        TimerOutputLink: /#/InstanceGraph/ObjectFlowObject/AnalogInput 
 
     AnalogInput: 
       Type: AnalogInput
       Resource:
         GpioPinID: 7 
         IntervalTime: 0
-        OutputLink: /#/ObjectFlowObject/ScaleMapper 
-      
+        OutputLink: /#/InstanceGraph/ObjectFlowObject/ScaleMapper 
+
     ScaleMapper: 
       Type: ValueMap
       Resource:
@@ -24,8 +24,8 @@ InstanceGraph:
         CurrentValueMinimum: 0 
         CurrentValueMaximum: 100 
         CurrentValueUnit: C 
-        OutputLink: /#/ObjectFlowObject/Display 
-      
+        OutputLink: /#/InstanceGraph/ObjectFlowObject/Display 
+
     Display: 
       Type: Publisher
       Resource:

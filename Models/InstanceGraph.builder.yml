@@ -8,7 +8,7 @@ InstanceGraph:
         IntervalTime:
           Value: 1000 
         OutputLink:
-          Value: /#/ObjectFlowObject/AnalogInput 
+          InstancePointer: /#/InstanceGraph/ObjectFlowObject/AnalogInput 
 
     AnalogInput: 
       Type: AnalogInput
@@ -18,8 +18,8 @@ InstanceGraph:
         IntervalTime:
           Value: 0
         OutputLink: 
-          Value: /#/ObjectFlowObject/ScaleMapper 
-      
+          InstancePointer: /#/InstanceGraph/ObjectFlowObject/ScaleMapper 
+
     ScaleMapper: 
       Type: ValueMap
       ObjectFlowResource:
@@ -38,8 +38,8 @@ InstanceGraph:
         CurrentValueUnit: 
           Value: C 
         OutputLink:
-          Value: /#/ObjectFlowObject/Display 
-      
+          InstancePointer: /#/InstanceGraph/ObjectFlowObject/Display 
+
     Display: 
       Type: Publisher
       ObjectFlowResource:

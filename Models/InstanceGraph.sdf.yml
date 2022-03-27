@@ -27,7 +27,7 @@ sdfThing:
                   IntegerType: { const: 1000 }
           OutputLink:
             sdfData:
-              SdfLink: { EntityPointer: /#/sdfThing/InstanceGraph/sdfThing/AnalogInput }
+              SdfLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfThing/AnalogInput }
 
       AnalogInput:
         sdfRef: /#/sdfThing/AnalogInput
@@ -39,7 +39,7 @@ sdfThing:
                   IntegerType: { const: 7 }
             OutputLink:
               sdfData:
-                SdfLink: { EntityPointer: /#/sdfThing/InstanceGraph/sdfThing/ScaleMapper }
+                SdfLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfThing/ScaleMapper }
         
       ScaleMapper:
         sdfRef: /#/sdfThing/ValueMap
@@ -81,7 +81,7 @@ sdfThing:
                   StringValue: { const: C }
           OutputLink:
             sdfData:
-              SdfLink: { EntityPointer: /#/sdfThing/InstanceGraph/sdfThing/Display }
+              SdfLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfThing/Display }
         
       Display:
         sdfRef: /#/sdfThing/Publisher
