@@ -16,15 +16,79 @@ sdfThing:
     sdfRef: /#/sdfThing/ObjectList
     # Objects in the graph
     sdfThing:
+
       TimeSource:
         sdfRef: /#/sdfThing/TimeSource
-        
+        sdfThing:
+          IntervalTime:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  IntegerType: { const: 1000 }
+          OutputLink:
+            sdfData:
+              SdfLink: { EntityPointer: /#/sdfThing/InstanceGraph/sdfThing/AnalogInput }
+
       AnalogInput:
         sdfRef: /#/sdfThing/AnalogInput
+        sdfThing:
+          GpioPinID:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  IntegerType: { const: 7 }
+            OutputLink:
+              sdfData:
+                SdfLink: { EntityPointer: /#/sdfThing/InstanceGraph/sdfThing/ScaleMapper }
         
       ScaleMapper:
         sdfRef: /#/sdfThing/ValueMap
+        sdfThing:
+          InputLowScale:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  FloatValue: { const: 0 }
+          InputHighScale:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  FloatValue: { const: 1023 }
+          CurrentLowScale:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  FloatValue: { const: 0 }
+          CurrentHighScale:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  FloatValue: { const: 100 }
+          CurrentValueMinimum:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  FloatValue: { const: 0 }
+          CurrentValueMaximum:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  FloatValue: { const: 100 }
+          CurrentValueUnit:
+            sdfProperty:
+              Value: 
+                sdfChoice:
+                  StringValue: { const: C }
+          OutputLink:
+            sdfData:
+              SdfLink: { EntityPointer: /#/sdfThing/InstanceGraph/sdfThing/Display }
         
       Display:
         sdfRef: /#/sdfThing/Publisher
+        sdfThing:
+          InputValue:
+            sdfProperty:
+              ValueType:
+                sdfChoice:
+                  sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType
         

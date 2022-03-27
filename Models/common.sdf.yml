@@ -21,7 +21,7 @@ defaultnamespace: objectflow
 # common data types
 
 sdfData:
-  sdfLink: 
+  SdfLink: 
     type: object
     properties: 
       EntityPointer: 
@@ -138,12 +138,13 @@ sdfThing:
     sdfData:
       TypeID: 
         sdfRef: /#/sdfData/TypeID/ResourceType/InputLink
-      # sdfLink to the sdfThing instance this link will point to
+      # SdfLink to the sdfThing instance this link will point to
       InstanceGraphLink: 
-        sdfRef: /#/sdfData/sdfLink
+        sdfRef: /#/sdfData/SdfLink
     sdfProperty:
       ValueType: 
-        sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
+        sdfChoice:
+          sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
@@ -151,12 +152,13 @@ sdfThing:
     sdfData:
       TypeID: 
         sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink
-      # sdfLink to the sdfThing instance this link will point to
+      # SdfLink to the sdfThing instance this link will point to
       InstanceGraphLink: 
-        sdfRef: /#/sdfData/sdfLink
+        sdfRef: /#/sdfData/SdfLink
     sdfProperty:
       ValueType: 
-        sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
+        sdfChoice:
+          sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
 
   CurrentTime:
     description: Time value updated from the timer service
@@ -166,7 +168,11 @@ sdfThing:
         sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime
     sdfProperty:
       ValueType: 
-        sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
+        sdfChoice:
+          sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
+      Value:
+        sdfChoice:
+          TimeType: { default: 0 }
 
   IntervalTime:
     description: Time value between activations
@@ -176,7 +182,11 @@ sdfThing:
         sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime
     sdfProperty:
       ValueType: 
-        sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
+        sdfChoice:
+          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
+      Value:
+        sdfChoice:
+          TimeType: { default: 0 }
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
@@ -186,7 +196,11 @@ sdfThing:
         sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime
     sdfProperty:
       ValueType:
-        sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
+        sdfChoice:
+          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
+      Value:
+        sdfChoice:
+          TimeType: { default: 0 }
 
   # Template for ObjectFlow Object class
   ObjectFlowObject:

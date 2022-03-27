@@ -28,7 +28,8 @@ sdfThing:
       TypeID:  
         sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue
       ValueType: 
-        sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+        sdfChoice:
+          sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
     minInstances: 0
 
   # Resource to hold the Minimum value for the scale referred to in Unit
@@ -38,7 +39,8 @@ sdfThing:
       TypeID:  
         sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum
       ValueType: 
-        sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+        sdfChoice:
+          sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
 
   # Resource to hold the Maximum value for the scale referred to in Unit
   ScaleMaximum:
@@ -47,7 +49,8 @@ sdfThing:
       TypeID:  
         sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum
       ValueType: 
-        sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+        sdfChoice:
+          sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
 
   # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
@@ -56,7 +59,8 @@ sdfThing:
       TypeID:  
         sdfRef: /#/sdfData/TypeID/ResourceType/Unit
       ValueType: 
-        sdfRef: /#/sdfData/ValueType/sdfChoice/StringType
+        sdfChoice:
+          sdfRef: /#/sdfData/ValueType/sdfChoice/StringType
 
   # ValueMap Object
   ValueMap:

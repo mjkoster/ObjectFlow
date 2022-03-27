@@ -29,7 +29,8 @@ sdfThing:
       OutputTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputValue
         ValueType:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
+          sdfChoice:
+            sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
 
       CurrentTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentTime
