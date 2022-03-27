@@ -22,11 +22,13 @@ sdfData:
 sdfThing:
   GpioPinID: 
     sdfRef: /#/sdfObject/ObjectFlowResource
-    ValueType: /#/sdfData/ValueType/IntegerType
+    ValueType: 
+      sdfRef: /#/sdfData/ValueType/IntegerType
 
   GpioPinPullup: 
     sdfRef: /#/sdfObject/ObjectFlowResource
-    ValueType: /#/sdfData/ValueType/BooleanType
+    ValueType: 
+      sdfRef: /#/sdfData/ValueType/BooleanType
 
   # Analog Input GPIO Object
   AnalogInput:
@@ -48,10 +50,10 @@ sdfThing:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/LastActivationTime
 
       PinID: 
-        sdfRef: /#/sdfThing/Object/GpioPinID
+        sdfRef: /#/sdfThing/GpioPinID
 
       Pullup: 
-        sdfRef: /#/sdfThing/Object/GpioPinPullup
+        sdfRef: /#/sdfThing/GpioPinPullup
 
       CurrentValue:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentValue
@@ -101,19 +103,22 @@ sdfThing:
       TypeID: 
         sdfRef: /#/sdfData/TypeID/ObjectType/AnalogOutput
 
-    # Analog Input Object Resources
+    # Analog Output Object Resources
     sdfThing:
 
       PinID: 
-        sdfRef: /#/sdfThing/Object/GpioPinID
+        sdfRef: /#/sdfThing/GpioPinID
 
       Pullup: 
-        sdfRef: /#/sdfThing/Object/GpioPinPullup
+        sdfRef: /#/sdfThing/GpioPinPullup
 
       CurrentValue:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentValue
         ValueType: 
           sdfRef: /#/sdfData/valueType/IntegerType
+
+      OutputLink:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
 
     sdfAction:
       OnDefaultValueUpdate: update the state of the gpio pin 
@@ -125,19 +130,22 @@ sdfThing:
       TypeID: 
         sdfRef: /#/sdfData/TypeID/ObjectType/BinaryOutput
 
-    # Analog Input Object Resources
+    # Binary Output Object Resources
     sdfThing:
 
       PinID: 
-        sdfRef: /#/sdfThing/Object/GpioPinID
+        sdfRef: /#/sdfThing/GpioPinID
 
       Pullup: 
-        sdfRef: /#/sdfThing/Object/GpioPinPullup
+        sdfRef: /#/sdfThing/GpioPinPullup
 
       CurrentValue:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentValue
         ValueType: 
           sdfRef: /#/sdfData/valueType/BooleanType
+
+      OutputLink:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
 
     sdfAction:
       OnDefaultValueUpdate: update the state of the gpio pin 

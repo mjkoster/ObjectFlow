@@ -28,7 +28,7 @@ sdfData:
         # JSON Pointer to the object instance definition to make an application link to
         type: string
       EntityType:
-        # JSON Pointer to the entity type definition to check for in sdfRef resolution
+        # JSON Pointer to the entity type definition to check for in sdfRef resolution paths
         type: string
       
   Value:
