@@ -35,9 +35,12 @@ class InstanceGraph:
   def __init__(self, modelGraph, instancePath):
     # instancePath can point to SDF format or InstanceGraph format
     # there will be an sdfThing called InstanceList in the SDF graph
-    # it may be easiest to create an SDF InstanceList to/from partial InstanceGraph
+    # it may be easiest to create an SDF InstanceList to/from partial 
+    # InstanceGraph
+    # 
     # InstanceGraph has all required items and values defined 
     # the ObjectFlow header can be made from the full InstanceGraph
+
     self._modelGraph = modelGraph
     self._instanceGraph = Graph(instancePath)
     return
@@ -67,8 +70,11 @@ class Resource:
 
 
 def test():
-  graph = ModelGraph("./")
-  print(graph.json())
+  model = ModelGraph("./")
+  print(model.json())
+  instance = InstanceGraph( model, "/#/sdfThing/InstanceList" )
+  print(instance.json())
+  print(instance.objectFlowHeader())
 
 if __name__ == '__main__':
     test()
