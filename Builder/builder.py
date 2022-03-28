@@ -11,7 +11,7 @@ class Graph:
     self._merge(model) 
 
   def _merge(self, graph):
-    self._merge(graph) # recursive merge
+    self._merge(graph) # recursive merge JSON trees, extend trees and set end values
 
   def graph(self):
     return self._graph
