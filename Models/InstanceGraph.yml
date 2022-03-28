@@ -1,0 +1,28 @@
+---
+InstanceGraph:
+  TimeSource: 
+    Type: TimeSource
+    IntervalTime: 1000 
+    TimerOutputLink: AnalogInput 
+
+  AnalogInput: 
+    Type: AnalogInput
+    GpioPinID: 7 
+    IntervalTime: 0
+    OutputLink: MapToCelsius 
+
+  MapToCelsius: 
+    Type: ValueMap
+    InputLowScale:  0 
+    InputHighScale: 1023 
+    CurrentLowScale: 0 
+    CurrentHighScale: 100 
+    CurrentValueMinimum: 0 
+    CurrentValueMaximum: 100 
+    CurrentValueUnit: C 
+    OutputLink: Display 
+
+  Display: 
+    Type: Publisher
+    InputValue: { ValueType: IntegerType }
+    
