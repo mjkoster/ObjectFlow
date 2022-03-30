@@ -1,0 +1,45 @@
+@startuml
+map Timer {
+  TypeID => 43000
+  InstanceID => 0
+  IntervalTime => 1000
+  OutputLink => [43001,0]
+  }
+map AnalogInput {
+  TypeID => 43001
+  InstanceID => 0
+  IntervalTime => 0
+  GpoiPinID => 7
+  OutputLink => [43002,0]
+  }
+map MapToCelsius {
+    Type => ValueMap
+    TypeID => 43002
+    InstanceID => 0
+    InputLowScale => 0 
+    InputHighScale => 1023 
+    CurrentLowScale => 0 
+    CurrentHighScale => 100 
+    CurrentValueMinimum => 0 
+    CurrentValueMaximum => 100 
+    CurrentValueUnit => C 
+    OutputLink_0 => [43003,0]
+    OutputLink_1 => [43003,1]
+}
+map Display {
+    Type => Publisher
+    TypeID => 43003
+    InstanceID => 0
+    InputValue => { ValueType: IntegerType }
+}
+map SerialPublisher{
+    Type => Publisher
+    TypeID => 43003
+    InstanceID => 1
+    InputValue => { ValueType: IntegerType }
+}
+Timer::OutputLink -> AnalogInput
+AnalogInput::OutputLink -> MapToCelsius
+MapToCelsius::OutputLink_0 -> Display
+MapToCelsius::OutputLink_1 -> SerialPublisher
+@enduml
