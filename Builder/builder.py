@@ -62,36 +62,54 @@ class FlowGraph:
     self._flowGraph = Graph()
 
     for file in glob.glob( flowPath + "*.flow.json" ):
-      self._instanceGraph.addFlow( json.loads( open(file,"r").read() ) )
+      self._flowGraph.addFlow( json.loads( open(file,"r").read() ) )
     for file in glob.glob( flowPath + "*.flow.yml" ):
       self._flowGraph.addFlow( yaml.load( open(file,"r").read() ) )
 
-    self._resolveInstances()
+    # self._resolveInstances()
 
 
   def _resolveInstances(self):
+    self._resolvedGraph = Graph()
     # process the flow graph to resolve all required items and default values from the model graph
     # 
-    # for object in flowGraph resolve required items by type in model graph
+    # for object in flowGraph resolve required items by object type (Type field in the flow object)
     # if no type, add type: <=name>
     # if required item not present, add it with defaults
-    # if required item is present, check its value
+    # if required item is present, apply the final value e.g. default => const
     # for object values, check required elements and types and fill in missing elements with defaults
-    # assign sequential instance numbers for duplicate instances of Objects and Resources
-    # expand sdfRef pointers as the model is traversed, navigate through JSON pointers
+    # assign sequential instance numbers for duplicate instances of Objects and Resources (same TypeID)
+    # expand sdfRef pointers as the model is traversed, navigate through temporary JSON pointer subgraphs
     #
     # resolving an SDF instance might be done using back-merge of all the sdfRef entry points from the model
-    # construct an SDF instance graph by expanding items in the flow graph and add it to the model
+    # construct an SDF instance graph by expanding items in the flow graph and add it to the model under sdfInstance:
+    # Assign TypeIDs and override default instanceIDs for duplicate TypeIDs
+    # resolve Flow links to SDF Instance links to ObjectLinks
     # construct paths to transitive endpoints specified in the flow file e.g.
-    # CurrentValue: 100 becomes CurrentValue: { Value: 100 } which is put into the construct => sdfThing:
-    # CurrentValue: { sdfRef: /#/...CurrentValue Value, ValueType: duckType(100), Value: 100 }
-    # if type is constrained to float, convert integer constant
-    # serialize the instance graph to a resolved flow graph
+    # Make an instance of the type and interpret the contents in the flow file 
+    # CurrentValue: 100 becomes CurrentValue: { Value: 100 } which is expanded by the model to => sdfThing:
+    # CurrentValue: { sdfRef: /#/...CurrentValue, ValueType: { sdfChoice: mapToTypeRef(100)}, Value: 100 }
+    # if type is constrained to float (ValueType is set to float in model or flow), convert integer constant
+    # e.g. { ValueType: FloatType, Value: 100 } might display back as Value: 100.0
+    # serialize the instance graph to a resolved flow graph which is an output graph
     # serialize each object to the header template file
-    #
     # can resources be added to an object that aren't in the composed model? What would they do?
-    return
+    #
+    # for object in flow: 
+    #   add sdfThing to the resolvedGraph and an sdfRef corresponding to the matching Type:
+    #   Assign TypeIDs and override default instanceIDs for duplicate TypeIDs, other Object data
+    # for each object in flow
+    #   for each resource 
+    #      Convert <value> to { Value: <value> }
+    #      Add resource instance to the thing in the ResolvedGraph and an sdfRef corresponding to the matching type
+    #      Recursively follow sdfRefs to assign values to the resource properties
+    #      If there is no default ValueType, infer one from the value (fixup)
+    #  add any required resources not included
+    # 
+    return self._resolvedGraph
 
+  def resolvedGraph(self):
+    return self._resolveInstances
 
   def json(self):
     return self._instanceGraph.json()
