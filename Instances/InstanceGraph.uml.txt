@@ -10,7 +10,7 @@ object AnalogInput {
   Type: AnalogInput
   IntervalTime: 0
   GpoiPinID: 7
-  OutputLink: ScaleMapper
+  OutputLink: MapToCelsius
   }
 AnalogInput::OutputLink --> MapToCelsius
 
