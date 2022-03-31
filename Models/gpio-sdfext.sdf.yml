@@ -181,4 +181,5 @@ sdfProperty:
         required: true
 
     sdfAction:
-      OnDefaultValueUpdate: update the state of the gpio pin 
+      OnDefaultValueUpdate: 
+        description: update the state of the gpio pin 

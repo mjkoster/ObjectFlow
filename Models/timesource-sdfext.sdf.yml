@@ -51,6 +51,8 @@ sdfObject:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
 
     sdfAction:
-      OnInterval: update the curent time values at the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
+      OnInterval: 
+        description: update the curent time values at the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
 
-      syncOutputTime: could be another method instead of override, etc.
+      syncOutputTime: 
+        description: could be another method instead of override, etc.

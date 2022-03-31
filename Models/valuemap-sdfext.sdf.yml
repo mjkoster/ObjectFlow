@@ -106,9 +106,11 @@ sdfProperty:
 
 
     sdfAction:
-      OnDefaultValueUpdate: "Apply the dual slope-intercept conversion:
-       CurrentValue = 
-          ( InputValue - InputLowScale ) 
-          * ( CurrentHighScale - CurrentLowScale ) / ( InputHighScale - InputLowScale )
-          - CurrentLowScale
-       clip the value between minimum and maximum, inclusive, update CurrentValue, call SyncToOutput"
+      OnDefaultValueUpdate: 
+        description:
+          "Apply the dual slope-intercept conversion:
+          CurrentValue = 
+              ( InputValue - InputLowScale ) 
+              * ( CurrentHighScale - CurrentLowScale ) / ( InputHighScale - InputLowScale )
+              - CurrentLowScale
+          clip the value between minimum and maximum, inclusive, update CurrentValue, call SyncToOutput"
