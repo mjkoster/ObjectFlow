@@ -1,0 +1,56 @@
+---
+info: 
+  title: Time source object 
+  version: 2022-03-25
+  copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
+  license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
+
+namespace: 
+  flo: https://onedm.org/objectflow
+
+defaultnamespace: flo
+
+sdfData:
+  # add this ObjectType ID to the TypeID registry
+  TypeID:
+    ObjectType:
+      TimeSource: { const: 43000 }
+
+sdfObject:
+  # Timer Source Object
+  TimeSource:
+    sdfRef: /#/sdfThing/ObjectFlowObject
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource/const }
+
+    # Timer Source Object Resources
+    sdfRequired:
+      - /#/sdfThing/TimeSource/sdfProperty/OutputTime
+      - /#/sdfThing/TimeSource/sdfProperty/CurrentTime
+      - /#/sdfThing/TimeSource/sdfProperty/IntervalTime
+      - /#/sdfThing/TimeSource/sdfProperty/LastActivationTime
+    sdfProperty:
+      OutputTime:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputValue
+        flo:meta: 
+          ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
+        required: true
+
+      CurrentTime:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentTime
+        required: true
+ 
+      IntervalTime:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/IntervalTime
+        required: true
+
+      LastActivationTime:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/LastActivationTime
+        required: true
+
+      TimerOutputLink:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
+
+    sdfAction:
+      OnInterval: update the curent time values at the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
+
+      syncOutputTime: could be another method instead of override, etc.

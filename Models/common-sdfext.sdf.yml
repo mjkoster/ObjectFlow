@@ -6,7 +6,8 @@ info:
   license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
 
 namespace: 
-  flo: https://onedm.org/objectflow
+  flo: https://onedm.org/ecosystem/objectflow
+  oma: "https://onedm.org/ecosystem/oma"
 
 defaultnamespace: flo
 
@@ -21,6 +22,7 @@ defaultnamespace: flo
 # common data types
 
 sdfData:
+
   SdfLink: 
     type: object
     properties: 
@@ -28,7 +30,7 @@ sdfData:
         # JSON Pointer to the object instance definition to make an application link to
         type: string
       InstanceType:
-        # JSON Pointer to the sdf type definition to check for in sdfRef resolution paths
+        # JSON Pointer to the object type definition to require in the InstancePointer resolution path
         type: string
       
   Value:
@@ -46,13 +48,13 @@ sdfData:
     description: Metadata for applications to test for unknown data type
     sdfChoice:
       # let the underlying implementation choose its own internal enum coding  
-      BooleanType:
-      IntegerType:
-      FloatType:
-      StringType:
-      TimeType: 
-      InstanceLinkType:
-      SemanticType:
+      BooleanType: {}
+      IntegerType: {}
+      FloatType: {}
+      StringType: {}
+      TimeType: {}
+      InstanceLinkType: {}
+      SemanticType: {}
 
   IDRange:
     description: integer ID for the object and resource addressing and selection scheme (LWM2M)
@@ -71,7 +73,7 @@ sdfData:
         default: 0 
 
   TypeID:
-    ObjectType:
+    ObjectType: {}
     ResourceType:
       CurrentValue: { const: 27000 }
       Inputvalue: { const: 27001 }
@@ -82,177 +84,112 @@ sdfData:
       IntervalTime: { const: 27006 }
       LastActivationTime: { const: 27007 }
 
-sdfThing:
+sdfProperty:
 
   # Template for ObjectFlow Resource class
   ObjectFlowResource:
-    sdfRequired:
-      - /#/sdfThing/ObjectFlowResource/sdfData/TypeID
-      - /#/sdfThing/ObjectFlowResource/sdfData/InstanceID
-      - /#/sdfThing/ObjectFlowResource/sdfProperty/ValueType
-      - /#/sdfThing/ObjectFlowResource/sdfProperty/Value
-
     description: definitions for the properties of an ObjectFlow Resource
-    # Meta data is not part of the API and not exposed
-    sdfData:
-      Description: 
-        type: string
-        default: ObjectFlow Base Object Template
-
-      TypeID:
-        sdfRef: /#/sdfData/IDRange
-
-      InstanceID:
-        sdfRef: /#/sdfData/IDRange
-        default: 0
-
-    sdfProperty:
+    sdfRef: /#/sdfData/Value
+    flo:meta: 
       ValueType:
-        sdfRef: /#/sdfData/ValueType
+        sdfRef: /#/sdfData/ValueType 
+        required: true
 
-      Value:
-        sdfRef: /#/sdfData/Value
-
-  # Reusable sdfThing types for resources
+  # Reusable sdfProperty types for Resources
   CurrentValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue/const }
 
   InputValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID:  
-        sdfRef: /#/sdfData/TypeID/ResourceType/InputValue
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputValue/const }
 
   OutputValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue/const }
 
   InputLink:
     description: Link to another object for obtaining an input or present value from an output or present value
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ResourceType/InputLink
-      # SdfLink to the sdfThing instance this link will point to
-      InstanceGraphLink: 
-        sdfRef: /#/sdfData/SdfLink
-    sdfProperty:
-      ValueType: 
-        sdfChoice:
-          sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
+    type: { sdfRef: /#/sdfData/Value/sdfChoice/InstanceLinkType/type }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputLink/const }
+    flo:meta: 
+      ValueType: { /#/sdfData/ValueType/sdfChoice/InstanceLinkType }
+      InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink
-      # SdfLink to the sdfThing instance this link will point to
-      InstanceGraphLink: 
-        sdfRef: /#/sdfData/SdfLink
-    sdfProperty:
-      ValueType: 
-        sdfChoice:
-          sdfRef: "#/sdfData/ValueType/sdfChoice/InstanceLinkType"
+    type: { sdfRef: /#/sdfData/Value/sdfChoice/InstanceLinkType/type }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/InstanceLinkType }
+      InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
 
   CurrentTime:
     description: Time value updated from the timer service
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime
-    sdfProperty:
-      ValueType: 
-        sdfChoice:
-          sdfRef: "#/sdfData/ValueType/sdfChoice/TimeType"
-      Value:
-        sdfChoice:
-          TimeType: { default: 0 }
+    type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType/type }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
+  default: 0 
 
   IntervalTime:
     description: Time value between activations
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime
-    sdfProperty:
-      ValueType: 
-        sdfChoice:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
-      Value:
-        sdfChoice:
-          TimeType: { default: 0 }
+    type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType/type }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
+    default: 0 
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime
-    sdfProperty:
-      ValueType:
-        sdfChoice:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
-      Value:
-        sdfChoice:
-          TimeType: { default: 0 }
+    type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType/type }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
+    default: 0 
+
+sdfObject:
 
   # Template for ObjectFlow Object class
   ObjectFlowObject:
     description: definitions common to all objects in the ObjectFlow framework
-    sdfRequired:
-      - /#/sdfThing/ObjectFlowObject/sdfData/TypeID
-      - /#/sdfThing/ObjectFlowObject/sdfData/InstanceID
+    # ObjectFlow Resources are sdfProperty within ObjectFlow Objects and wrap exposed state
 
-    # Meta data is not part of the API and not exposed
-    sdfData:
-      Description: 
-        type: string
-        default: ObjectFlow Base Object Template
-
-      TypeID:
-        sdfRef: /#/sdfData/IDRange
-
-      InstanceID:
-        sdfRef: /#/sdfData/IDRange
-        default: 0 
-
-    # ObjectFlow Resources are sdfThings within ObjectFlow Objects and wrap exposed state
-    sdfThing: 
+    sdfProperty: 
       CurrentValue:
-        sdfRef: /#/sdfThing/CurrentValue
+        sdfRef: /#/sdfProperty/CurrentValue
 
       InputValue:
-        sdfRef: /#/sdfThing/InputValue
+        sdfRef: /#/sdfProperty/InputValue
 
       OutputValue:
-        sdfRef: /#/sdfThing/OutputValue
+        sdfRef: /#/sdfProperty/OutputValue
 
       InputLink:
-        description: Link to another object for obtaining an input or present value from an output or present value
-        sdfRef: /#/sdfThing/InputLink
+        description: Link to another object for obtaining a value from on syncFromInputLink
+        sdfRef: /#/sdfProperty/InputLink
         minItems: 0
 
       OutputLink:
-        description: Link to another object for updating an input or present value from an output or present value
-        sdfRef: /#/sdfThing/OutputLink
+        description: Link to another object for updating on syncToOutputLink
+        sdfRef: /#/sdfProperty/OutputLink
         minItems: 0
 
       CurrentTime:
         description: Time value updated from the timer service
-        sdfRef: /#/sdfThing/CurrentTime
+        sdfRef: /#/sdfProperty/CurrentTime
 
       IntervalTime:
         description: Time value between activations
-        sdfRef: /#/sdfThing/IntervalTime
+        sdfRef: /#/sdfProperty/IntervalTime
 
       LastActivationTime:
-        sdfRef: /#/sdfThing/LastActivationTime
+        sdfRef: /#/sdfProperty/LastActivationTime
         description: Time value when the last activation occurred
 
     # ObjectFlow internal logic and communication handlers are defined as sdfAction types

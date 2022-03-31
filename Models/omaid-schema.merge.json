@@ -1,0 +1,27 @@
+{
+ "definitions": {
+    "OmaID": {
+      "type": "number",
+      "minumum": 0,
+      "maximum": 65535
+    },
+    "thingqualities": {
+      "properties": {
+        "TypeID": { "$ref": "#/definitions/OmaID" },
+        "InstanceID": { "$ref": "#/definitions/OmaID" }
+      }
+    },
+    "objectqualities": {
+      "properties": {
+        "TypeID": { "$ref": "#/definitions/OmaID" },
+        "InstanceID": { "$ref": "#/definitions/OmaID" }
+      }
+    }, 
+    "propertyqualities": {
+      "properties": {
+        "TypeID": { "$ref": "#/definitions/OmaID" },
+        "InstanceID": { "$ref": "#/definitions/OmaID" }
+      }
+    }   
+  }
+}

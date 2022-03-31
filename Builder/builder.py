@@ -100,11 +100,14 @@ class FlowGraph:
     #   Assign TypeIDs and override default instanceIDs for duplicate TypeIDs, other Object data
     # for each object in flow
     #   for each resource 
-    #      Convert <value> to { Value: <value> }
+    #      add sdfRef: /#/sdfType: <type>
+    #      Add typeID and override default instanceID as needed
+    #      Convert <value> to { Value: { const: <value> } }
     #      Add resource instance to the thing in the ResolvedGraph and an sdfRef corresponding to the matching type
     #      Recursively follow sdfRefs to assign values to the resource properties
     #      If there is no default ValueType, infer one from the value (fixup)
-    #  add any required resources not included
+    #      resolve links to ObjectLinks
+    #  add any required resources not included with defaults
     # 
     return self._resolvedGraph
 

@@ -1,0 +1,36 @@
+---
+info: 
+  title: Publisher object 
+  version: 2022-03-25
+  copyright: "Copyright 2021, 2022 Michael J. Koster. All rights reserved."
+  license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
+
+namespace: 
+  flo: https://onedm.org/objectflow
+
+defaultnamespace: flo
+
+sdfData:
+  # add this ObjectType ID to the TypeID registry
+  TypeID:
+    ObjectType:
+      Publisher: { const: 43008 }
+
+sdfThing:
+  # Publisher Object
+  Publisher:
+    sdfRef: /#/sdfThing/ObjectFlowObject
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/Publisher/const }
+
+    # Publisher Object Resources
+    sdfRequired:
+      - /#/sdfThing/Publisher/sdfThing/InputValue
+    sdfProperty:
+
+      InputValue:
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfProperty/InputValue
+        flo:meta: 
+          ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
+
+    sdfAction:
+      OnDefaultValueUpdate: Publish the data to the endpoint (printf for prototype)
