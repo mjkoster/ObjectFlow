@@ -6,9 +6,9 @@ info:
   license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
 
 namespace: 
-  objectflow: https://onedm.org/objectflow
+  flo: https://onedm.org/objectflow
 
-defaultnamespace: objectflow
+defaultnamespace: flo
 
 sdfData:
   # add this ObjectType ID to the TypeID registry
@@ -21,53 +21,39 @@ sdfData:
       ScaleMaximum: { const: 27010 }
       Unit: { const: 27011 }
 
-sdfThing:
+sdfProperty:
   FloatValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID:  
-        sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue
-      ValueType: 
-        sdfChoice:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
     minInstances: 0
 
   # Resource to hold the Minimum value for the scale referred to in Unit
   ScaleMinimum:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID:  
-        sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum
-      ValueType: 
-        sdfChoice:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
 
   # Resource to hold the Maximum value for the scale referred to in Unit
   ScaleMaximum:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID:  
-        sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum
-      ValueType: 
-        sdfChoice:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
 
   # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
     sdfRef: /#/sdfThing/ObjectFlowResource
-    sdfData:
-      TypeID:  
-        sdfRef: /#/sdfData/TypeID/ResourceType/Unit
-      ValueType: 
-        sdfChoice:
-          sdfRef: /#/sdfData/ValueType/sdfChoice/StringType
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/Unit/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/StringType }
 
   # ValueMap Object
   ValueMap:
     sdfRef: /#/sdfThing/ObjectFlowObject
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ObjectType/ValueMap
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ValueMap/const }
 
     # ValueMap Object Resources
     sdfRequired:
@@ -81,31 +67,50 @@ sdfThing:
       - /#/sdfThing/ValueMap/sdfThing/CurrentValueMaximum
       - /#/sdfThing/ValueMap/sdfThing/CurrentValueUnit
 
-    sdfThing:
+    sdfProperty:
       InputValue:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/InputValue
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfProperty/InputValue
+        required: true
+
       CurrentValue:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentValue
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfProperty/CurrentValue
+        required: true
+
       InputLowScale:
-        sdfRef: /#/sdfThing/FloatValue
+        sdfRef: /#/sdfProperty/FloatValue
+        required: true
+
       InputHighScale:
-        sdfRef: /#/sdfThing/FloatValue
+        sdfRef: /#/sdfProperty/FloatValue
+        required: true
+
       CurrentLowScale:
-        sdfRef: /#/sdfThing/FloatValue
+        sdfRef: /#/sdfProperty/FloatValue
+        required: true
+
       CurrentHighScale:
-        sdfRef: /#/sdfThing/FloatValue
+        sdfRef: /#/sdfProperty/FloatValue
+        required: true
+
       CurrentValueMinimum:
-        sdfRef: /#/sdfThing/MinimumValue
+        sdfRef: /#/sdfProperty/MinimumValue
+        required: true
+
       CurrentValueMaximum:
-        sdfRef: /#/sdfThing/MaximumValue
+        sdfRef: /#/sdfProperty/MaximumValue
+        required: true
+        
       CurrentValueUnit:
-        sdfRef: /#/sdfThing/Unit
+        sdfRef: /#/sdfProperty/Unit
+        required: true
 
 
     sdfAction:
-      OnDefaultValueUpdate: "Apply the dual slope-intercept conversion:
-       CurrentValue = 
-          ( InputValue - InputLowScale ) 
-          * ( CurrentHighScale - CurrentLowScale ) / ( InputHighScale - InputLowScale )
-          - CurrentLowScale
-       clip the value between minimum and maximum, inclusive, update CurrentValue, call SyncToOutput"
+      OnDefaultValueUpdate: 
+        description:
+          "Apply the dual slope-intercept conversion:
+          CurrentValue = 
+              ( InputValue - InputLowScale ) 
+              * ( CurrentHighScale - CurrentLowScale ) / ( InputHighScale - InputLowScale )
+              - CurrentLowScale
+          clip the value between minimum and maximum, inclusive, update CurrentValue, call SyncToOutput"

@@ -6,9 +6,9 @@ info:
   license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
 
 namespace: 
-  flo: https://onedm.org/objectflow
+  objectflow: https://onedm.org/objectflow
 
-defaultnamespace: flo
+defaultnamespace: objectflow
 
 sdfData:
   # add this ObjectType ID to the TypeID registry
@@ -16,43 +16,41 @@ sdfData:
     ObjectType:
       TimeSource: { const: 43000 }
 
-sdfObject:
+sdfThing:
   # Timer Source Object
   TimeSource:
     sdfRef: /#/sdfThing/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource/const }
+    sdfData:
+      TypeID: 
+        sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource
 
     # Timer Source Object Resources
     sdfRequired:
-      - /#/sdfThing/TimeSource/sdfProperty/OutputTime
-      - /#/sdfThing/TimeSource/sdfProperty/CurrentTime
-      - /#/sdfThing/TimeSource/sdfProperty/IntervalTime
-      - /#/sdfThing/TimeSource/sdfProperty/LastActivationTime
-    sdfProperty:
+      - /#/sdfThing/TimeSource/sdfThing/OutputTime
+      - /#/sdfThing/TimeSource/sdfThing/CurrentTime
+      - /#/sdfThing/TimeSource/sdfThing/IntervalTime
+      - /#/sdfThing/TimeSource/sdfThing/LastActivationTime
+
+    sdfThing:
       OutputTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputValue
-        flo:meta: 
-          ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
-        required: true
+        ValueType:
+          sdfChoice:
+            sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType
 
       CurrentTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentTime
-        required: true
  
       IntervalTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/IntervalTime
-        required: true
 
       LastActivationTime:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/LastActivationTime
-        required: true
 
       TimerOutputLink:
         sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
 
     sdfAction:
-      OnInterval: 
-        description: update the curent time values at the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
+      OnInterval: update the curent time values at the output links with the current time value, i.e. OutputTime = LastActivationTime (== CurrentTime when onInterval is called)
 
-      syncOutputTime: 
-        description: could be another method instead of override, etc.
+      syncOutputTime: could be another method instead of override, etc.

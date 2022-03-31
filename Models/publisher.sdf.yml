@@ -6,9 +6,9 @@ info:
   license: "https://github.com/one-data-model/oneDM/blob/master/LICENSE"
 
 namespace: 
-  objectflow: https://onedm.org/objectflow
+  flo: https://onedm.org/objectflow
 
-defaultnamespace: objectflow
+defaultnamespace: flo
 
 sdfData:
   # add this ObjectType ID to the TypeID registry
@@ -20,20 +20,19 @@ sdfThing:
   # Publisher Object
   Publisher:
     sdfRef: /#/sdfThing/ObjectFlowObject
-    sdfData:
-      TypeID: 
-        sdfRef: /#/sdfData/TypeID/ObjectType/Publisher
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/Publisher/const }
 
     # Publisher Object Resources
     sdfRequired:
       - /#/sdfThing/Publisher/sdfThing/InputValue
-    sdfThing:
+    sdfProperty:
 
       InputValue:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/InputValue
-        ValueType: 
-          sdfChoice: 
-            default: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
+        sdfRef: /#/sdfThing/ObjectFlowObject/sdfProperty/InputValue
+        flo:meta: 
+          ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
+        required: true
 
     sdfAction:
-      OnDefaultValueUpdate: Publish the data to the endpoint (printf for prototype)
+      OnDefaultValueUpdate: 
+        description: Publish the data to the endpoint (printf for prototype)
