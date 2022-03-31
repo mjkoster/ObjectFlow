@@ -7,20 +7,17 @@
     },
     "thingqualities": {
       "properties": {
-        "TypeID": { "$ref": "#/definitions/OmaID" },
-        "InstanceID": { "$ref": "#/definitions/OmaID" }
+        "id": { "$ref": "#/definitions/OmaID" }
       }
     },
     "objectqualities": {
       "properties": {
-        "TypeID": { "$ref": "#/definitions/OmaID" },
-        "InstanceID": { "$ref": "#/definitions/OmaID" }
+        "id": { "$ref": "#/definitions/OmaID" }
       }
     }, 
     "propertyqualities": {
       "properties": {
-        "TypeID": { "$ref": "#/definitions/OmaID" },
-        "InstanceID": { "$ref": "#/definitions/OmaID" }
+        "id": { "$ref": "#/definitions/OmaID" }
       }
     }   
   }
