@@ -10,14 +10,12 @@ class Graph():
   def __init__(self):
     self._graph = {}
 
-  def addModel(self, model):
+  def add(self, model):
     self._merge(model) 
 
-  def addFlow(self, flow):
-    self._graph += flow
-
   def _merge(self, model):
-  # recursive descent merge JSON trees, extend trees and set end values
+  # RFC7386 style merge-patch
+  # recursive descent merge JSON, extend trees and set values
   # for each item in the model, check the position in the graph
   # add to graph if not present until the end value is reached 
   # set the end value, const overrides default (leave const: )
@@ -40,9 +38,9 @@ class ModelGraph:
     self._modelGraph = Graph()
     # read in all of the SDF files in the model directory
     for file in glob.glob( modelPath + "*.sdf.json" ):
-      self._modelGraph.addModel( json.loads( open(file,"r").read() ) )
+      self._modelGraph.add( json.loads( open(file,"r").read() ) )
     for file in glob.glob( modelPath + "*.sdf.yml" ):
-      self._modelGraph.addModel( yaml.load( open(file,"r").read() ) )
+      self._modelGraph.add( yaml.load( open(file,"r").read() ) )
   
   def json(self):
     return self._modelGraph.json()
@@ -61,10 +59,10 @@ class FlowGraph:
 
     self._flowGraph = Graph()
 
-    for file in glob.glob( flowPath + "*.flow.json" ):
-      self._flowGraph.addFlow( json.loads( open(file,"r").read() ) )
-    for file in glob.glob( flowPath + "*.flow.yml" ):
-      self._flowGraph.addFlow( yaml.load( open(file,"r").read() ) )
+    for file in glob.glob( flowPath + "*.flo.json" ):
+      self._flowGraph.add( json.loads( open(file,"r").read() ) )
+    for file in glob.glob( flowPath + "*.flo.yml" ):
+      self._flowGraph.add( yaml.load( open(file,"r").read() ) )
 
     # self._resolveInstances()
 
@@ -81,22 +79,23 @@ class FlowGraph:
     # assign sequential instance numbers for duplicate instances of Objects and Resources (same TypeID)
     # expand sdfRef pointers as the model is traversed, navigate through temporary JSON pointer subgraphs
     #
-    # resolving an SDF instance might be done using back-merge of all the sdfRef entry points from the model
+    # resolving an SDF instance is done using back-merge of all the sdfRef entry points from the model
+    # First, make an instance copy of the Object template for each object instance in the flow, name it, and add sdfRef
     # construct an SDF instance graph by expanding items in the flow graph and add it to the model under sdfInstance:
     # Assign TypeIDs and override default instanceIDs for duplicate TypeIDs
     # resolve Flow links to SDF Instance links to ObjectLinks
     # construct paths to transitive endpoints specified in the flow file e.g.
     # Make an instance of the type and interpret the contents in the flow file 
-    # CurrentValue: 100 becomes CurrentValue: { Value: 100 } which is expanded by the model to => sdfThing:
+    # CurrentValue: 100 becomes CurrentValue: { Value: 100 } which is expanded in the template to => sdfThing:
     # CurrentValue: { sdfRef: /#/...CurrentValue, ValueType: { sdfChoice: mapToTypeRef(100)}, Value: 100 }
     # if type is constrained to float (ValueType is set to float in model or flow), convert integer constant
     # e.g. { ValueType: FloatType, Value: 100 } might display back as Value: 100.0
-    # serialize the instance graph to a resolved flow graph which is an output graph
+    # serialize the SDF instance graph to a resolved flow graph which is an output graph
     # serialize each object to the header template file
     # can resources be added to an object that aren't in the composed model? What would they do?
     #
     # for object in flow: 
-    #   add sdfThing to the resolvedGraph and an sdfRef corresponding to the matching Type:
+    #   add the sdf object template to the resolvedGraph and an sdfRef corresponding to the matching Type:
     #   Assign TypeIDs and override default instanceIDs for duplicate TypeIDs, other Object data
     # for each object in flow
     #   for each resource 
@@ -115,15 +114,15 @@ class FlowGraph:
     return self._resolveInstances
 
   def json(self):
-    return self._instanceGraph.json()
+    return self._resolvedGraph.json()
 
 
   def yaml(self):
-    return self._instanceGraph.yaml()
+    return self._resolvedGraph.yaml()
 
 
   def objectFlowHeader(self):
-    return self._header() # convert the resolved instance graph to a header file
+    return self._header(self._resolvedGraph) # convert the resolved instance graph to a header file
 
 
   def _header(self):

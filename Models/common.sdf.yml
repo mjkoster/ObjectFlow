@@ -23,6 +23,21 @@ defaultnamespace: flo
 
 sdfData:
 
+  flo:meta:
+    description: metadata schema extension for ObjectFlow metadata in sdfThing, sdfObject, or sdfProperty definitions
+    TypeID:
+      sdfRef: /#/sdfData/IDRange
+    InstanceID:
+      sdfRef: /#/sdfData/IDRange
+    ValueType:
+      sdfRef: /#/sdfData/ValueType
+    InstanceGraphLink:
+      sdfRef: /#/sdfData/SdfLink
+
+  oma:id:
+    description: OMA type ID metadata for Object and Resource application types
+    sdfRef: /#/sdfData/IDRange
+
   SdfLink: 
     type: object
     properties: 
@@ -30,8 +45,13 @@ sdfData:
         # JSON Pointer to the object instance definition to make an application link to
         type: string
       InstanceType:
-        # JSON Pointer to the object type definition to require in the InstancePointer resolution path
+        # Optional JSON Pointer to the object type definition to require in the InstancePointer resolution path
         type: string
+      
+  UnsignedInt32: 
+    type: integer
+    minimum: 0
+    maximum: 4294967295
       
   Value:
     description: Data types to represent ObjectFlow values
@@ -40,21 +60,35 @@ sdfData:
       IntegerType: { type: integer }
       FloatType: { type: float }
       StringType: { type: string }
-      TimeType: { type: integer }
+      ValueTypeType: { sdfRef: /#/sdfData/ValueType }
+      TimeType: { sdfRef: /#/sdfData/UnsignedInt32 }
       InstanceLinkType: { sdfRef: "#/sdfData/InstanceLinkData" }
       SemanticType: { sdfRef: "#/sdfData/SemanticType" } 
 
   ValueType:
     description: Metadata for applications to test for unknown data type
     sdfChoice:
-      # let the underlying implementation choose its own internal enum coding  
+      # let the underlying implementation choose its own internal enum coding, need a binding to names or values
       BooleanType: {}
       IntegerType: {}
       FloatType: {}
       StringType: {}
-      TimeType: {}
-      InstanceLinkType: {}
+      ValueTypeType: {} # built-in semantic type 
+      TimeType: {} # built-in semantic type
+      InstanceLinkType: {} # built-in semantic type
       SemanticType: {}
+
+  ValueTypeString: # to use in a programming language binding, etc. 
+    sdfRef: /#/sdfData/ValueType
+    sdfChoice:
+      BooleanType: { const: BooleanType }
+      IntegerType: { const: IntegerType }
+      FloatType: { const: FloatType }
+      StringType: { const: StringType }
+      ValueTypeType: { const: ValueTypeType }
+      TimeType: { const: TimeType }
+      InstanceLinkType: { const: InstanceLinkType }
+      SemanticType: { const: SemanticType }
 
   IDRange:
     description: integer ID for the object and resource addressing and selection scheme (LWM2M)
@@ -72,17 +106,41 @@ sdfData:
         sdfRef: /#/sdfData/IDRange
         default: 0 
 
+  SemanticType:
+    description: Any type is allowed, eventually a registry of named data schemas and corresponding struct definitions
+    type: object
+    properties: 
+      TypeName: { type: string }
+      DataSchema: { type: object }
+  # Example:
+  # { 
+  #  TypeName: RgbColorData
+  #  DataSchema:
+  #    type: object
+  #    properties:
+  #      red: { type: integer, minimum: 0, maximum: 255 }
+  #      green: { type: integer, minimum: 0, maximum: 255 }
+  #      blue: { type: integer, minimum: 0, maximum: 255 }
+  #
+  #  struct RgbColorData {
+  #    uint8_t red;
+  #    uint8_t green;
+  #    uint8_t blue;
+  #  };
+  #
+
   TypeID:
     ObjectType: {}
     ResourceType:
-      CurrentValue: { const: 27000 }
-      Inputvalue: { const: 27001 }
-      OutputValue: { const: 27002 }
-      InputLink: { const: 27003 }
-      OutputLink: { const: 27004 }
-      CurrentTime: { const: 27005 }
-      IntervalTime: { const: 27006 }
-      LastActivationTime: { const: 27007 }
+      ValueType: { const: 27000}
+      CurrentValue: { const: 27001 }
+      Inputvalue: { const: 27002 }
+      OutputValue: { const: 27003 }
+      InputLink: { const: 27004 }
+      OutputLink: { const: 27005 }
+      CurrentTime: { const: 27006 }
+      IntervalTime: { const: 27007 }
+      LastActivationTime: { const: 27008 }
 
 sdfProperty:
 
@@ -96,6 +154,13 @@ sdfProperty:
         required: true
 
   # Reusable sdfProperty types for Resources
+  ValueType:
+    sdfRef: /#/sdfThing/ObjectFlowResource
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ValueType/const }
+    flo:meta: 
+      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/ValueTypeType }
+    type: { sdfRef: /#/sdfData/ValueType }
+
   CurrentValue:
     sdfRef: /#/sdfThing/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue/const }
@@ -114,7 +179,7 @@ sdfProperty:
     type: { sdfRef: /#/sdfData/Value/sdfChoice/InstanceLinkType/type }
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputLink/const }
     flo:meta: 
-      ValueType: { /#/sdfData/ValueType/sdfChoice/InstanceLinkType }
+      ValueType: { sdfRef: /#/sdfData/ValueType }
       InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
 
   OutputLink:
@@ -161,6 +226,10 @@ sdfObject:
     # ObjectFlow Resources are sdfProperty within ObjectFlow Objects and wrap exposed state
 
     sdfProperty: 
+
+      DefaultValueType:
+        sdfRef: /#/sdfProperty/ValueType
+
       CurrentValue:
         sdfRef: /#/sdfProperty/CurrentValue
 

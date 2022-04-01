@@ -9,7 +9,7 @@ TimeSource::OutputLink --> AnalogInput
 object AnalogInput {
   Type: AnalogInput
   IntervalTime: 0
-  GpoiPinID: 7
+  GpioPinID: 7
   OutputLink: MapToCelsius
   }
 AnalogInput::OutputLink --> MapToCelsius
