@@ -1,0 +1,83 @@
+---
+Input:
+  SystemRunMode: { InstanceID: 0 } # System Run/Stop control
+  OtherSideAdsorbValve: { InstanceID: 1 } # Interlock between sides to synchronize alternalte adsorption cycles
+  FirstAdsorb: { default: true } # constant signal indicating which columns initially go into Adsorb cycle
+
+Output:
+  InletValve: { InstanceID: 0 } # Supply air into the PSA column
+  ExhaustValve: { InstanceID: 1 } # Waste gas and purge gas out to atmosphere
+  PurgeValve: { InstanceID: 2 } # O2 backflush 
+  PressurizeValve: { InstanceID: 3 } # O2 back-pressurization 
+
+CurrentState: Stop # initially in stop state
+
+State:
+  Stop:
+    Output:
+      InletValve: false
+      ExhaustValve: false
+      PurgeValve: false
+      PressurizeValve: false
+    Transition:
+      Adsorb:
+        - SystemRunMode: true
+          FirstAdsorb: true
+      Blowdown:
+        - SystemRunMode: true
+          FirstAdsorb: false
+  Adsorb: 
+    Output: 
+      InletValve: true
+      ExhaustValve: false
+      PurgeValve: false
+      PressurizeValve: false
+    IntervalTime: 6000 # Built-in timer
+    Transition: 
+      Blowdown: 
+        - Interval: false # NOTO+Level mode timer starts true if the Interval value is set, goes false Interval after state transition
+          SystemRunMode: true
+        - SystemRunMode: false
+
+  Blowdown:
+    Output: 
+      InletValve: false
+      ExhaustValve: true
+      PurgeValve: false
+      PressurizeValve: false
+    IntervalTime: 1000
+    Transition: 
+      Purge: 
+        - Interval: false
+          SystemRunMode: true
+      Blowdown: 
+        - SystemRunMode: false
+
+  Purge:
+    Output: 
+      InletValve: false
+      ExhaustValve: true # The Exhaust Valve is open during Blowdown and Purge cycles
+      PurgeValve: true
+      PressurizeValve: false
+    IntervalTime: 4000
+    Transition: 
+      Pressurize: 
+        - Interval: false
+          SystemRunMode: true
+      Blowdown: 
+        - SystemRunMode: false
+
+  Pressurize:
+    Output: 
+      InletValve: false
+      ExhaustValve: false
+      PurgeValve: false
+      PressurizeValve: true
+    IntervalTime: 1000
+    Transition: 
+      Adsorb: 
+        - Interval: false
+          OtherSideAdsorbValve: false # wait for the other side to end the adsorb cycle before starting
+          SystemRunMode: true
+      Blowdown: 
+        - SystemRunMode: false
