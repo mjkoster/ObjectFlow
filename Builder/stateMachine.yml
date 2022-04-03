@@ -32,12 +32,12 @@ State:
       ExhaustValve: false
       PurgeValve: false
       PressurizeValve: false
-    IntervalTime: 6000 # Built-in timer
+    IntervalTime: 6000 # Built-in timer for state duration or timeout
     Transition: 
       Blowdown: 
         - Interval: false # NOTO+Level mode timer starts true if the Interval value is set, goes false Interval after state transition
           SystemRunMode: true
-        - SystemRunMode: false
+        - SystemRunMode: false # if SystemRunMode is false, do a Blowdown cycle, which will then go to Stop
 
   Blowdown:
     Output: 
@@ -50,7 +50,7 @@ State:
       Purge: 
         - Interval: false
           SystemRunMode: true
-      Blowdown: 
+      Stop: 
         - SystemRunMode: false
 
   Purge:
