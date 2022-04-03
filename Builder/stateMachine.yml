@@ -1,7 +1,7 @@
 ---
 Input:
-  SystemRunMode: { InstanceID: 0 } # System Run/Stop control
-  OtherSideInletValve: { InstanceID: 1 } # Interlock between sides to synchronize alternalte adsorption cycles
+  SystemRunMode: { LinkID: 0 } # System Run/Stop control
+  OtherSideInletValve: { LinkID: 1 } # Interlock between sides to synchronize alternalte adsorption cycles
   FirstAdsorb: { default: true } # constant signal indicating which columns initially go into Adsorb cycle
   AdsorbInterval: { default: 6000 } # IntervalTime values for different cycles, can be set externally with links
   BlowdownInterval: { default: 1000 }
@@ -9,10 +9,11 @@ Input:
   PressurizeInterval: { default: 1000 }
 
 Output:
-  InletValve: { InstanceID: 0 } # Supply air into the PSA column
-  ExhaustValve: { InstanceID: 1 } # Waste gas and purge gas out to atmosphere
-  PurgeValve: { InstanceID: 2 } # O2 backflush 
-  PressurizeValve: { InstanceID: 3 } # O2 back-pressurization 
+  InletValve: { LinkID: 0 } # Supply air into the PSA column
+  ExhaustValve: { LinkID: 1 } # Waste gas and purge gas out to atmosphere
+  PurgeValve: { LinkID: 2 } # O2 backflush 
+  PressurizeValve: { LinkID: 3 } # O2 back-pressurization 
+  Interval: { Function: Timer } # virtual output, outputs can also be read back as inputs
 
 CurrentState: Stop # initially in stop state
 
@@ -26,11 +27,11 @@ State:
       PressurizeValve: false
     Transition:
       Adsorb:
-        - SystemRunMode: true
+        - SystemRunMode: true 
           FirstAdsorb: true
       Blowdown:
         - SystemRunMode: true
-          FirstAdsorb: false
+          FirstAdsorb: false # shorthand in conditions for !FirstAdsorb
 
   Adsorb: 
     Output: 
@@ -38,10 +39,10 @@ State:
       ExhaustValve: false
       PurgeValve: false
       PressurizeValve: false
-    IntervalTime: AdsorbInterval # Built-in timer for state duration or timeout
+      Interval: 0
     Transition: 
       Blowdown: 
-        - Interval: false # NOTO+Level mode timer starts true if the Interval value is set, goes false Interval after state transition
+        - Interval: { .ge.: AdsorbInterval }
           SystemRunMode: true
         - SystemRunMode: false # if SystemRunMode is false, do a Blowdown cycle, which will then go to Stop
 
@@ -51,10 +52,11 @@ State:
       ExhaustValve: true
       PurgeValve: false
       PressurizeValve: false
+      Interval: 0
     IntervalTime: BlowdownInterval
     Transition: 
       Purge: 
-        - Interval: false
+        - Interval: { .ge.: BlowdownInterval }
           SystemRunMode: true
       Stop: 
         - SystemRunMode: false
@@ -65,10 +67,10 @@ State:
       ExhaustValve: true # The Exhaust Valve is open during Blowdown and Purge cycles
       PurgeValve: true
       PressurizeValve: false
-    IntervalTime: PurgeInterval
+      Interval: 0
     Transition: 
       Pressurize: 
-        - Interval: false
+        - Interval: { .ge.: PurgeInterval }
           SystemRunMode: true
       Blowdown: 
         - SystemRunMode: false
@@ -79,10 +81,10 @@ State:
       ExhaustValve: false
       PurgeValve: false
       PressurizeValve: true
-    IntervalTime: PressurizeInterval
+      Interval: 0
     Transition: 
       Adsorb: 
-        - Interval: false # minimum pressurize time
+        - Interval: { .ge.: PressurizeInterval } # minimum pressurize time
           OtherSideInletValve: false # wait for the other side to end the adsorb cycle before starting
           SystemRunMode: true
       Blowdown: 
