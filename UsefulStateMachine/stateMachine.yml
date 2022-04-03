@@ -13,7 +13,7 @@ Output:
   ExhaustValve: { LinkID: 1 } # Waste gas and purge gas out to atmosphere
   PurgeValve: { LinkID: 2 } # O2 backflush 
   PressurizeValve: { LinkID: 3 } # O2 back-pressurization 
-  Interval: { Function: Timer } # virtual output, outputs can also be read back as inputs
+  Interval: { Function: Timer } # virtual output, outputs can also be read back as inputs, could also be an external block
 
 CurrentState: Stop # initially in stop state
 
