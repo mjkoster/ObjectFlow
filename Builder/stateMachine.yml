@@ -1,7 +1,7 @@
 ---
 Input:
   SystemRunMode: { InstanceID: 0 } # System Run/Stop control
-  OtherSideAdsorbValve: { InstanceID: 1 } # Interlock between sides to synchronize alternalte adsorption cycles
+  OtherSideInletValve: { InstanceID: 1 } # Interlock between sides to synchronize alternalte adsorption cycles
   FirstAdsorb: { default: true } # constant signal indicating which columns initially go into Adsorb cycle
 
 Output:
@@ -76,8 +76,8 @@ State:
     IntervalTime: 1000
     Transition: 
       Adsorb: 
-        - Interval: false
-          OtherSideAdsorbValve: false # wait for the other side to end the adsorb cycle before starting
+        - Interval: false # minimum pressurize time
+          OtherSideInletValve: false # wait for the other side to end the adsorb cycle before starting
           SystemRunMode: true
       Blowdown: 
         - SystemRunMode: false
