@@ -3,6 +3,10 @@ Input:
   SystemRunMode: { InstanceID: 0 } # System Run/Stop control
   OtherSideInletValve: { InstanceID: 1 } # Interlock between sides to synchronize alternalte adsorption cycles
   FirstAdsorb: { default: true } # constant signal indicating which columns initially go into Adsorb cycle
+  AdsorbInterval: { default: 6000 } # IntervalTime values for different cycles, can be set externally with links
+  BlowdownInterval: { default: 1000 }
+  PurgeInterval: { default: 4000 }
+  PressurizeInterval: { default: 1000 }
 
 Output:
   InletValve: { InstanceID: 0 } # Supply air into the PSA column
@@ -13,6 +17,7 @@ Output:
 CurrentState: Stop # initially in stop state
 
 State:
+
   Stop:
     Output:
       InletValve: false
@@ -26,13 +31,14 @@ State:
       Blowdown:
         - SystemRunMode: true
           FirstAdsorb: false
+
   Adsorb: 
     Output: 
       InletValve: true
       ExhaustValve: false
       PurgeValve: false
       PressurizeValve: false
-    IntervalTime: 6000 # Built-in timer for state duration or timeout
+    IntervalTime: AdsorbInterval # Built-in timer for state duration or timeout
     Transition: 
       Blowdown: 
         - Interval: false # NOTO+Level mode timer starts true if the Interval value is set, goes false Interval after state transition
@@ -45,7 +51,7 @@ State:
       ExhaustValve: true
       PurgeValve: false
       PressurizeValve: false
-    IntervalTime: 1000
+    IntervalTime: BlowdownInterval
     Transition: 
       Purge: 
         - Interval: false
@@ -59,7 +65,7 @@ State:
       ExhaustValve: true # The Exhaust Valve is open during Blowdown and Purge cycles
       PurgeValve: true
       PressurizeValve: false
-    IntervalTime: 4000
+    IntervalTime: PurgeInterval
     Transition: 
       Pressurize: 
         - Interval: false
@@ -73,7 +79,7 @@ State:
       ExhaustValve: false
       PurgeValve: false
       PressurizeValve: true
-    IntervalTime: 1000
+    IntervalTime: PressurizeInterval
     Transition: 
       Adsorb: 
         - Interval: false # minimum pressurize time
