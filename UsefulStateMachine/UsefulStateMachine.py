@@ -8,9 +8,9 @@ class StateMachine:
 
     self._stateMachine = self
     self._filePath = filePath
-    if self._filePath.endswith("yml"):
+    if self._filePath.endswith("json"):
       self._stateMachineSpec = json.loads( open(filePath,"r").read() ) 
-    elif self._filePath.endswith("json"):
+    elif self._filePath.endswith("yml"):
       self._stateMachineSpec = yaml.loads( open(filePath,"r").read() ) 
     else: self._stateMachineSpec = {}
 
@@ -18,6 +18,7 @@ class StateMachine:
     self._output = dict(str, Output)
     self._state = dict(str, State)
 
+    # make instances of all inputs, outputs, and states
     for input in self._stateMachineSpec["Input"]:
       self._input[input] = Input(self._stateMachineSpec["Input"][input]) # construct an instance with the document node 
     for output in self._stateMachineSpec["Output"]:
@@ -26,6 +27,10 @@ class StateMachine:
       self._state[state] = State( state, self._stateMachineSpec["State"][state], self._stateMachine ) # construct an instance with the name, the document node, and the state machine instance
 
     self._currentState = self._state[ self._stateMachineSpec["CurrentState"] ] # initialize the state machine to the provided state
+
+    self._currentTime = 0
+
+  def currentTime(self): return self._currentTime
 
   def currentState(self): return self._currentState
 
@@ -90,8 +95,8 @@ class State:
         self._stateMachine._output[output].syncOutput(self._output[output])
 
 
-def test_machine(): # state machine definition for test
-  test_machine = {
+def testMachine(): # state machine definition for test
+  testMachine = {
 
     "Input": {
       "a": False,
@@ -148,7 +153,7 @@ def test_machine(): # state machine definition for test
 
     }
   }
-  return test_machine
+  return testMachine
 
 
 def test_input(): # this can be used as a test vector generator
@@ -174,7 +179,11 @@ def test_input(): # this can be used as a test vector generator
 
 
 def test():
-  return
+  stateMachine = StateMachine( testMachine() )
+  # for all vectors in test file
+  # set inputs vector
+  # evaluate the state machine 
+  # display the outputs
 
 if __name__ == '__main__':
     test()
