@@ -14,9 +14,9 @@ class StateMachine:
       self._stateMachineSpec = yaml.loads( open(filePath,"r").read() ) 
     else: self._stateMachineSpec = {}
 
-    self._input = {}
-    self._output = {}
-    self._state = {}
+    self._input = dict(str, Input)
+    self._output = dict(str, Output)
+    self._state = dict(str, State)
 
     for input in self._stateMachineSpec["Input"]:
       self._input[input] = Input(self._stateMachineSpec["Input"][input]) # construct an instance with the document node 
@@ -28,6 +28,9 @@ class StateMachine:
     self._currentState = self._state[ self._stateMachineSpec["CurrentState"] ] # initialize the state machine to the provided state
 
   def currentState(self): return self._currentState
+
+  def evaluate(self): self._currentState = self.currentState.evaluate()
+
 
 class Input:
   def __init__(self, inputInstance):
@@ -60,13 +63,14 @@ class State:
   def name(self): return self._stateName
   
   def evaluate(self):
-    self._nextState = self._stateMachine.currentState()
+    self._nextState = self
     for transition in self._transition:
       for minterm in self._transition[transition]:
         if self._mintrue(self._transition[transition][minterm]): # if any minterm is true, the OR value is true 
           self._nextState = self._stateMachine._state[transition] 
-          self._nextState.syncToOutput() # moore 
-    self._nextState.syncToOutput() # mealy 
+          self._nextState.syncToOutput() # moore or mealey
+          return self._nextState
+    self._nextState.syncToOutput() # mealey 
     return self._nextState
 
   def _mintrue(self, minterm): # see if an AND minterm is true
@@ -78,6 +82,12 @@ class State:
           self._mintrue = False
       else: self._mintrue = False # return false for any non-simple values until implemented
     return self._mintrue
+
+  def syncToOutput(self):
+    for output in self._output:
+      if isinstance( self._output[output], bool ) or isinstance( self._output[output], int ) or isinstance( self._output[output], float ) or isinstance(self._output[output], str ): 
+        # for simple values, just call syncOutput on each Output object using the name index in the StateMachine
+        self._stateMachine._output[output].syncOutput(self._output[output])
 
 
 def test_machine(): # state machine definition for test
