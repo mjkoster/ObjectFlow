@@ -6,9 +6,6 @@ import yaml
 class StateMachine:
   def __init__(self, filePath: str):
 
-    # FLowGraph gets filled in with all required items and values defined 
-    # the ObjectFlow header can be made from the full InstanceGraph
-
     self._stateMachine = self
     self._filePath = filePath
     if self._filePath.endswith("yml"):
@@ -17,25 +14,26 @@ class StateMachine:
       self._stateMachineSpec = yaml.loads( open(filePath,"r").read() ) 
     else: self._stateMachineSpec = {}
 
-    self._inputs = []
-    self._outputs = []
-    self._states = []
+    self._input = {}
+    self._output = {}
+    self._state = {}
 
     for input in self._stateMachineSpec["Input"]:
-      self._inputs[input] = Input(self._stateMachineSpec["Input"][input]) # construct an instance with the constructor node 
+      self._input[input] = Input(self._stateMachineSpec["Input"][input]) # construct an instance with the document node 
     for output in self._stateMachineSpec["Output"]:
-      self._outputs[output] = Output(self._stateMachineSpec["Output"][output]) # construct an instance with the constructor node 
+      self._output[output] = Output(self._stateMachineSpec["Output"][output]) # construct an instance with the document node 
     for state in self._stateMachineSpec["State"]:
-      self._states[state] = State( state, self._stateMachineSpec["State"][state], self._stateMachine ) # construct an instance with the constructor node 
+      self._state[state] = State( state, self._stateMachineSpec["State"][state], self._stateMachine ) # construct an instance with the name, the document node, and the state machine instance
 
-    self._currentState = self._states[ self._stateMachineSpec["CurrentState"] ] # initialize the state machine to the provided state
+    self._currentState = self._state[ self._stateMachineSpec["CurrentState"] ] # initialize the state machine to the provided state
 
   def currentState(self): return self._currentState
 
 class Input:
   def __init__(self, inputInstance):
-    self._externalValue = inputInstance
-    self._value = inputInstance # assume a compatible value
+
+    self._externalValue = inputInstance # assume a compatible value
+    self.syncInput() 
   
   def syncInput(self):
     self._value = self._externalValue
@@ -65,19 +63,22 @@ class State:
     self._nextState = self._stateMachine.currentState()
     for transition in self._transition:
       for minterm in self._transition[transition]:
-        if self._mintrue(self._transition[transition][minterm]): # if any minterm is true, the OR value
-          self._nextState = transition
+        if self._mintrue(self._transition[transition][minterm]): # if any minterm is true, the OR value is true 
+          self._nextState = self._stateMachine._state[transition] 
+          self._nextState.syncToOutput() # moore 
+    self._nextState.syncToOutput() # mealy 
     return self._nextState
 
-  def _mintrue(self, minterm):
+  def _mintrue(self, minterm): # see if an AND minterm is true
     self._mintrue = True
     for input in minterm: # evaluates the state of one or more inputs and returns the logical "and"
       if isinstance( minterm[input], bool ) or isinstance( minterm[input], int ) or isinstance( minterm[input], float ) or isinstance( minterm[input], str ): 
         # if it's a simple value, simply compare the value with the value returned by Input.value()
-        if self._stateMachine._inputs[input].value() != minterm[input]:
+        if self._stateMachine._input[input].value() != minterm[input]:
           self._mintrue = False
       else: self._mintrue = False # return false for any non-simple values until implemented
     return self._mintrue
+
 
 def test_machine(): # state machine definition for test
   test_machine = {
