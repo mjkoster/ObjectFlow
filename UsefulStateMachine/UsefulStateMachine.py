@@ -52,8 +52,19 @@ class StateMachine:
 
   def evaluate(self, time): 
     self._currentTime = time
-    self._currentState = self._currentState.evaluate()
+    self._intervalTime = self._currentTime - self._lastTransitionTime # wrap- and sign-safe interval compare
+    self.syncInput()
+    self._nextStateName = self._currentState.evaluate()
+    if self._nextStateName != "" : # execute the state transition
+      self._currentState = self._state[self._nextStateName]
+      self.setTransitionTime()
+      self._currentState.syncToOutput() # moore or mealy
+    self._currentState.syncToOutput() # mealy
 
+ 
+  def setTransitionTime(self): self._lastTransitionTime = self._currentTime
+
+  def intervalTime(self): return self._intervalTime
 
 class Input:
   def __init__(self, inputInstance):
@@ -91,27 +102,21 @@ class State:
   def name(self): return self._stateName
   
   def evaluate(self):
-    self._stateMachine.syncInput()
-    self._nextState = self
     for transition in self._transition:
       for minterm in self._transition[transition]:
         if self._mintrue(minterm): # if any minterm is true, the OR value is true 
-          self._stateMachine._lastTransitionTime = self._stateMachine._currentTime
-          self._nextState = self._stateMachine._state[transition] 
-          self._nextState.syncToOutput() # moore or mealy
-          return self._nextState
-    self._nextState.syncToOutput() # mealy 
-    return self._nextState
+          return transition
+    return ""
 
-  def _mintrue(self, minterm): # see if an AND minterm is true (none of the subexpressions are false)
-    self._minterm = True
-    for input in minterm: # evaluates the state of one or more inputs and returns the logical "and"
-      if isinstance( minterm[input], bool ) or isinstance( minterm[input], int ) or isinstance( minterm[input], float ) or isinstance( minterm[input], str ): 
-        # if it's a simple value, simply compare the value with the value returned by Input.value()
-        if self._stateMachine._input[input].value() != minterm[input]:
-          self._minterm = False
-      else: self._minterm = False # return false for any non-simple values until implemented
-    return self._minterm
+  def _mintrue(self, expression): # see if an AND minterm is true (none of the subexpressions for input values are false)
+    self._result = True
+    for input in expression: # evaluates the state of one or more inputs and returns the logical "and"
+      if isinstance( expression[input], bool ) or isinstance( expression[input], int ) or isinstance( expression[input], float ) or isinstance( expression[input], str ): 
+        # if the sub expression is a simple value, simply compare the value with the value returned by Input.value()
+        if self._stateMachine._input[input].value() != expression[input]:
+          self._result = False
+      else: self._result = False # return false for any non-simple values until implemented
+    return self._result
 
   def syncToOutput(self):
     for output in self._output:
@@ -171,7 +176,7 @@ def testMachine(): # state machine definition for test
           },
           "Transition": {
             "S1": [
-              { "a": False, "b": True }
+              { "a": True, "b": False }
             ]
           }
         }
@@ -198,7 +203,19 @@ def testInput(): # this can be used as a test vector generator
       {
         "time": 3,
         "Input": { "a": True, "b": True }
-      }
+      },
+       {
+        "time": 4,
+        "Input": { "a": True, "b": False }
+      },
+      {
+        "time": 5,
+        "Input": { "a": False, "b": False }
+      },
+      {
+        "time": 6,
+        "Input": { "a": False, "b": True }
+      },
     ]
   )
 
@@ -209,6 +226,7 @@ def test():
   print ("Inputs:")
   for input in stateMachine._input:
     print ( input, ": ", stateMachine._input[input].value() )
+  print ("State: ", stateMachine.currentState().name() )
   print ("Outputs:")
   for output in stateMachine._output:
     print ( output, ": ", stateMachine._output[output].value() )
