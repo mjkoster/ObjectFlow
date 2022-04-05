@@ -143,10 +143,10 @@ def testMachine(): # state machine definition for test
             "b": False
           },
           "Transition": {
-            "S1": [
+            "S2": [
               { "a": False, "b": True }
             ],
-            "S2": [
+            "S1": [
               { "a": True, "b": False }
             ]
           }
@@ -159,7 +159,7 @@ def testMachine(): # state machine definition for test
           },
           "Transition": {
             "S2": [
-              { "a": True, "b": False }
+              { "a": False, "b": True }
             ]
           }
         },
@@ -217,13 +217,14 @@ def test():
   for testStep in testInput():
     print ("Time: ", testStep["time"])
     # set inputs vector
-    print ("Inputs:")
     for input in testStep["Input"]:
       stateMachine._input[input].setExternalValue(testStep["Input"][input] )
-      print ( input, ": ", stateMachine._input[input].value() )
     # evaluate the state machine 
     stateMachine.evaluate(testStep["time"])
     # display the outputs
+    print ("Inputs:")
+    for input in stateMachine._input:
+      print ( input, ": ", stateMachine._input[input].value() )
     print ("Outputs:")
     for output in stateMachine._output:
       print ( output, ": ", stateMachine._output[output].value() )
