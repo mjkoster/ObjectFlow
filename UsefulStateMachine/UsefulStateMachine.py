@@ -7,23 +7,23 @@ Implementation of Useful State Machine, consumes a state description JSON and ma
 
 Python classes for State Machine, its Inputs, its Outputs, and its States.
 
-Simple evaluator for transition conditional inputs for simple values with eqality test
+Simple evaluator for transition conditional inputs for simple values with direct value equality test
 Simple setter for output values
 
 """
 class StateMachine:
-  def __init__(self, filePath: str):
+  def __init__(self, spec):
 
     self._stateMachine = self
-    self._filePath = filePath
-    if isinstance(filePath, dict):
-      self._stateMachineSpec = filePath
+    self._spec = spec
+    if isinstance(spec, dict): # for testing and calling as a library
+      self._stateMachineSpec = spec
     else:
-      if self._filePath.endswith("json"):
-        self._stateMachineSpec = json.loads( open(filePath,"r").read() ) 
-      elif self._filePath.endswith("yml"):
-        self._stateMachineSpec = yaml.loads( open(filePath,"r").read() ) 
-      else: self._stateMachineSpec = {}
+      if self._spec.endswith("json"):
+        self._stateMachineSpec = json.loads( open(self._spec,"r").read() ) 
+      elif self._spec.endswith("yml"):
+        self._stateMachineSpec = yaml.loads( open(self._spec,"r").read() ) 
+      else: self._stateMachineSpec = {} # for incremantal construction
 
     self._input = {}
     self._output = {}
