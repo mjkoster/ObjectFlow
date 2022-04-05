@@ -212,7 +212,7 @@ def test():
   print ("Outputs:")
   for output in stateMachine._output:
     print ( output, ": ", stateMachine._output[output].value() )
-  print 
+  print ()
   # for all vectors in test file
   for testStep in testInput():
     print ("Time: ", testStep["time"])
@@ -221,14 +221,15 @@ def test():
       stateMachine._input[input].setExternalValue(testStep["Input"][input] )
     # evaluate the state machine 
     stateMachine.evaluate(testStep["time"])
-    # display the outputs
+    # display the state
     print ("Inputs:")
     for input in stateMachine._input:
       print ( input, ": ", stateMachine._input[input].value() )
+    print ("State: ", stateMachine.currentState().name() )
     print ("Outputs:")
     for output in stateMachine._output:
       print ( output, ": ", stateMachine._output[output].value() )
-    print 
+    print ()
 
 
 if __name__ == '__main__':
