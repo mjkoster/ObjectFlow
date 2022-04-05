@@ -2,7 +2,15 @@
 import json
 import yaml
 
+"""
+Implementation of Useful State Machine, consumes a state description JSON and makes an instance of the state machine 
 
+Python classes for State Machine, its Inputs, its Outputs, and its States.
+
+Simple evaluator for transition conditional inputs for simple values with eqality test
+Simple setter for output values
+
+"""
 class StateMachine:
   def __init__(self, filePath: str):
 
@@ -34,6 +42,10 @@ class StateMachine:
 
   def currentState(self): return self._currentState
 
+  def syncInput(self): 
+    for input in self._input:
+      self._input[input].syncInput() 
+
   def evaluate(self): self._currentState = self.currentState.evaluate()
 
 
@@ -43,6 +55,9 @@ class Input:
     self._externalValue = inputInstance # assume a compatible value
     self.syncInput() 
   
+  def setExternalValue(self, value):
+    self._externalValue = value
+
   def syncInput(self):
     self._value = self._externalValue
 
@@ -52,9 +67,11 @@ class Input:
 class Output:
   def __init__(self, outputInstance):
     self._outputInstance = outputInstance
-    self._value = outputInstance # some initial value or a mapping construct
+    self.syncOutput(outputInstance) # some initial value or a mapping construct
 
   def syncOutput(self,value): self._value = value
+  
+  def value(self): return self._value
 
 
 class State:
@@ -68,17 +85,18 @@ class State:
   def name(self): return self._stateName
   
   def evaluate(self):
+    self._stateMachine.syncInput()
     self._nextState = self
     for transition in self._transition:
       for minterm in self._transition[transition]:
         if self._mintrue(self._transition[transition][minterm]): # if any minterm is true, the OR value is true 
           self._nextState = self._stateMachine._state[transition] 
-          self._nextState.syncToOutput() # moore or mealey
+          self._nextState.syncToOutput() # moore or mealy
           return self._nextState
-    self._nextState.syncToOutput() # mealey 
+    self._nextState.syncToOutput() # mealy 
     return self._nextState
 
-  def _mintrue(self, minterm): # see if an AND minterm is true
+  def _mintrue(self, minterm): # see if an AND minterm is true (none of the subexpressions are false)
     self._mintrue = True
     for input in minterm: # evaluates the state of one or more inputs and returns the logical "and"
       if isinstance( minterm[input], bool ) or isinstance( minterm[input], int ) or isinstance( minterm[input], float ) or isinstance( minterm[input], str ): 
@@ -156,8 +174,8 @@ def testMachine(): # state machine definition for test
   return testMachine
 
 
-def test_input(): # this can be used as a test vector generator
-  test_input = [
+def testInput(): # this can be used as a test vector generator
+  testInput = [
     {
       "time": 0,
       "Input": { "a": False, "b": False }
@@ -181,10 +199,22 @@ def test_input(): # this can be used as a test vector generator
 def test():
   stateMachine = StateMachine( testMachine() )
   # for all vectors in test file
-  # set inputs vector
-  # evaluate the state machine 
-  # display the outputs
+  for testStep in testInput():
+    print ("Time: ", testStep["time"])
+    # set inputs vector
+    print ("Inputs:")
+    for input in testStep["Input"]:
+      testMachine._input[input].setExternalValue(testStep["Input"][input].value() )
+      print ( input, ": ", testMachine._input[input].value() )
+    # evaluate the state machine 
+    testMachine.evaluate()
+    # display the outputs
+    print ("Outputs:")
+    for output in testMachine._output:
+      print ( output, ": ", testMachine._output[output].value() )
+    print 
+
 
 if __name__ == '__main__':
-    test()
+  test()
 
