@@ -16,15 +16,18 @@ class StateMachine:
 
     self._stateMachine = self
     self._filePath = filePath
-    if self._filePath.endswith("json"):
-      self._stateMachineSpec = json.loads( open(filePath,"r").read() ) 
-    elif self._filePath.endswith("yml"):
-      self._stateMachineSpec = yaml.loads( open(filePath,"r").read() ) 
-    else: self._stateMachineSpec = {}
+    if isinstance(filePath, dict):
+      self._stateMachineSpec = filePath
+    else:
+      if self._filePath.endswith("json"):
+        self._stateMachineSpec = json.loads( open(filePath,"r").read() ) 
+      elif self._filePath.endswith("yml"):
+        self._stateMachineSpec = yaml.loads( open(filePath,"r").read() ) 
+      else: self._stateMachineSpec = {}
 
-    self._input = dict(str, Input)
-    self._output = dict(str, Output)
-    self._state = dict(str, State)
+    self._input = {}
+    self._output = {}
+    self._state = {}
 
     # make instances of all inputs, outputs, and states
     for input in self._stateMachineSpec["Input"]:
@@ -37,6 +40,7 @@ class StateMachine:
     self._currentState = self._state[ self._stateMachineSpec["CurrentState"] ] # initialize the state machine to the provided state
 
     self._currentTime = 0
+    self._lastTransitionTime = self._currentTime
 
   def currentTime(self): return self._currentTime
 
@@ -46,7 +50,9 @@ class StateMachine:
     for input in self._input:
       self._input[input].syncInput() 
 
-  def evaluate(self): self._currentState = self.currentState.evaluate()
+  def evaluate(self, time): 
+    self._currentTime = time
+    self._currentState = self._currentState.evaluate()
 
 
 class Input:
@@ -89,7 +95,8 @@ class State:
     self._nextState = self
     for transition in self._transition:
       for minterm in self._transition[transition]:
-        if self._mintrue(self._transition[transition][minterm]): # if any minterm is true, the OR value is true 
+        if self._mintrue(minterm): # if any minterm is true, the OR value is true 
+          self._stateMachine._lastTransitionTime = self._stateMachine._currentTime
           self._nextState = self._stateMachine._state[transition] 
           self._nextState.syncToOutput() # moore or mealy
           return self._nextState
@@ -97,14 +104,14 @@ class State:
     return self._nextState
 
   def _mintrue(self, minterm): # see if an AND minterm is true (none of the subexpressions are false)
-    self._mintrue = True
+    self._minterm = True
     for input in minterm: # evaluates the state of one or more inputs and returns the logical "and"
       if isinstance( minterm[input], bool ) or isinstance( minterm[input], int ) or isinstance( minterm[input], float ) or isinstance( minterm[input], str ): 
         # if it's a simple value, simply compare the value with the value returned by Input.value()
         if self._stateMachine._input[input].value() != minterm[input]:
-          self._mintrue = False
-      else: self._mintrue = False # return false for any non-simple values until implemented
-    return self._mintrue
+          self._minterm = False
+      else: self._minterm = False # return false for any non-simple values until implemented
+    return self._minterm
 
   def syncToOutput(self):
     for output in self._output:
@@ -114,104 +121,112 @@ class State:
 
 
 def testMachine(): # state machine definition for test
-  testMachine = {
-
-    "Input": {
-      "a": False,
-      "b": False
-    },
-
-    "Output": {
-      "a": False,
-      "b": False
-    },
-
-    "CurrentState": "S0",
-
-    "State": {
-
-      "S0": {
-        "Output": {
-          "a": False,
-          "b": False
-        },
-        "Transition": {
-          "S1": [
-            { "Input a": False, "Input b": True }
-          ],
-          "S2": [
-            { "Input a": True, "Input b": False }
-          ]
-        }
+  return (
+    {
+      "Input": {
+        "a": False,
+        "b": False
       },
 
-      "S1": {
-        "Output": {
-          "a": True,
-          "b": False
-        },
-        "Transition": {
-          "S2": [
-            { "Input a": True, "Input b": False }
-          ]
-        }
+      "Output": {
+        "a": False,
+        "b": False
       },
 
-      "S2": {
-        "Output": {
-          "a": False,
-          "b": True
+      "CurrentState": "S0",
+
+      "State": {
+
+        "S0": {
+          "Output": {
+            "a": False,
+            "b": False
+          },
+          "Transition": {
+            "S1": [
+              { "a": False, "b": True }
+            ],
+            "S2": [
+              { "a": True, "b": False }
+            ]
+          }
         },
-        "Transition": {
-          "S1": [
-            { "Input a": False, "Input b": True }
-          ]
+
+        "S1": {
+          "Output": {
+            "a": True,
+            "b": False
+          },
+          "Transition": {
+            "S2": [
+              { "a": True, "b": False }
+            ]
+          }
+        },
+
+        "S2": {
+          "Output": {
+            "a": False,
+            "b": True
+          },
+          "Transition": {
+            "S1": [
+              { "a": False, "b": True }
+            ]
+          }
         }
+
       }
-
     }
-  }
-  return testMachine
-
+  )
 
 def testInput(): # this can be used as a test vector generator
-  testInput = [
-    {
-      "time": 0,
-      "Input": { "a": False, "b": False }
-    },
-    {
-      "time": 1,
-      "Input": { "a": True, "b": False }
-    },
-    {
-      "time": 2,
-      "Input": { "a": False, "b": True }
-    },
-    {
-      "time": 3,
-      "Input": { "a": True, "b": True }
-    }
-  ]
-  return test_input
+  return (
+    [
+      {
+        "time": 0,
+        "Input": { "a": False, "b": False }
+      },
+      {
+        "time": 1,
+        "Input": { "a": True, "b": False }
+      },
+      {
+        "time": 2,
+        "Input": { "a": False, "b": True }
+      },
+      {
+        "time": 3,
+        "Input": { "a": True, "b": True }
+      }
+    ]
+  )
 
 
 def test():
   stateMachine = StateMachine( testMachine() )
+  print ("Constructed state:")
+  print ("Inputs:")
+  for input in stateMachine._input:
+    print ( input, ": ", stateMachine._input[input].value() )
+  print ("Outputs:")
+  for output in stateMachine._output:
+    print ( output, ": ", stateMachine._output[output].value() )
+  print 
   # for all vectors in test file
   for testStep in testInput():
     print ("Time: ", testStep["time"])
     # set inputs vector
     print ("Inputs:")
     for input in testStep["Input"]:
-      testMachine._input[input].setExternalValue(testStep["Input"][input].value() )
-      print ( input, ": ", testMachine._input[input].value() )
+      stateMachine._input[input].setExternalValue(testStep["Input"][input] )
+      print ( input, ": ", stateMachine._input[input].value() )
     # evaluate the state machine 
-    testMachine.evaluate()
+    stateMachine.evaluate(testStep["time"])
     # display the outputs
     print ("Outputs:")
-    for output in testMachine._output:
-      print ( output, ": ", testMachine._output[output].value() )
+    for output in stateMachine._output:
+      print ( output, ": ", stateMachine._output[output].value() )
     print 
 
 
