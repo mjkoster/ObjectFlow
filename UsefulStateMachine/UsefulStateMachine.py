@@ -42,9 +42,14 @@ class StateMachine:
     self._currentTime = 0
     self._lastTransitionTime = self._currentTime
 
+
   def currentTime(self): return self._currentTime
 
   def currentState(self): return self._currentState
+
+  def getInputByName(self, input): return self._input[input].value()
+
+  def setOutputByName(self, output, value): self._output[output].syncOutput(value)
 
   def syncInput(self): 
     for input in self._input:
@@ -65,6 +70,7 @@ class StateMachine:
   def setTransitionTime(self): self._lastTransitionTime = self._currentTime
 
   def intervalTime(self): return self._intervalTime
+
 
 class Input:
   def __init__(self, inputInstance):
@@ -112,8 +118,8 @@ class State:
     self._result = True
     for input in expression: # evaluates the state of one or more inputs and returns the logical "and"
       if isinstance( expression[input], bool ) or isinstance( expression[input], int ) or isinstance( expression[input], float ) or isinstance( expression[input], str ): 
-        # if the sub expression is a simple value, simply compare the value with the value returned by Input.value()
-        if self._stateMachine._input[input].value() != expression[input]:
+        # if the sub expression is a simple value, simply compare the value with the input value
+        if self._stateMachine.getInputByName(input) != expression[input]: # getInputByName(input)
           self._result = False
       else: self._result = False # return false for any non-simple values until implemented
     return self._result
@@ -122,7 +128,7 @@ class State:
     for output in self._output:
       if isinstance( self._output[output], bool ) or isinstance( self._output[output], int ) or isinstance( self._output[output], float ) or isinstance(self._output[output], str ): 
         # for simple values, just call syncOutput on each Output object using the name index in the StateMachine
-        self._stateMachine._output[output].syncOutput(self._output[output])
+        self._stateMachine.setOutputByName(output, self._output[output])
 
 
 def testMachine(): # state machine definition for test
@@ -180,7 +186,6 @@ def testMachine(): # state machine definition for test
             ]
           }
         }
-
       }
     }
   )
