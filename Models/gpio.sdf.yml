@@ -30,7 +30,7 @@ sdfProperty:
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/BooleanType }
     required: true
-    { default: false }
+    default: false
 
   # Analog Input GPIO Object
   AnalogInput:
@@ -164,7 +164,7 @@ sdfProperty:
     sdfRequired:
       - /#/sdfThing/BinaryOutput/sdfProperty/PinID
       - /#/sdfThing/BinaryOutput/sdfProperty/CurrentValue
-     sdfProperty:
+    sdfProperty:
 
       PinID: 
         sdfRef: /#/sdfProperty/GpioPinID

@@ -44,11 +44,9 @@ class StateMachine:
     self._intervalTime = self._currentTime - self._lastTransitionTime # wrap- and sign-safe interval compare
 
 
-  def currentTime(self): return self._currentTime
-
-  def intervalTime(self): return self._intervalTime
-
   def currentState(self): return self._currentState
+  
+  def intervalTime(self): return self._intervalTime
 
   def getInputByName(self, input): return self._input[input].value()
 
@@ -66,8 +64,8 @@ class StateMachine:
     if self._nextStateName != "" : # execute the state transition
       self._currentState = self._state[self._nextStateName]
       self._lastTransitionTime = self._currentTime
-      self._currentState.syncToOutput() # moore or mealy
-    self._currentState.syncToOutput() # mealy
+      self._currentState.syncToOutput() # moore, update outputs only on state change
+    self._currentState.syncToOutput() # mealy, update outputs when inputs change per state logic
 
 
 class Input:
