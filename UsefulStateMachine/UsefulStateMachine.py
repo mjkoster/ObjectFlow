@@ -40,30 +40,30 @@ class StateMachine:
     self._currentState = self._state[ self._stateMachineSpec["CurrentState"] ] # initialize the state machine to the provided state
 
     self._currentTime = 0
-    self._lastTransitionTime = self._currentTime
-    self._intervalTime = self._currentTime - self._lastTransitionTime # wrap- and sign-safe interval compare
+    self._intervalStartTime = self._currentTime
+    self._intervalTime = self._currentTime - self._intervalStartTime # wrap- and sign-safe interval compare
 
 
   def currentState(self): return self._currentState
   
   def intervalTime(self): return self._intervalTime
 
-  def getInputByName(self, input): return self._input[input].value()
+  def inputByName(self, input): return self._input[input]
 
-  def setOutputByName(self, output, value): self._output[output].syncOutput(value)
+  def outputByName(self, output): return self._output[output]
 
-  def syncInput(self): 
+  def syncInput(self, intervalTime): 
     for input in self._input:
-      self._input[input].syncInput() 
+      self._input[input].syncInput(intervalTime) 
 
   def evaluate(self, time): 
     self._currentTime = time
-    self._intervalTime = self._currentTime - self._lastTransitionTime # wrap- and sign-safe interval compare
-    self.syncInput()
+    self._intervalTime = self._currentTime - self._intervalStartTime # wrap- and sign-safe interval compare
+    self.syncInput(self.intervalTime())
     self._nextStateName = self._currentState.evaluate()
     if self._nextStateName != "" : # execute the state transition
       self._currentState = self._state[self._nextStateName]
-      self._lastTransitionTime = self._currentTime
+      self._intervalStartTime = self._currentTime
       self._currentState.syncToOutput() # moore, update outputs only on state change
     self._currentState.syncToOutput() # mealy, update outputs when inputs change per state logic
 
@@ -72,23 +72,28 @@ class Input:
   def __init__(self, inputInstance):
 
     self._externalValue = inputInstance # assume a compatible value
-    self.syncInput() 
+    self.syncInput(0) 
   
   def setExternalValue(self, value):
     self._externalValue = value
 
-  def syncInput(self):
+  def syncInput(self, intervalTime):
+    self._intervalTime = intervalTime
     self._value = self._externalValue
 
-  def value(self): return self._value 
+  def value(self): 
+    if "Interval" == self._value:
+      return self._intervalTime 
+    else:
+      return self._value 
 
 
 class Output:
   def __init__(self, outputInstance):
     self._outputInstance = outputInstance
-    self.syncOutput(outputInstance) # some initial value or a mapping construct
+    self.setValue(outputInstance) # some initial value or a mapping construct
 
-  def syncOutput(self,value): self._value = value
+  def setValue(self,value): self._value = value
   
   def value(self): return self._value
 
@@ -98,7 +103,7 @@ class State:
     self._stateName = stateName # the name of the spec state node
     self._stateInstance = stateInstance # the value of the spec state node
     self._stateMachine = stateMachine
-    self._output = stateInstance["Output"]
+    self._setter = stateInstance["Setter"]
     self._transition = stateInstance["Transition"]
 
   def name(self): return self._stateName
@@ -110,21 +115,21 @@ class State:
           return transition
     return ""
 
-  def _mintrue(self, expression): # see if an AND minterm is true (none of the subexpressions for input values are false)
+  def _mintrue(self, expression): # see if the logical product of input subexpressions is true (none of the subexpressions are false)
     self._result = True
     for input in expression: # evaluates the state of one or more inputs and returns the logical "and"
       if isinstance( expression[input], bool ) or isinstance( expression[input], int ) or isinstance( expression[input], float ) or isinstance( expression[input], str ): 
         # if the sub expression is a simple value, simply compare the value with the input value
-        if self._stateMachine.getInputByName(input) != expression[input]: # getInputByName(input)
+        if self._stateMachine.inputByName(input).value() != expression[input]: 
           self._result = False
       else: self._result = False # return false for any non-simple values until implemented
     return self._result
 
   def syncToOutput(self):
-    for output in self._output:
-      if isinstance( self._output[output], bool ) or isinstance( self._output[output], int ) or isinstance( self._output[output], float ) or isinstance(self._output[output], str ): 
-        # for simple values, just call syncOutput on each Output object using the name index in the StateMachine
-        self._stateMachine.setOutputByName(output, self._output[output])
+    for output in self._setter:
+      if isinstance( self._setter[output], bool ) or isinstance( self._setter[output], int ) or isinstance( self._setter[output], float ) or isinstance(self._setter[output], str ): 
+        # for simple values, just call setOutput on each Output object using the name index in the StateMachine
+        self._stateMachine.outputByName(output).setValue(self._setter[output]) 
 
 
 def testMachine(): # state machine definition for test
@@ -132,7 +137,8 @@ def testMachine(): # state machine definition for test
     {
       "Input": {
         "a": False,
-        "b": False
+        "b": False,
+        "Interval": "Interval"
       },
 
       "Output": {
@@ -145,7 +151,7 @@ def testMachine(): # state machine definition for test
       "State": {
 
         "S0": {
-          "Output": {
+          "Setter": {
             "a": False,
             "b": False
           },
@@ -160,7 +166,7 @@ def testMachine(): # state machine definition for test
         },
 
         "S1": {
-          "Output": {
+          "Setter": {
             "a": True,
             "b": False
           },
@@ -172,7 +178,7 @@ def testMachine(): # state machine definition for test
         },
 
         "S2": {
-          "Output": {
+          "Setter": {
             "a": False,
             "b": True
           },

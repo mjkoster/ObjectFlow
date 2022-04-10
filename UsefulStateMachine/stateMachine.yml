@@ -2,18 +2,18 @@
 Input:
   SystemRunMode: { LinkID: 0 } # System Run/Stop control
   OtherSideInletValve: { LinkID: 1 } # Interlock between sides to synchronize alternalte adsorption cycles
-  FirstAdsorb: { default: true } # constant signal indicating which columns initially go into Adsorb cycle
-  AdsorbInterval: { default: 6000 } # IntervalTime values for different cycles, can be set externally with links
-  BlowdownInterval: { default: 1000 }
-  PurgeInterval: { default: 4000 }
-  PressurizeInterval: { default: 1000 }
+  FirstAdsorb: false # constant signal indicating which columns initially go into Adsorb cycle
+  AdsorbInterval: 6000 # IntervalTime values for different cycles, can be set externally with links
+  BlowdownInterval: 1000
+  PurgeInterval: 4000 
+  PressurizeInterval: 1000
 
 Output:
   InletValve: { LinkID: 0 } # Supply air into the PSA column
   ExhaustValve: { LinkID: 1 } # Waste gas and purge gas out to atmosphere
   PurgeValve: { LinkID: 2 } # O2 backflush 
   PressurizeValve: { LinkID: 3 } # O2 back-pressurization 
-  Interval: { Function: Timer } # virtual output, outputs can also be read back as inputs, could also be an external block
+  Interval: { Interval } # virtual output, outputs can also be read back as inputs, could also be an external block
 
 CurrentState: Stop # initially in stop state
 
