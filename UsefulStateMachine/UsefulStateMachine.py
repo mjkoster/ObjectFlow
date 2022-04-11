@@ -61,7 +61,7 @@ class StateMachine:
     self._intervalTime = self._currentTime - self._intervalStartTime # wrap- and sign-safe interval compare
     self.syncInput(self.intervalTime())
     self._nextStateName = self._currentState.evaluate()
-    if self._nextStateName != "" : # execute the state transition
+    if None != self._nextStateName: # execute the state transition
       self._currentState = self._state[self._nextStateName]
       self._intervalStartTime = self._currentTime
       self._currentState.syncToOutput() # moore, update outputs only on state change
@@ -109,11 +109,11 @@ class State:
   def name(self): return self._stateName
   
   def evaluate(self):
-    for transition in self._transition:
-      for minterm in self._transition[transition]:
+    for newState in self._transition: # Evaluate each potential state transition 
+      for minterm in self._transition[newState]:
         if self._mintrue(minterm): # if any minterm is true, the OR value is true 
-          return transition
-    return ""
+          return newState # selected transition is the name of the new state that evaluated true
+    return None
 
   def _mintrue(self, expression): # see if the logical product of input subexpressions is true (none of the subexpressions are false)
     self._result = True
