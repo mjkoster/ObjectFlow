@@ -134,7 +134,7 @@ class Registration:
       "link": self._linkArray
     }
 
-  def endpoint(self): # for endpoint lookup
+  def endpoint(self): # for endpoint lookup, return a flat map, elide the lt parameter
       map = {}
       map["base"] = self._base
       map["href"] = self._href
@@ -150,12 +150,12 @@ class Registration:
         case "base": self._base = update[item]
         case "lt": 
           self._lt = update[item] # may be same as, or different from, previous
-        case "endpointAttribute": self._endpointAttribute = update[item]
+        case "endpointAttribute": self._endpointAttribute = update[item] # replace all attributes 
         case "link": # replace all links with new links 
           self._link = []
           for link in update[item]:
             self._link.append( Link(link) )
-    # updates always reset the registration timer to the new lt value, if supplied, or the previous value
+    # updates always reset the registration timer
     self._ltStartTime = self._currentTime 
     self._registrationValid = True
 
@@ -182,10 +182,11 @@ class Link:
     }
 
   def resolved():
-    return # resloved link parameters including base
+    # resolve relative context and target URLs 
+    return # resolved link object
 
-  def resource(self): # for resource lookup
-      resolved = self.resolved()
+  def resource(self): # for lookup, reslove the link and return a flat map
+      resolved = self.resolved() # do the resolution for each link in every lookup result 
       map = {}
       map[self._linkSymbol["context"]] = resolved["context"]
       map[self._linkSymbol["relation"]] = self._relation
