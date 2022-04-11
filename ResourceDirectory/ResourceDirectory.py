@@ -44,7 +44,7 @@ class ResourceDirectory:
     return regID
 
   def registrationByID(self, regID): # returns the registration from ID
-    self._registrationCollection.readRegistration(regID)
+    return self._registrationCollection.registrationByID(regID)
 
   def simpleRegister(self, regspec):
     pass
@@ -65,16 +65,19 @@ class RegistrationCollection:
         return registration # the registration that matches ep and d
     return None 
 
+  def registrationByID(self, regID):
+    return self._collection[regID]
+
   def createRegistration(self, registrationTemplate):
     id = self._newID() 
     self._collection[id] = Registration(registrationTemplate)
     return id
 
   def readRegistration(self, regID):
-    return self._collection[regID].registration()
+    return self.registrationByID(regID).registration()
 
   def updateRegistration(self, regID, registrationTemplate):
-    self._collection[regID].update(registrationTemplate)
+    self.registrationByID(regID).update(registrationTemplate)
 
   def deleteRegistration(self, regID):
     self._collection.pop(regID, None)
@@ -82,8 +85,6 @@ class RegistrationCollection:
 
 class Registration:
   def __init__(self, registrationTemplate):
-
-    self._collection = collections
     # Template defaults
     self._base = ""
     self._href = ""
@@ -122,7 +123,7 @@ class Registration:
   def registration(self):
     self._linkArray = []
     for link in self._link:
-      self._linkArray.append( link.link() ) # link.textmap() here for target attributes at top level
+      self._linkArray.append( link.link() ) # link.resource() for lookup format
     return { # an object fomat of the entire state of the registration
       "base": self._base,
       "href": self._href,
@@ -133,16 +134,26 @@ class Registration:
       "link": self._linkArray
     }
 
-  def update(self, updateItems):
-    for item in updateItems:
+  def endpoint(self): # for endpoint lookup
+      map = {}
+      map["base"] = self._base
+      map["href"] = self._href
+      map["ep"] = self._ep
+      map["d"] = self._d
+      for attribute in self._endpointAttribute:
+        map[attribute] = self._endpointAttribute[attribute]
+      return map
+
+  def update(self, update):
+    for item in update:
       match item:
-        case "base": self._base = updateItems[item]
+        case "base": self._base = update[item]
         case "lt": 
-          self._lt = updateItems[item] # may be same as, or different from, previous
-        case "endpointAttribute": self._endpointAttribute = updateItems[item]
+          self._lt = update[item] # may be same as, or different from, previous
+        case "endpointAttribute": self._endpointAttribute = update[item]
         case "link": # replace all links with new links (not specified in RFC9176)
           self._link = []
-          for link in updateItems[item]:
+          for link in update[item]:
             self._link.append( Link(link) )
     # updates always reset the registration timer to the new lt value, if supplied, or the previous value
     self._ltStartTime = self._currentTime 
@@ -154,7 +165,7 @@ class Link:
     self._context = linkspec["context"]
     self._relation = linkspec["relation"]
     self._target = linkspec["target"]
-    self._targetAttributes = linkspec["targetAttributes"] # map of named attributes
+    self._targetAttribute = linkspec["targetAttribute"] # map of named attributes
 
     self._linkSymbol = {
       "context": "con",
@@ -167,20 +178,21 @@ class Link:
       "context": self._context, 
       "relation": self._relation,
       "target": self._target,
-      "targetAttributes": self._targetAttributes
+      "targetAttribute": self._targetAttribute
     }
 
-  def resolve():
-    return # resloved link including base
+  def resolved():
+    return # resloved link parameters including base
 
-  def textmap(self):
-      self._map = {}
-      self._map[self._linkSymbol["context"]] = self._context
-      self._map[self._linkSymbol["relation"]] = self._relation
-      self._map[self._linkSymbol["target"]] = self._target
-      for attribute in self._targetAttributes:
-        self._map[attribute] = self._targetAttributes[attribute]
-      return self._map
+  def resource(self): # for resource lookup
+      resolved = self.resolved()
+      map = {}
+      map[self._linkSymbol["context"]] = resolved["context"]
+      map[self._linkSymbol["relation"]] = self._relation
+      map[self._linkSymbol["target"]] = resolved["target"]
+      for attribute in self._targetAttribute:
+        map[attribute] = self._targetAttribute[attribute]
+      return map
 
   def json(self):
       return json.dumps(self.textmap())
