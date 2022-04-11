@@ -151,13 +151,13 @@ class Registration:
         case "lt": 
           self._lt = update[item] # may be same as, or different from, previous
         case "endpointAttribute": self._endpointAttribute = update[item]
-        case "link": # replace all links with new links (not specified in RFC9176)
+        case "link": # replace all links with new links 
           self._link = []
           for link in update[item]:
             self._link.append( Link(link) )
     # updates always reset the registration timer to the new lt value, if supplied, or the previous value
     self._ltStartTime = self._currentTime 
-    self._registrationStale = False
+    self._registrationValid = True
 
 
 class Link:
