@@ -10,11 +10,13 @@ class ResourceDirectory:
     self._options = options
 
     self._supportedContentType = {
+      # ct=40 is required
       "rd": [40],
       "rd-lookup-ep": [40],
       "rd-lookup-res": [40]
     }
     self._supportedMimeType = {
+      # json is convenient 
       "rd": ["application/json"],
       "rd-lookup-ep": ["application/json"],
       "rd-lookup-res": ["application/json"]
@@ -131,13 +133,14 @@ class Registration:
         case "base": self._base = updateItems[item]
         case "lt": 
           self._lt = updateItems[item] # may be same as, or different from, previous
-          self._ltStartTime = self._currentTime
-          self._registrationStale = False
         case "endpointAttribute": self._endpointAttribute = updateItems[item]
-        case "link": # replace all links with new links
+        case "link": # replace all links with new links (not specified in RFC9176)
           self._link = []
           for link in updateItems[item]:
             self._link.append( Link(link) )
+    # updates always reset the registration timer to the new lt value, if supplied, or the previous value
+    self._ltStartTime = self._currentTime 
+    self._registrationStale = False
 
   def delete(self):
     return # nothing to clean up
