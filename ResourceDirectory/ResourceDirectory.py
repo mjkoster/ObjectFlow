@@ -38,11 +38,12 @@ class ResourceDirectory:
   def registrationRequest(self, registrationTemplate ): # RFC9176 registrationRequest
     regID = self._registrationCollection.registrationByEpD((registrationTemplate["ep"], registrationTemplate["d"]))
     if None == regID:
-      self._registrationCollection.createRegistration(registrationTemplate)
+      regID = self._registrationCollection.createRegistration(registrationTemplate)
     else:
       self._registrationCollection.updateRegistration(regID, registrationTemplate)
+    return regID
 
-  def registration(self, regID): # returns the registration from ID
+  def registrationByID(self, regID): # returns the registration from ID
     self._registrationCollection.readRegistration(regID)
 
   def simpleRegister(self, regspec):
@@ -52,7 +53,11 @@ class ResourceDirectory:
 class RegistrationCollection:
   def __init__(self):
     self._collection = {} # index by registration ID
-    self._nextID = 0 # counter for now, need a reusable pool
+    self._nextID = 0
+
+  def _newID(self):
+    self._nextID += 1 # counter for now, need a reusable pool
+    return self._nextID
 
   def registrationByEpD(self, ep, d):
     for registration in self._collection:
@@ -61,8 +66,9 @@ class RegistrationCollection:
     return None 
 
   def createRegistration(self, registrationTemplate):
-    self._collection[self._nextID] = Registration(registrationTemplate)
-    self._nextID += 1
+    id = self._newID() 
+    self._collection[id] = Registration(registrationTemplate)
+    return id
 
   def readRegistration(self, regID):
     return self._collection[regID].registration()
@@ -71,13 +77,13 @@ class RegistrationCollection:
     self._collection[regID].update(registrationTemplate)
 
   def deleteRegistration(self, regID):
-    self._collection[regID].delete()
     self._collection.pop(regID, None)
 
 
 class Registration:
   def __init__(self, registrationTemplate):
 
+    self._collection = collections
     # Template defaults
     self._base = ""
     self._href = ""
@@ -141,9 +147,6 @@ class Registration:
     # updates always reset the registration timer to the new lt value, if supplied, or the previous value
     self._ltStartTime = self._currentTime 
     self._registrationStale = False
-
-  def delete(self):
-    return # nothing to clean up
 
 
 class Link:
