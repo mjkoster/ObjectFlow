@@ -75,31 +75,46 @@ class RegistrationCollection:
 
 class Registration:
   def __init__(self, registrationTemplate):
-    for item in registrationTemplate:
-      if "base" == item: 
-        self._base = registrationTemplate["base"]
-      elif "href" == item: 
-        self._href = registrationTemplate["href"]
-      elif "ep" == item: 
-        self._ep = registrationTemplate["ep"]
-      elif "d" == item: 
-        self._d = registrationTemplate["d"]
-      elif "lt" == item: 
-        self._lt = registrationTemplate["lt"]
-      elif "endpointAttribute" == item: 
-        self._endpointAttribute = registrationTemplate["endpointAttribute"] # named attributes
-      elif "link" == item: 
-        self._link = []
-        for link in registrationTemplate["link"]:
-          self._link.append(Link(link))
 
-  def link(self, linkspec): # return matching links
-    pass
+    # Template defaults
+    self._base = ""
+    self._href = ""
+    self._ep = None # Mostly required
+    self._d = ""
+    self._lt = 90000 # RFC9176 
+    self._endpointAttribute = {}
+    self._link = []
+
+    for item in registrationTemplate:
+      match item:
+        case "base": self._base = registrationTemplate["base"]
+        case "href": self._href = registrationTemplate["href"]
+        case "ep": self._ep = registrationTemplate["ep"]
+        case "d": self._d = registrationTemplate["d"]
+        case "lt": self._lt = registrationTemplate["lt"]
+        case "endpointAttribute": self._endpointAttribute = registrationTemplate["endpointAttribute"]
+        case "link": 
+          for link in registrationTemplate["link"]:
+            self._link.append(Link(link))
+    # wrap-safe time method        
+    self._currentTime = 0
+    self._ltStartTime = self._currentTime
+    self._registrationValid = True
+
+  def evaluateTime(self, time):
+    self._currentTime = time
+    if self._currentTime >= self._ltStartTime + self._lt:
+      self._registrationValid = False
+
+  def valid(self): return self._registrationValid
+
+  def link(self, linkspec): # return matching links for lookup functions
+    return None
 
   def registration(self):
     self._linkArray = []
     for link in self._link:
-      self._linkArray.append( link.link() )
+      self._linkArray.append( link.link() ) # link.textmap() here for target attributes at top level
     return { # an object fomat of the entire state of the registration
       "base": self._base,
       "href": self._href,
@@ -112,13 +127,17 @@ class Registration:
 
   def update(self, updateItems):
     for item in updateItems:
-      if "base" == item: self._base = updateItems[item]
-      if "lt" == item: self._lt = updateItems[item]
-      if "endpointAttribute" == item: self._endpointAttribute = updateItems[item]
-      if "link" == item: 
-        self._link = []
-        for link in updateItems[item]:
-          self._link.append( Link(link) )
+      match item:
+        case "base": self._base = updateItems[item]
+        case "lt": 
+          self._lt = updateItems[item] # may be same as, or different from, previous
+          self._ltStartTime = self._currentTime
+          self._registrationStale = False
+        case "endpointAttribute": self._endpointAttribute = updateItems[item]
+        case "link": # replace all links with new links
+          self._link = []
+          for link in updateItems[item]:
+            self._link.append( Link(link) )
 
   def delete(self):
     return # nothing to clean up
