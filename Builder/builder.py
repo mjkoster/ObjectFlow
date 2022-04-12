@@ -18,8 +18,36 @@ class Graph():
   # recursive descent merge JSON, extend trees and set values
   # for each item in the model, check the position in the graph
   # add to graph if not present until the end value is reached 
-  # set the end value, const overrides default (leave const: )
-    self._merge(model) 
+  # set the end value (const doubles with default as they are dicts)
+  # arrays are merged, leaving the set union
+    self._graph = self._mergeObject(self._graph, model) # kick off the recursion
+
+  def _mergeObject(self, graph, model):
+    if not isinstance(graph, dict):
+      graph = {}
+
+    if not isinstance( model, dict):
+      return model
+
+    for key, modelValue in model.items():
+      if isinstance(modelValue, dict): 
+        graphValue = graph.get(key) 
+        if isinstance(graphValue, dict): # see if there is a matching dict in the range of the graph
+          self._mergeObject(graphValue, modelValue) # if so, merge the model value into the graph
+          continue
+        graph[key] = {} # if there isn't a dict there, make a new empty node merge dict into it
+        self._mergeObject(graph[key], modelValue)
+        continue
+      if  isinstance(modelValue, list):      
+        graphValue = graph.get(key) 
+        if isinstance(graphValue, list): # see if there is a matching list
+          graphValue = list(set(graphValue + modelValue)) # merge lists with unique values
+          continue
+      if None is modelValue: # if the model contains None, remove the matching node in the graph
+        graph.pop(key, None)
+        continue
+      graph[key] = modelValue # replace plain value with value from the model
+    return graph
 
   def graph(self):
     return self._graph
