@@ -3,6 +3,7 @@ import json
 import yaml
 import glob
 import jsonpointer
+from jsonpointer import resolve_pointer
 import jsonschema
 
 class Graph():
@@ -20,7 +21,7 @@ class Graph():
   # for each item in the model, check the position in the graph
   # add to graph if not present until the end value is reached 
   # set the end value (const doubles with default as they are dicts)
-  # arrays are merged, leaving the set union
+  # arrays are merged assuming uniqueItems, leaving the set union
     self._graph = self._mergeObject(self._graph, model) # kick off the recursion
 
   def _mergeObject(self, graph, model):
@@ -34,7 +35,7 @@ class Graph():
       if isinstance(modelValue, dict): 
         graphValue = graph.get(key) # key error safe this way
         if isinstance(graphValue, dict): # see if there is a matching dict in the graph
-          self._mergeObject(graphValue, modelValue) # if so, merge the model value into the graph
+          self._mergeObject(graphValue, modelValue) # FIXME graph[key] here; if so, merge the model value into the graph
           continue
         graph[key] = {} # if there isn't a dict there, make a new empty node merge dict into it
         self._mergeObject(graph[key], modelValue)
@@ -67,16 +68,43 @@ class ModelGraph:
     self._modelGraph = Graph()
     # read in all of the SDF files in the model directory
     for file in glob.glob( modelPath + "*.sdf.json" ):
+      print(file)
       self._modelGraph.add( json.loads( open(file,"r").read() ) )
     for file in glob.glob( modelPath + "*.sdf.yml" ):
-      self._modelGraph.add( yaml.load( open(file,"r").read() ) )
+      print(file)
+      self._modelGraph.add( yaml.safe_load( open(file,"r").read() ) )
     self._checkPointers()
   
   def _checkPointers(self):
     # validate that all of the sdfRef and other pointers resolve to some place in the merged graph
-    # sdfRef, sdfRequired, sdfInputData, sdfOutputData, sdfRequiredInputData
-    # scan for instances of these keys and resolve the references
-    return
+    # sdfRef, sdfRequired, sdfInputData, sdfOutputData
+    # recursive scan for instances of these keys and resolve the references
+    # allow sdfRef in any object type node of the instance
+    # 
+    self._check(self._modelGraph._graph())
+
+  def _check(self, value):
+    if isinstance(value, object) or isinstance(value, list):
+      for item in value:
+        if isinstance(item, object):
+          if item.contains("sdfRef"):
+            self._check_resolve(item["sdfRef"])
+        self._check(item)
+     
+  def _check_resolve(self, sdfPointer):
+    self._pointer = sdfPointer
+    if self._pointer.startswith("/#"):
+      self._pointer = self._pointer[2:]
+    elif self._pointer.startswith("#"):
+      self._pointer = self._pointer[1:]
+    if self._pointer.startswith("/"):
+      target = resolve_pointer(self._modelGraph._graph(), self._pointer)
+      return(target)
+    else:
+      return(self._resolveNamespaceReference(self._pointer)) # resolve curie
+
+  def _resolveNamespaceReference(self, sdfPointer):
+    return # feature
 
   def json(self):
     return self._modelGraph.json()
@@ -99,23 +127,79 @@ class FlowGraph:
     self._flowSpec = Graph()
 
     for file in glob.glob( flowPath + "*.flo.json" ):
+      print(file)
       self._flowSpec.add( json.loads( open(file,"r").read() ) )
     for file in glob.glob( flowPath + "*.flo.yml" ):
-      self._flowSpec.add( yaml.load( open(file,"r").read() ) )
+      print(file)
+      self._flowSpec.add( yaml.safe_load( open(file,"r").read() ) )
 
     self._resolveFlowGraph() 
 
   def _resolveFlowGraph(self):
     self._flowGraph = Graph()
+    print(self._flowSpec.yaml())
     # build a flow graph from the flow spec; resolve all required items and default values from the model graph
     #
-    # for each object in the merged flow: 
-    #   add a named sdfObject with an sdfRef to the object type
-    #   configure the qualities and extension points
-    #   add the required sdfProperties and configure them
-    #   use default templates for adding sdf elements to the instance model
+    # make an instance of a flow graph template and add it to the flowGraph
+    self._flowGraph.add(_baseFlowTemplate())
+    self._flowBase = self._flowGraph["sdfThing"]["Flow"]["sdfObject"]
     #
-    return self._flowGraph
+    # for each object in the merged flow: 
+    #   add a named sdfObject with an sdfRef to the application object type
+    for flowObject in self._flowSpec["Flow"]:
+      self._flowBase[flowObject] = {}
+      if flowObject.contains("Type"):
+        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpec[flowObject]["Type"]
+      else:
+        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
+
+      # hydrate - expand all sdfRefs and process required items
+      self._hydrate(self._flowBase[flowObject])
+      #   for each resource not in the template
+      #     add a named sdfProperty with an sdfRef to the application property type
+      #     hydrate - expand all sdfRefs and process required items
+      #     currently. _hydrate expands all resources defined in the application template
+      #     merge the values from the flow spec resources to the graph resources
+      for resource in self._flowBase[flowObject]["sdfProperty"]:
+        if self._flowSpec[flowObject].contains(resource):
+          if isinstance(self._flowSpec[flowObject][resource], object ): # merge in qualities verbatim
+            self._flowBase[flowObject]["sdfProperty"][resource] = self._flowGraph._mergeObject(
+              self._flowBase[flowObject]["sdfProperty"][resource], 
+              self._flowSpec[flowObject][resource]
+            )
+          else: # apply as constant value - array needs to be handled when we add multi-instance support
+            self._flowBase[flowObject]["sdfProperty"][resource]["const"] = self._flowSpec[flowObject][resource]
+
+    #   assign instance IDs 
+    #   resolve oma objlinks from sdf object links
+
+    #   --- (linear) recursive expand-merge
+  def _expandRef(self, value):
+      if isinstance(value, object) and value.contains("sdfRef"):
+        refValue = self._resolve(value["sdfRef"]) # get the value linked
+        self._expandRef(refValue) # expand all the way down the chain
+        value = self._flowGraph._mergeObject(value, refValue) # then back-merge in reverse order on the nested closure
+
+  def _hydrate(self, value): # recursively expand-merge all nodes
+    if isinstance(value, object) or isinstance(value, list):
+      for item in value:
+        self._expandRef(value[item])
+        self._hydrate(value[item]) 
+
+  def _resolve(self, sdfPointer):
+    self._pointer = sdfPointer
+    if self._pointer.startswith("/#"):
+      self._pointer = self._pointer[2:]
+    elif self._pointer.startswith("#"):
+      self._pointer = self._pointer[1:]
+    if self._pointer.startswith("/"):
+      target = resolve_pointer(self._flowGraph._graph(), self._pointer)
+      return(target)
+    else:
+      return(self._resolveNamespaceReference(self._pointer)) # resolve curie
+
+  def _resolveNamespaceReference(self, sdfPointer):
+    return # namespace feature
 
   def flowGraph(self):
     return self._flowGraph.graph()
@@ -124,10 +208,10 @@ class FlowGraph:
     return # a resolved Flow format JSON serialized from the Flow Graph, could merge into the input flow spec
 
   def json(self):
-    return self.flowGraph().json()
+    return self._flowGraph.json()
 
   def yaml(self):
-    return self.flowGraph().yaml()
+    return self._flowGraph.yaml()
 
   def uml(self):
     return # "Instance" UML format
@@ -151,14 +235,25 @@ class Resource:
   def __init__(self, resourcePath):
     self.resourcePath = resourcePath
 
+def _baseFlowTemplate():
+  return(
+    {
+      "sdfThing": {
+        "flow": {
+          "sdfObject": {}
+        }
+      }
+    }
+  )
 
 def build():
-  print("FlowBuilder\n")
+  print("FlowBuilder")
   # test with local files, make the model graph first
-  model = ModelGraph("../Model")
-  print(model.json())
-  flow = FlowGraph( model, "../Flow" )
-  print(flow.json())
+  model = ModelGraph("../Model/")
+  # print (model._modelGraph._graph)
+  print(model.yaml())
+  flow = FlowGraph( model, "../Flow/" )
+  print(flow.yaml())
   # print(flow.objectFlowHeader())
 
 if __name__ == '__main__':
