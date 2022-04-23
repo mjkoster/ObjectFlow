@@ -16,19 +16,19 @@ sdfData:
     ObjectType:
       Publisher: { const: 43008 }
 
-sdfThing:
+sdfObject:
   # Publisher Object
   Publisher:
-    sdfRef: /#/sdfThing/ObjectFlowObject
+    sdfRef: /#/sdfObject/ObjectFlowObject
     oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/Publisher/const }
 
     # Publisher Object Resources
     sdfRequired:
-      - /#/sdfThing/Publisher/sdfThing/InputValue
+      - /#/sdfObject/Publisher/sdfProperty/InputValue
     sdfProperty:
 
       InputValue:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfProperty/InputValue
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/InputValue
         flo:meta: 
           ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
         required: true

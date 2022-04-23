@@ -143,32 +143,42 @@ class FlowGraph:
     # make an instance of a flow graph template and add it to the flowGraph
     self._flowGraph.add(_baseFlowTemplate())
     self._flowBase = self._flowGraph["sdfThing"]["Flow"]["sdfObject"]
+    self._flowSpecBase = self._flowSpec["Flow"]
     #
     # for each object in the merged flow: 
-    #   add a named sdfObject with an sdfRef to the application object type
-    for flowObject in self._flowSpec["Flow"]:
+    #   add a named sdfObject with an sdfRef to the application object type, using a simple path reference
+    #   if there is no Type specified in the flow, the object name will be used as type
+    #
+    for flowObject in self._flowSpecBase:
       self._flowBase[flowObject] = {}
       if flowObject.contains("Type"):
-        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpec[flowObject]["Type"]
+        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["Type"]
       else:
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
 
       # hydrate - expand all sdfRefs and process required items
+      # currently _hydrate expands all resources defined in the application template and ignores sdfRequired
       self._hydrate(self._flowBase[flowObject])
-      #   for each resource not in the template
-      #     add a named sdfProperty with an sdfRef to the application property type
-      #     hydrate - expand all sdfRefs and process required items
-      #     currently. _hydrate expands all resources defined in the application template
-      #     merge the values from the flow spec resources to the graph resources
+      
+      # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]:
-        if self._flowSpec[flowObject].contains(resource):
-          if isinstance(self._flowSpec[flowObject][resource], object ): # merge in qualities verbatim
+        if self._flowSpec[flowObject].contains(resource): # if there is a value in the flow spec
+          if isinstance(self._flowSpec[flowObject][resource], object ): # merge in qualities verbatim from object value
             self._flowBase[flowObject]["sdfProperty"][resource] = self._flowGraph._mergeObject(
               self._flowBase[flowObject]["sdfProperty"][resource], 
               self._flowSpec[flowObject][resource]
             )
-          else: # apply as constant value - array needs to be handled when we add multi-instance support
-            self._flowBase[flowObject]["sdfProperty"][resource]["const"] = self._flowSpec[flowObject][resource]
+          # apply as constant value - array needs to be handled when we add multi-instance support
+          elif "IntegerType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+            self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["IntegerType"]["const"] = self._flowSpec[flowObject][resource]
+          elif "FloatType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+            self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["FloatType"]["const"] = self._flowSpec[flowObject][resource]
+          elif "StringType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+            self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["StringType"]["const"] = self._flowSpec[flowObject][resource]
+          elif "BooleanType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+            self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["BooleanType"]["const"] = self._flowSpec[flowObject][resource]
+          else:
+            print("non conforming value type for flow Object:", flowObject, "Resource:", resource)
 
     #   assign instance IDs 
     #   resolve oma objlinks from sdf object links

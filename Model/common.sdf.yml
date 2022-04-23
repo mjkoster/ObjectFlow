@@ -155,27 +155,27 @@ sdfProperty:
 
   # Reusable sdfProperty types for Resources
   ValueType:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ValueType/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/ValueTypeType }
     type: { sdfRef: /#/sdfData/ValueType }
 
   CurrentValue:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue/const }
 
   InputValue:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputValue/const }
 
   OutputValue:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue/const }
 
   InputLink:
     description: Link to another object for obtaining an input or present value from an output or present value
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/InstanceLinkType/type }
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputLink/const }
     flo:meta: 
@@ -184,7 +184,7 @@ sdfProperty:
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/InstanceLinkType/type }
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink/const }
     flo:meta: 
@@ -193,7 +193,7 @@ sdfProperty:
 
   CurrentTime:
     description: Time value updated from the timer service
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType/type }
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime/const }
     flo:meta: 
@@ -202,7 +202,7 @@ sdfProperty:
 
   IntervalTime:
     description: Time value between activations
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType/type }
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime/const }
     flo:meta: 
@@ -211,7 +211,7 @@ sdfProperty:
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType/type }
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime/const }
     flo:meta: 
@@ -304,5 +304,5 @@ sdfObject:
   ObjectList:
     sdfThing:
       Object:
-        sdfRef: /#/sdfThing/ObjectFlowObject
+        sdfRef: /#/sdfObject/ObjectFlowObject
         minItems: 0

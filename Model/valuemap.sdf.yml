@@ -23,7 +23,7 @@ sdfData:
 
 sdfProperty:
   FloatValue:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfObject/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
@@ -31,49 +31,49 @@ sdfProperty:
 
   # Resource to hold the Minimum value for the scale referred to in Unit
   ScaleMinimum:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfObject/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
 
   # Resource to hold the Maximum value for the scale referred to in Unit
   ScaleMaximum:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfObject/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
 
   # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
-    sdfRef: /#/sdfThing/ObjectFlowResource
+    sdfRef: /#/sdfObject/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/Unit/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/StringType }
 
   # ValueMap Object
   ValueMap:
-    sdfRef: /#/sdfThing/ObjectFlowObject
+    sdfRef: /#/sdfObject/ObjectFlowObject
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ValueMap/const }
 
     # ValueMap Object Resources
     sdfRequired:
-      - /#/sdfThing/ValueMap/sdfThing/InputValue
-      - /#/sdfThing/ValueMap/sdfThing/CurrentValue
-      - /#/sdfThing/ValueMap/sdfThing/InputLowScale
-      - /#/sdfThing/ValueMap/sdfThing/InputHighScale
-      - /#/sdfThing/ValueMap/sdfThing/CurrentLowScale
-      - /#/sdfThing/ValueMap/sdfThing/CurrentHighScale
-      - /#/sdfThing/ValueMap/sdfThing/CurrentValueMinimum
-      - /#/sdfThing/ValueMap/sdfThing/CurrentValueMaximum
-      - /#/sdfThing/ValueMap/sdfThing/CurrentValueUnit
+      - /#/sdfObject/ValueMap/sdfProperty/InputValue
+      - /#/sdfObject/ValueMap/sdfProperty/CurrentValue
+      - /#/sdfObject/ValueMap/sdfProperty/InputLowScale
+      - /#/sdfObject/ValueMap/sdfProperty/InputHighScale
+      - /#/sdfObject/ValueMap/sdfProperty/CurrentLowScale
+      - /#/sdfObject/ValueMap/sdfProperty/CurrentHighScale
+      - /#/sdfObject/ValueMap/sdfProperty/CurrentValueMinimum
+      - /#/sdfObject/ValueMap/sdfProperty/CurrentValueMaximum
+      - /#/sdfObject/ValueMap/sdfProperty/CurrentValueUnit
 
     sdfProperty:
       InputValue:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfProperty/InputValue
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/InputValue
         required: true
 
       CurrentValue:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfProperty/CurrentValue
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
         required: true
 
       InputLowScale:

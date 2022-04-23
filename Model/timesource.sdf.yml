@@ -19,36 +19,36 @@ sdfData:
 sdfObject:
   # Timer Source Object
   TimeSource:
-    sdfRef: /#/sdfThing/ObjectFlowObject
+    sdfRef: /#/sdfObject/ObjectFlowObject
     oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource/const }
 
     # Timer Source Object Resources
     sdfRequired:
-      - /#/sdfThing/TimeSource/sdfProperty/OutputTime
-      - /#/sdfThing/TimeSource/sdfProperty/CurrentTime
-      - /#/sdfThing/TimeSource/sdfProperty/IntervalTime
-      - /#/sdfThing/TimeSource/sdfProperty/LastActivationTime
+      - /#/sdfObject/TimeSource/sdfProperty/OutputTime
+      - /#/sdfObject/TimeSource/sdfProperty/CurrentTime
+      - /#/sdfObject/TimeSource/sdfProperty/IntervalTime
+      - /#/sdfObject/TimeSource/sdfProperty/LastActivationTime
     sdfProperty:
       OutputTime:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputValue
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/OutputValue
         flo:meta: 
           ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
         required: true
 
       CurrentTime:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/CurrentTime
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentTime
         required: true
  
       IntervalTime:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/IntervalTime
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/IntervalTime
         required: true
 
       LastActivationTime:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/LastActivationTime
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/LastActivationTime
         required: true
 
       TimerOutputLink:
-        sdfRef: /#/sdfThing/ObjectFlowObject/sdfThing/OutputLink
+        sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/OutputLink
 
     sdfAction:
       OnInterval: 
