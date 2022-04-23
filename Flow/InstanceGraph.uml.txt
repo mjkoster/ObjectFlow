@@ -10,14 +10,17 @@ object AnalogInput {
   Type: AnalogInput
   IntervalTime: 0
   GpioPinID: 7
+  CurrentValue: { ValueType: IntegerType }
   OutputLink: MapToCelsius
   }
 AnalogInput::OutputLink --> MapToCelsius
 
 object MapToCelsius {
     Type: ValueMap
+    InputValue: { ValueType: IntegerType }
     InputLowScale:  0 
     InputHighScale: 1023 
+    CurrentValue: { ValueType: FloatType }
     CurrentLowScale: 0 
     CurrentHighScale: 100 
     CurrentValueMinimum: 0 
@@ -29,6 +32,6 @@ MapToCelsius::OutputLink --> Display
 
 object Display {
     Type: Publisher
-    InputValue: { ValueType: IntegerType }
+    InputValue: { ValueType: FloatType }
 }
 @enduml

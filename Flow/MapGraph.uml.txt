@@ -10,18 +10,21 @@ map AnalogInput {
   InstanceID => 0
   IntervalTime => 0
   GpoiPinID => 7
+  OutputValue: { ValueType: IntegerType }
   OutputLink => [43002,0]
   }
 map MapToCelsius {
     Type => ValueMap
     TypeID => 43002
     InstanceID => 0
+    InputValue: { ValueType: IntegerType }
     InputLowScale => 0 
     InputHighScale => 1023 
-    CurrentLowScale => 0 
-    CurrentHighScale => 100 
-    CurrentValueMinimum => 0 
-    CurrentValueMaximum => 100 
+    CurrentValue: { ValueType: FloatType }
+    CurrentLowScale => 0.0 
+    CurrentHighScale => 100.0 
+    CurrentValueMinimum => 0.0 
+    CurrentValueMaximum => 100.0 
     CurrentValueUnit => C 
     OutputLink_0 => [43003,0]
     OutputLink_1 => [43003,1]
@@ -30,13 +33,13 @@ map Display {
     Type => Publisher
     TypeID => 43003
     InstanceID => 0
-    InputValue => { ValueType: IntegerType }
+    InputValue => { ValueType: FloatType }
 }
 map SerialPublisher{
     Type => Publisher
     TypeID => 43003
     InstanceID => 1
-    InputValue => { ValueType: IntegerType }
+    InputValue => { ValueType: FloatType }
 }
 Timer::OutputLink -> AnalogInput
 AnalogInput::OutputLink -> MapToCelsius

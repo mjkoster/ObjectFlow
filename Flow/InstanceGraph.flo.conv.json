@@ -1,5 +1,5 @@
 {
-  "InstanceGraph": {
+  "Flow": {
     "TimeSource": {
       "IntervalTime": 1000,
       "TimerOutputLink": "AnalogInput"

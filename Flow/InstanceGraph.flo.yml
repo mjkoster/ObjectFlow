@@ -1,5 +1,5 @@
 ---
-InstanceGraph:
+Flow:
   TimeSource: 
     Type: TimeSource
     IntervalTime: 1000 
