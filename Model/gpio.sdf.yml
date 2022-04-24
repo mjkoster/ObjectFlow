@@ -21,17 +21,18 @@ sdfData:
 
 sdfProperty:
   GpioPinID: 
-    sdfRef: /#/sdfObject/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
 
   GpioPinPullup: 
-    sdfRef: /#/sdfObject/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/BooleanType }
     required: true
     default: false
 
+sdfObject:
   # Analog Input GPIO Object
   AnalogInput:
     sdfRef: /#/sdfObject/ObjectFlowObject
@@ -43,7 +44,7 @@ sdfProperty:
       - /#/sdfObject/AnalogInput/sdfProperty/CurrentTime
       - /#/sdfObject/AnalogInput/sdfProperty/IntervalTime
       - /#/sdfObject/AnalogInput/sdfProperty/LastActivationTime
-      - /#/sdfObject/AnalogInput/sdfProperty/GpioPinID
+      - /#/sdfObject/AnalogInput/sdfProperty/PinID
       - /#/sdfObject/AnalogInput/sdfProperty/CurrentValue
 
     sdfProperty:
@@ -71,7 +72,7 @@ sdfProperty:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
         ValueType: 
           sdfChoice:
-            sdfRef: /#/sdfData/valueType/IntegerType
+            sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType
         required: true
 
       OutputLink:
@@ -90,7 +91,7 @@ sdfProperty:
       - /#/sdfObject/BinaryInput/sdfProperty/CurrentTime
       - /#/sdfObject/BinaryInput/sdfProperty/IntervalTime
       - /#/sdfObject/BinaryInput/sdfProperty/LastActivationTime
-      - /#/sdfObject/BinaryInput/sdfProperty/GpioPinID
+      - /#/sdfObject/BinaryInput/sdfProperty/PinID
       - /#/sdfObject/BinaryInput/sdfProperty/CurrentValue
 
     sdfProperty:
@@ -118,7 +119,7 @@ sdfProperty:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
         ValueType: 
           sdfChoice:
-            sdfRef: /#/sdfData/valueType/BooleanType
+            sdfRef: /#/sdfData/ValueType/sdfChoice/BooleanType
         required: true
 
       OutputLink:
@@ -149,7 +150,7 @@ sdfProperty:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
         ValueType: 
           sdfChoice:
-            sdfRef: /#/sdfData/valueType/IntegerType
+            sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType
         required: true
 
     sdfAction:
@@ -177,7 +178,7 @@ sdfProperty:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
         ValueType: 
           sdfChoice:
-            sdfRef: /#/sdfData/valueType/BooleanType
+            sdfRef: /#/sdfData/ValueType/sdfChoice/BooleanType
         required: true
 
     sdfAction:

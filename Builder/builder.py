@@ -2,7 +2,6 @@
 import json
 import yaml
 import glob
-import jsonpointer
 from jsonpointer import resolve_pointer
 import jsonschema
 
@@ -16,7 +15,7 @@ class Graph():
     self._merge(model) 
 
   def _merge(self, model):
-  # RFC7386 style merge-patch + list merge
+  # RFC7386 style merge-patch + uniqueItem list merge
   # recursive descent merge JSON, extend trees and set values
   # for each item in the model, check the position in the graph
   # add to graph if not present until the end value is reached 
@@ -81,24 +80,27 @@ class ModelGraph:
     # recursive scan for instances of these keys and resolve the references
     # allow sdfRef in any object type node of the instance
     # 
-    self._check(self._modelGraph._graph())
+    self._check(self._modelGraph._graph)
 
   def _check(self, value):
-    if isinstance(value, object) or isinstance(value, list):
+    if isinstance(value, dict):
+      if "sdfRef" in value:
+        self._checkResolve(value["sdfRef"])
+      if "sdfRequired" in value:
+        for ref in value["sdfRequired"]:
+          self._checkResolve(ref)
       for item in value:
-        if isinstance(item, object):
-          if item.contains("sdfRef"):
-            self._check_resolve(item["sdfRef"])
-        self._check(item)
-     
-  def _check_resolve(self, sdfPointer):
+        self._check(value[item])
+
+  def _checkResolve(self, sdfPointer):
     self._pointer = sdfPointer
     if self._pointer.startswith("/#"):
       self._pointer = self._pointer[2:]
     elif self._pointer.startswith("#"):
       self._pointer = self._pointer[1:]
     if self._pointer.startswith("/"):
-      target = resolve_pointer(self._modelGraph._graph(), self._pointer)
+      print (self._pointer)
+      target = resolve_pointer(self._modelGraph._graph, self._pointer)
       return(target)
     else:
       return(self._resolveNamespaceReference(self._pointer)) # resolve curie
@@ -142,8 +144,8 @@ class FlowGraph:
     #
     # make an instance of a flow graph template and add it to the flowGraph
     self._flowGraph.add(_baseFlowTemplate())
-    self._flowBase = self._flowGraph["sdfThing"]["Flow"]["sdfObject"]
-    self._flowSpecBase = self._flowSpec["Flow"]
+    self._flowBase = self._flowGraph._graph["sdfThing"]["Flow"]["sdfObject"]
+    self._flowSpecBase = self._flowSpec._graph["Flow"]
     #
     # for each object in the merged flow: 
     #   add a named sdfObject with an sdfRef to the application object type, using a simple path reference
@@ -151,7 +153,7 @@ class FlowGraph:
     #
     for flowObject in self._flowSpecBase:
       self._flowBase[flowObject] = {}
-      if flowObject.contains("Type"):
+      if flowObject.has_key("Type"):
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["Type"]
       else:
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
@@ -162,7 +164,7 @@ class FlowGraph:
       
       # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]:
-        if self._flowSpec[flowObject].contains(resource): # if there is a value in the flow spec
+        if self._flowSpec[flowObject].has_key(resource): # if there is a value in the flow spec
           if isinstance(self._flowSpec[flowObject][resource], object ): # merge in qualities verbatim from object value
             self._flowBase[flowObject]["sdfProperty"][resource] = self._flowGraph._mergeObject(
               self._flowBase[flowObject]["sdfProperty"][resource], 
@@ -185,13 +187,13 @@ class FlowGraph:
 
     #   --- (linear) recursive expand-merge
   def _expandRef(self, value):
-      if isinstance(value, object) and value.contains("sdfRef"):
+      if isinstance(value, dict) and "sdfRef" in value:
         refValue = self._resolve(value["sdfRef"]) # get the value linked
         self._expandRef(refValue) # expand all the way down the chain
         value = self._flowGraph._mergeObject(value, refValue) # then back-merge in reverse order on the nested closure
 
   def _hydrate(self, value): # recursively expand-merge all nodes
-    if isinstance(value, object) or isinstance(value, list):
+    if isinstance(value, dict) or isinstance(value, list):
       for item in value:
         self._expandRef(value[item])
         self._hydrate(value[item]) 
@@ -249,7 +251,7 @@ def _baseFlowTemplate():
   return(
     {
       "sdfThing": {
-        "flow": {
+        "Flow": {
           "sdfObject": {}
         }
       }
@@ -268,41 +270,3 @@ def build():
 
 if __name__ == '__main__':
     build()
-
-    #  for each resource 
-    #      add sdfRef: /#/sdfType: <type>
-    #      Add typeID and override default instanceID as needed
-    #      Convert <value> to { Value: { const: <value> } }
-    #      Add resource instance to the thing in the ResolvedGraph and an sdfRef corresponding to the matching type
-    #      Recursively follow sdfRefs to assign values to the resource properties
-    #      If there is no default ValueType, infer one from the value (fixup)
-    #      resolve links to ObjectLinks
-    #  add any required resources not included with defaults
-
-    # for object in flowGraph resolve required items by object type (Type field in the flow object)
-    # if no type, add type: <=name>
-    # if required item not present, add it with defaults
-    # if required item is present, apply the final value e.g. default => const
-    # for object values, check required elements and types and fill in missing elements with defaults
-    # assign sequential instance numbers for duplicate instances of Objects and Resources (same TypeID)
-    # expand sdfRef pointers as the model is traversed, navigate through temporary JSON pointer subgraphs
-    #
-    # resolving an SDF instance is done using back-merge of all the sdfRef entry points from the model
-    # First, make an instance copy of the Object template for each object instance in the flow, name it, and add sdfRef
-    # construct an SDF instance graph by expanding items in the flow graph and add it to the model under sdfInstance:
-    # Assign TypeIDs and override default instanceIDs for duplicate TypeIDs
-    # resolve Flow links to SDF Instance links to ObjectLinks
-    # construct paths to transitive endpoints specified in the flow file e.g.
-    # Make an instance of the type and interpret the contents in the flow file 
-    # CurrentValue: 100 becomes CurrentValue: { Value: 100 } which is expanded in the template to => sdfThing:
-    # CurrentValue: { sdfRef: /#/...CurrentValue, ValueType: { sdfChoice: mapToTypeRef(100)}, Value: 100 }
-    # if type is constrained to float (ValueType is set to float in model or flow), convert integer constant
-    # e.g. { ValueType: FloatType, Value: 100 } might display back as Value: 100.0
-    # serialize the SDF instance graph to a resolved flow graph which is an output graph
-    # serialize each object to the header template file
-    # can resources be added to an object that aren't in the composed model? What would they do?
-    #
-    #   merge all of the defaults and required elements 
-    #   add the sdf object template to the resolvedGraph and an sdfRef corresponding to the matching Type:
-    #   Assign TypeIDs and override default instanceIDs for duplicate TypeIDs, other Object data
-    # for each object in flow

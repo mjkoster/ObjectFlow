@@ -23,7 +23,7 @@ sdfData:
 
 sdfProperty:
   FloatValue:
-    sdfRef: /#/sdfObject/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
@@ -31,29 +31,30 @@ sdfProperty:
 
   # Resource to hold the Minimum value for the scale referred to in Unit
   ScaleMinimum:
-    sdfRef: /#/sdfObject/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
 
   # Resource to hold the Maximum value for the scale referred to in Unit
   ScaleMaximum:
-    sdfRef: /#/sdfObject/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
 
   # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
-    sdfRef: /#/sdfObject/ObjectFlowResource
+    sdfRef: /#/sdfProperty/ObjectFlowResource
     oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/Unit/const }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/StringType }
 
-  # ValueMap Object
+# ValueMap Object
+sdfObject:
   ValueMap:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ValueMap/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/ValueMap/const }
 
     # ValueMap Object Resources
     sdfRequired:
@@ -93,11 +94,11 @@ sdfProperty:
         required: true
 
       CurrentValueMinimum:
-        sdfRef: /#/sdfProperty/MinimumValue
+        sdfRef: /#/sdfProperty/ScaleMinimum
         required: true
 
       CurrentValueMaximum:
-        sdfRef: /#/sdfProperty/MaximumValue
+        sdfRef: /#/sdfProperty/ScaleMaximum
         required: true
         
       CurrentValueUnit:
