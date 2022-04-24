@@ -99,8 +99,11 @@ class ModelGraph:
     elif self._pointer.startswith("#"):
       self._pointer = self._pointer[1:]
     if self._pointer.startswith("/"):
-      print (self._pointer)
-      target = resolve_pointer(self._modelGraph._graph, self._pointer)
+      try:
+        target = resolve_pointer(self._modelGraph.graph(), self._pointer)
+      except:
+        print("sdfPointer doesn't resolve:", self._pointer)
+        return
       return(target)
     else:
       return(self._resolveNamespaceReference(self._pointer)) # resolve curie
@@ -153,18 +156,19 @@ class FlowGraph:
     #
     for flowObject in self._flowSpecBase:
       self._flowBase[flowObject] = {}
-      if flowObject.has_key("Type"):
+      if "Type" in self._flowSpecBase[flowObject]:
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["Type"]
       else:
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
+      print(self.yaml())
 
       # hydrate - expand all sdfRefs and process required items
       # currently _hydrate expands all resources defined in the application template and ignores sdfRequired
       self._hydrate(self._flowBase[flowObject])
-      
+
       # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]:
-        if self._flowSpec[flowObject].has_key(resource): # if there is a value in the flow spec
+        if resource in self._flowSpec[flowObject]: # if there is a value in the flow spec
           if isinstance(self._flowSpec[flowObject][resource], object ): # merge in qualities verbatim from object value
             self._flowBase[flowObject]["sdfProperty"][resource] = self._flowGraph._mergeObject(
               self._flowBase[flowObject]["sdfProperty"][resource], 
@@ -193,9 +197,9 @@ class FlowGraph:
         value = self._flowGraph._mergeObject(value, refValue) # then back-merge in reverse order on the nested closure
 
   def _hydrate(self, value): # recursively expand-merge all nodes
-    if isinstance(value, dict) or isinstance(value, list):
+    if isinstance(value, dict):
+      self._expandRef(value)
       for item in value:
-        self._expandRef(value[item])
         self._hydrate(value[item]) 
 
   def _resolve(self, sdfPointer):
@@ -205,7 +209,10 @@ class FlowGraph:
     elif self._pointer.startswith("#"):
       self._pointer = self._pointer[1:]
     if self._pointer.startswith("/"):
-      target = resolve_pointer(self._flowGraph._graph(), self._pointer)
+      try:
+        target = resolve_pointer(self._modelGraph._modelGraph._graph, self._pointer)
+      except:
+        print("sdfPointer doesn't resolve:", self._pointer)
       return(target)
     else:
       return(self._resolveNamespaceReference(self._pointer)) # resolve curie
@@ -233,19 +240,6 @@ class FlowGraph:
 
   def _header(self):
     return
-
-
-class Object:
-  def __init__(self, objectPath):
-    self.objectPath = objectPath
-
-  def addResource(self, resourcePath):
-    self.resource = Resource(resourcePath)
-
-
-class Resource:
-  def __init__(self, resourcePath):
-    self.resourcePath = resourcePath
 
 def _baseFlowTemplate():
   return(
