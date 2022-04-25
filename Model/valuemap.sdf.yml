@@ -24,37 +24,45 @@ sdfData:
 sdfProperty:
   FloatValue:
     sdfRef: /#/sdfProperty/ObjectFlowResource
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/FloatValue }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
+    sdfChoice:
+      FloatType: {}
     minInstances: 0
 
   # Resource to hold the Minimum value for the scale referred to in Unit
   ScaleMinimum:
     sdfRef: /#/sdfProperty/ObjectFlowResource
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMinimum }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
+    sdfChoice:
+      FloatType: {}
 
   # Resource to hold the Maximum value for the scale referred to in Unit
   ScaleMaximum:
     sdfRef: /#/sdfProperty/ObjectFlowResource
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/ScaleMaximum }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/FloatType }
+    sdfChoice:
+      FloatType: {}
 
   # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
     sdfRef: /#/sdfProperty/ObjectFlowResource
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/Unit/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/Unit }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/StringType }
+    sdfChoice:
+      StringtType: {}
 
 # ValueMap Object
 sdfObject:
   ValueMap:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/ValueMap/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/ValueMap }
 
     # ValueMap Object Resources
     sdfRequired:
@@ -71,10 +79,14 @@ sdfObject:
     sdfProperty:
       InputValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/InputValue
+        sdfChoice:
+          IntegerType: {}
         required: true
 
       CurrentValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
+        sdfChoice:
+          FloatType: {}
         required: true
 
       InputLowScale:

@@ -36,7 +36,7 @@ sdfObject:
   # Analog Input GPIO Object
   AnalogInput:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/AnalogInput/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/AnalogInput }
 
 
     # Analog Input Object Resources
@@ -84,7 +84,7 @@ sdfObject:
   # Binary Input GPIO Object
   BinaryInput:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/BinaryInput/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/BinaryInput }
 
     # Binary Input Object Resources
     sdfRequired:
@@ -131,7 +131,7 @@ sdfObject:
   # Analog Output GPIO Object
   AnalogOutput:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/AnalogOutput/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/AnalogOutput }
 
     # Analog Output Object Resources
     sdfRequired:
@@ -159,7 +159,7 @@ sdfObject:
   # Binary Output GPIO Object
   BinaryOutput:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/BinaryOutput/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/BinaryOutput }
 
     # Binary Output Object Resources
     sdfRequired:

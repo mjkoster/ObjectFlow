@@ -160,11 +160,11 @@ class FlowGraph:
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["Type"]
       else:
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
-      print(flowObject)
+      print("Resolving ",flowObject)
       # hydrate - expand all sdfRefs and process required items
       # currently _hydrate expands all resources defined in the application template and ignores sdfRequired
       self._hydrate(self._flowBase[flowObject])
-      print(self._flowBase[flowObject])
+      # print(self._flowBase[flowObject])
 
       # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]: # for each property in the sdf graph
@@ -184,8 +184,8 @@ class FlowGraph:
           elif "BooleanType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["BooleanType"]["const"] = self._flowSpecBase[flowObject][resource]
           else:
-            print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource], "Expected type:", self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"])
-
+            # print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource], "Expected type:", self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"])
+            print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource])
     #   assign instance IDs 
     #   resolve oma objlinks from sdf object links
 
@@ -208,6 +208,8 @@ class FlowGraph:
       self._pointer = self._pointer[2:]
     elif self._pointer.startswith("#"):
       self._pointer = self._pointer[1:]
+    
+    # print(self._pointer)
     if self._pointer.startswith("/"):
       try:
         target = resolve_pointer(self._modelGraph._modelGraph._graph, self._pointer)
@@ -259,6 +261,7 @@ def build():
   # print (model._modelGraph._graph)
   # print(model.yaml())
   flow = FlowGraph( model, "../Flow/" )
+  print (flow.json())
   # print(flow.yaml())
   # print(flow.objectFlowHeader())
 

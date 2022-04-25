@@ -24,8 +24,8 @@ sdfThing:
             sdfChoice:
               IntegerType: { const: 1000 }
           OutputLink:
-            sdfData:
-              SdfLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfObject/AnalogInput }
+            flo:meta:
+              FlowGraphLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfObject/AnalogInput }
 
       AnalogInput:
         sdfRef: /#/sdfObject/AnalogInput
@@ -34,10 +34,10 @@ sdfThing:
             sdfProperty:
               IntegerType: { const: 7 }
             OutputLink:
-              sdfData:
-                SdfLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfObject/ScaleMapper }
+              flo:meta:
+                FlowGraphLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfObject/ScaleMapper }
         
-      MapToCelsiuså:
+      MapToCelsius:
         sdfRef: /#/sdfObject/ValueMap
         sdfProperty:
           InputLowScale:
@@ -62,8 +62,8 @@ sdfThing:
             sdfChoice:
               StringValue: { const: C }
           OutputLink:
-            sdfData:
-              SdfLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfObject/Display }
+            flo:meta:
+              FlowGraphLink: { InstancePointer: /#/sdfThing/InstanceGraph/sdfObject/Display }
         
       Display:
         sdfRef: /#/sdfObject/Publisher
@@ -72,5 +72,4 @@ sdfThing:
             flo:meta:
               ValueType:
                 sdfChoice:
-                  sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType
-        
+                  IntegerType: {}        

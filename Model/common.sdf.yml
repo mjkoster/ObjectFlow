@@ -31,7 +31,7 @@ sdfData:
       sdfRef: /#/sdfData/IDRange
     ValueType:
       sdfRef: /#/sdfData/ValueType
-    InstanceGraphLink:
+    FlowGraphLink:
       sdfRef: /#/sdfData/SdfLink
 
   oma:id:
@@ -160,63 +160,72 @@ sdfProperty:
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/ValueTypeType }
     type: { sdfRef: /#/sdfData/ValueType }
+    sdfChoice:
+      ValueTypeType: {}
 
   CurrentValue:
     sdfRef: /#/sdfProperty/ObjectFlowResource
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentValue }
 
   InputValue:
     sdfRef: /#/sdfProperty/ObjectFlowResource
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputValue/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputValue }
 
   OutputValue:
     sdfRef: /#/sdfProperty/ObjectFlowResource
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputValue }
 
   InputLink:
     description: Link to another object for obtaining an input or present value from an output or present value
     sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/InstanceLinkType }
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputLink/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/InputLink }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType }
       InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
+    sdfChoice:
+      LinkType: {}
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
     sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/InstanceLinkType }
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/OutputLink }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/InstanceLinkType }
       InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
+    sdfChoice:
+      LinkType: {}
 
   CurrentTime:
     description: Time value updated from the timer service
     sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType }
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/CurrentTime }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
-  default: 0 
+    sdfChoice:
+      TimeType: { default: 0 }
 
   IntervalTime:
     description: Time value between activations
     sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType }
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/IntervalTime }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
-    default: 0 
+    sdfChoice:
+      TimeType: { default: 0 }
 
   LastActivationTime:
     description: Time value when the last activatoin occurred
     sdfRef: /#/sdfProperty/ObjectFlowResource
     type: { sdfRef: /#/sdfData/Value/sdfChoice/TimeType }
-    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/LastActivationTime }
     flo:meta: 
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
-    default: 0 
+    sdfChoice:
+      TimeType: { default: 0 }
 
 sdfObject:
 

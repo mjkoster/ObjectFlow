@@ -20,7 +20,7 @@ sdfObject:
   # Timer Source Object
   TimeSource:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/TimeSource }
 
     # Timer Source Object Resources
     sdfRequired:
@@ -34,6 +34,8 @@ sdfObject:
         flo:meta: 
           ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
         required: true
+        sdfChoice:
+          TimeType: {}
 
       CurrentTime:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentTime

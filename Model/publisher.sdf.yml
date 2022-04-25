@@ -20,7 +20,7 @@ sdfObject:
   # Publisher Object
   Publisher:
     sdfRef: /#/sdfObject/ObjectFlowObject
-    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/Publisher/const }
+    oma:id: { sdfRef: /#/sdfData/TypeID/ObjectType/Publisher } # value vs. { const: value }
 
     # Publisher Object Resources
     sdfRequired:
