@@ -69,14 +69,14 @@ sdfData:
     description: Metadata for applications to test for unknown data type
     sdfChoice:
       # let the underlying implementation choose its own internal enum coding, need a binding to names or values
-      BooleanType: {}
-      IntegerType: {}
-      FloatType: {}
-      StringType: {}
-      ValueTypeType: {} # built-in semantic type 
-      TimeType: {} # built-in semantic type
-      InstanceLinkType: {} # built-in semantic type
-      SemanticType: {}
+      BooleanType: { default: BooleanType }
+      IntegerType: { default: IntegerType }
+      FloatType: { default: FloatType }
+      StringType: { default: StringType }
+      ValueTypeType: { default: ValueTypeType }
+      TimeType: { default: TimeType }
+      InstanceLinkType: { default: InstanceLinkType }
+      SemanticType: { default: SemanticType }
 
   ValueTypeString: # to use in a programming language binding, etc. 
     sdfRef: /#/sdfData/ValueType
@@ -310,8 +310,8 @@ sdfObject:
         description: Handler for timer interval application trigger
 
   # sdfThing definition for the Object List
+sdfThing:
   ObjectList:
-    sdfThing:
-      Object:
-        sdfRef: /#/sdfObject/ObjectFlowObject
-        minItems: 0
+    sdfObject:
+      sdfRef: /#/sdfObject/ObjectFlowObject
+      minItems: 0

@@ -164,7 +164,6 @@ class FlowGraph:
       # hydrate - expand all sdfRefs and process required items
       # currently _hydrate expands all resources defined in the application template and ignores sdfRequired
       self._hydrate(self._flowBase[flowObject])
-      # print(self._flowBase[flowObject])
 
       # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]: # for each property in the sdf graph
@@ -175,13 +174,13 @@ class FlowGraph:
               self._flowSpecBase[flowObject][resource]
             )
           # apply as constant value - array needs to be handled when we add multi-instance support
-          elif "IntegerType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+          elif "IntegerType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["IntegerType"]["const"] = self._flowSpecBase[flowObject][resource]
-          elif "FloatType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+          elif "FloatType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["FloatType"]["const"] = self._flowSpecBase[flowObject][resource]
-          elif "StringType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+          elif "StringType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["StringType"]["const"] = self._flowSpecBase[flowObject][resource]
-          elif "BooleanType" == self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+          elif "BooleanType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["BooleanType"]["const"] = self._flowSpecBase[flowObject][resource]
           else:
             # print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource], "Expected type:", self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"])
@@ -189,18 +188,28 @@ class FlowGraph:
     #   assign instance IDs 
     #   resolve oma objlinks from sdf object links
 
-    #   --- (linear) recursive expand-merge
-  def _expandRef(self, value):
-      if isinstance(value, dict) and "sdfRef" in value:
-        refValue = self._resolve(value["sdfRef"]) # get the value linked
-        self._expandRef(refValue) # expand all the way down the chain
-        value = self._flowGraph._mergeObject(value, refValue) # then back-merge in reverse order on the nested closure
-
-  def _hydrate(self, value): # recursively expand-merge all nodes
+  def _hydrate(self, value): # vertical recursive expand-merge all nodes
     if isinstance(value, dict):
       self._expandRef(value)
       for item in value:
         self._hydrate(value[item]) 
+
+    #   --- horizontal recursive expand-merge, follow a chain of sdfRefs refining a node
+  def _expandRef(self, value):
+    if isinstance(value, dict) and "sdfRef" in value:
+      refValue = self._resolve(value["sdfRef"]) # get the value linked
+      print()
+      print("@@@ expand", value["sdfRef"])
+      print("@@@ refValue", refValue)
+      self._expandRef(refValue) # expand all the way down the chain
+      print()
+      print("@@@ value", value)
+      print("@@@ refValue", refValue)
+      self._refine(refValue, value) # then back-merge in reverse order on the nested closure
+      print("@@@ refined value", refValue)
+      return refValue
+    print ("@@@ returned value", value)
+    return value
 
   def _resolve(self, sdfPointer):
     self._pointer = sdfPointer
@@ -209,7 +218,7 @@ class FlowGraph:
     elif self._pointer.startswith("#"):
       self._pointer = self._pointer[1:]
     
-    # print(self._pointer)
+    # print("Resolving: ", self._pointer)
     if self._pointer.startswith("/"):
       try:
         target = resolve_pointer(self._modelGraph._modelGraph._graph, self._pointer)
@@ -221,6 +230,35 @@ class FlowGraph:
 
   def _resolveNamespaceReference(self, sdfPointer):
     return # namespace feature
+
+  def _refine(self, value, refValue):
+    if not isinstance(value, dict):
+      value = {}
+    if not isinstance( refValue, dict):
+      return refValue
+    for key, refItem in refValue.items():
+      if isinstance(refItem, dict): # merge dict into value
+        targetValue = value.get(key) # key error safe this way
+        if isinstance(targetValue, dict): # see if there is also a dict in the target
+          if "sdfChoice" == key: # if the item is sdfChoice, refine by copying into an empty dict
+            # print("target:", key, value[key])
+            # print("replace with:", refItem)
+            value[key] = {} 
+            value[key] = self._refine(value[key], refItem) # if both are dicts, merge the item into the value
+          continue
+        value[key] = {} # if there isn't a dict there, or if it is sdfChoice, make a new empty node merge dict into it
+        self._refine(value[key], refItem) # merge new item or sdfChoice into empty dict
+        continue
+      if isinstance(refItem, list):      
+        targetValue = value.get(key) # key error safe this way
+        if isinstance(targetValue, list): # see if there is a matching list
+          value[key] = list(set(targetValue + refItem)) # merge lists with unique values
+          continue
+      if None is refItem: # if the model contains None, remove the matching node in the graph
+        value.pop(key, None)
+        continue
+      value[key] = refItem # replace empty or plain value with value from the model
+    return value
 
   def flowGraph(self):
     return self._flowGraph.graph()
@@ -258,12 +296,9 @@ def build():
   print("FlowBuilder")
   # test with local files, make the model graph first
   model = ModelGraph("../Model/")
-  # print (model._modelGraph._graph)
-  # print(model.yaml())
+  # print(model.json())
   flow = FlowGraph( model, "../Flow/" )
-  print (flow.json())
-  # print(flow.yaml())
-  # print(flow.objectFlowHeader())
+  # print (flow.json())
 
 if __name__ == '__main__':
     build()
