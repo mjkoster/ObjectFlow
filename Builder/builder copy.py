@@ -3,7 +3,6 @@ import json
 import yaml
 import glob
 from jsonpointer import resolve_pointer
-import copy
 import jsonschema
 
 class Graph():
@@ -54,9 +53,6 @@ class Graph():
   def graph(self):
     return self._graph
 
-  def resolve(self, pointer):
-    return resolve_pointer(self._graph, pointer)
-
   def json(self):
     # options go here
     return json.dumps( self.graph() ) 
@@ -104,7 +100,7 @@ class ModelGraph:
       self._pointer = self._pointer[1:]
     if self._pointer.startswith("/"):
       try:
-        target = self._modelGraph.resolve(self._pointer)
+        target = resolve_pointer(self._modelGraph.graph(), self._pointer)
       except:
         print("sdfPointer doesn't resolve:", self._pointer)
         return
@@ -113,7 +109,6 @@ class ModelGraph:
       return(self._resolveNamespaceReference(self._pointer)) # resolve curie
 
   def _resolveNamespaceReference(self, sdfPointer):
-    print("Namespace not supported: ", sdfPointer)
     return # feature
 
   def json(self):
@@ -132,7 +127,7 @@ class FlowGraph:
     # FLowGraph gets filled in with all required items and values defined 
     # the ObjectFlow header can be made from the full InstanceGraph
 
-    self._modelGraph = modelGraph._modelGraph
+    self._modelGraph = modelGraph
 
     self._flowSpec = Graph()
 
@@ -152,7 +147,7 @@ class FlowGraph:
     #
     # make an instance of a flow graph template and add it to the flowGraph
     self._flowGraph.add(_baseFlowTemplate())
-    self._flowBase = self._flowGraph.resolve("/sdfThing/Flow/sdfObject")
+    self._flowBase = self._flowGraph._graph["sdfThing"]["Flow"]["sdfObject"]
     self._flowSpecBase = self._flowSpec._graph["Flow"]
     #
     # for each object in the merged flow: 
@@ -166,9 +161,10 @@ class FlowGraph:
       else:
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
       print("Resolving ",flowObject)
-      # expand all sdfRefs
+      # hydrate - expand all sdfRefs and process required items
+      # currently _expandAll expands all resources defined in the application template and ignores sdfRequired
       self._expandAll(self._flowBase[flowObject])
-      print("Expanded:\n", self._flowGraph.yaml())
+
       # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]: # for each property in the sdf graph
         if resource in self._flowSpecBase[flowObject]: # if there is a value in the flow spec
@@ -192,25 +188,27 @@ class FlowGraph:
     #   assign instance IDs 
     #   resolve oma objlinks from sdf object links
 
-  def _expandAll(self, value): # recursive expand-refine all nodes
+  def _expandAll(self, value): # vertical recursive expand-merge all nodes
     if isinstance(value, dict):
-      if "sdfRef" in value:
-        value = self._expandRefine(value)
+      self._expandRef(value)
       for item in value:
         self._expandAll(value[item]) 
 
-    #   --- recursive expand-merge, follow a chain of sdfRefs refining a node and merge from the end back
-  def _expandRefine(self, value):
+    #   --- horizontal recursive expand-merge, follow a chain of sdfRefs refining a node
+  def _expandRef(self, value):
     if isinstance(value, dict) and "sdfRef" in value:
-      print ("value:\n", value)
-      ref = value["sdfRef"]
-      value["sdfRef"] = None
-      value["sdfRefFrom"] = [ref] # this will result in set merge of sdfRef strings for breadcrumbs
-       # expand all the way down the chain, making deep copies to merge into
-       # then mergeRefine in reverse order on the nested closure and return the fully resolved object
-      refined = self._mergeRefine(self._expandRefine(copy.deepcopy(self._resolve(ref))), value)
-      print ("refined:\n", refined)
-      return refined
+      refValue = self._resolve(value["sdfRef"]) # get the value linked
+      print()
+      print("@@@ expand", value["sdfRef"])
+      print("@@@ refValue", refValue)
+      self._expandRef(refValue) # expand all the way down the chain
+      print()
+      print("@@@ value", value)
+      print("@@@ refValue", refValue)
+      self._refine(refValue, value) # then back-merge in reverse order on the nested closure
+      print("@@@ refined value", refValue)
+      return refValue
+    print ("@@@ returned value", value)
     return value
 
   def _resolve(self, sdfPointer):
@@ -219,9 +217,11 @@ class FlowGraph:
       self._pointer = self._pointer[2:]
     elif self._pointer.startswith("#"):
       self._pointer = self._pointer[1:]
+    
+    # print("Resolving: ", self._pointer)
     if self._pointer.startswith("/"):
       try:
-        target = self._modelGraph.resolve(self._pointer)
+        target = resolve_pointer(self._modelGraph._modelGraph._graph, self._pointer)
       except:
         print("sdfPointer doesn't resolve:", self._pointer)
       return(target)
@@ -229,10 +229,9 @@ class FlowGraph:
       return(self._resolveNamespaceReference(self._pointer)) # resolve curie
 
   def _resolveNamespaceReference(self, sdfPointer):
-    print("Namespace not supported: ", sdfPointer)
     return # namespace feature
 
-  def _mergeRefine(self, value, refValue):
+  def _refine(self, value, refValue):
     if not isinstance(value, dict):
       value = {}
     if not isinstance( refValue, dict):
@@ -245,10 +244,10 @@ class FlowGraph:
             # print("target:", key, value[key])
             # print("replace with:", refItem)
             value[key] = {} 
-          value[key] = self._mergeRefine(value[key], refItem) # if both are dicts, merge the item into the value
+            value[key] = self._refine(value[key], refItem) # if both are dicts, merge the item into the value
           continue
         value[key] = {} # if there isn't a dict there, or if it is sdfChoice, make a new empty node merge dict into it
-        self._mergeRefine(value[key], refItem) # merge new item or sdfChoice into empty dict
+        self._refine(value[key], refItem) # merge new item or sdfChoice into empty dict
         continue
       if isinstance(refItem, list):      
         targetValue = value.get(key) # key error safe this way
@@ -258,8 +257,7 @@ class FlowGraph:
       if None is refItem: # if the model contains None, remove the matching node in the graph
         value.pop(key, None)
         continue
-      if "description" != key:
-        value[key] = refItem # replace empty or plain value with value from the model
+      value[key] = refItem # replace empty or plain value with value from the model
     return value
 
   def flowGraph(self):
