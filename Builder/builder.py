@@ -66,16 +66,16 @@ class Graph():
     return yaml.dump( self.graph() ) 
 
 
-class ModelGraph:
+class ModelGraph(Graph):
   def __init__(self, modelPath):
-    self._modelGraph = Graph()
+    Graph.__init__(self)
     # read in all of the SDF files in the model directory
     for file in glob.glob( modelPath + "*.sdf.json" ):
       print(file)
-      self._modelGraph.add( json.loads( open(file,"r").read() ) )
+      self.add( json.loads( open(file,"r").read() ) )
     for file in glob.glob( modelPath + "*.sdf.yml" ):
       print(file)
-      self._modelGraph.add( yaml.safe_load( open(file,"r").read() ) )
+      self.add( yaml.safe_load( open(file,"r").read() ) )
     self._checkPointers()
   
   def _checkPointers(self):
@@ -84,7 +84,7 @@ class ModelGraph:
     # recursive scan for instances of these keys and resolve the references
     # allow sdfRef in any object type node of the instance
     # 
-    self._check(self._modelGraph._graph)
+    self._check(self.graph())
 
   def _check(self, value):
     if isinstance(value, dict):
@@ -97,6 +97,7 @@ class ModelGraph:
         self._check(value[item])
 
   def _checkResolve(self, sdfPointer):
+    # print("checking: ", sdfPointer)
     self._pointer = sdfPointer
     if self._pointer.startswith("/#"):
       self._pointer = self._pointer[2:]
@@ -104,7 +105,7 @@ class ModelGraph:
       self._pointer = self._pointer[1:]
     if self._pointer.startswith("/"):
       try:
-        target = self._modelGraph.resolve(self._pointer)
+        target = self.resolve(self._pointer)
       except:
         print("sdfPointer doesn't resolve:", self._pointer)
         return
@@ -116,25 +117,17 @@ class ModelGraph:
     print("Namespace not supported: ", sdfPointer)
     return # feature
 
-  def json(self):
-    return self._modelGraph.json()
 
-  def yaml(self):
-    return self._modelGraph.yaml()
-
-  def uml(self):
-    return # "class" UML format
-
-
-class FlowGraph:
+class FlowGraph(Graph):
   def __init__(self, modelGraph, flowPath):
+    Graph.__init__(self)
 
     # FLowGraph gets filled in with all required items and values defined 
     # the ObjectFlow header can be made from the full InstanceGraph
 
-    self._modelGraph = modelGraph._modelGraph
+    self._modelGraph = modelGraph
 
-    self._flowSpec = Graph()
+    self._flowSpec = Graph() # for the JSON DSL spec, merge these also
 
     for file in glob.glob( flowPath + "*.flo.json" ):
       print(file)
@@ -146,13 +139,13 @@ class FlowGraph:
     self._resolveFlowGraph() 
 
   def _resolveFlowGraph(self):
-    self._flowGraph = Graph()
+    # self._flowGraph = Graph()
     print(self._flowSpec.yaml())
     # build a flow graph from the flow spec; resolve all required items and default values from the model graph
     #
     # make an instance of a flow graph template and add it to the flowGraph
-    self._flowGraph.add(_baseFlowTemplate())
-    self._flowBase = self._flowGraph.resolve("/sdfThing/Flow/sdfObject")
+    self.add(_baseFlowTemplate())
+    self._flowBase = self.resolve("/sdfThing/Flow/sdfObject")
     self._flowSpecBase = self._flowSpec._graph["Flow"]
     #
     # for each object in the merged flow: 
@@ -168,12 +161,12 @@ class FlowGraph:
       print("Resolving ",flowObject)
       # expand all sdfRefs
       self._expandAll(self._flowBase[flowObject])
-      print("Expanded:\n", self._flowGraph.yaml())
+      print("Expanded:\n", self.yaml())
       # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]: # for each property in the sdf graph
         if resource in self._flowSpecBase[flowObject]: # if there is a value in the flow spec
           if isinstance(self._flowSpecBase[flowObject][resource], dict ): # merge in qualities verbatim from object value
-            self._flowBase[flowObject]["sdfProperty"][resource] = self._flowGraph._mergeObject(
+            self._flowBase[flowObject]["sdfProperty"][resource] = self._mergeObject(
               self._flowBase[flowObject]["sdfProperty"][resource], 
               self._flowSpecBase[flowObject][resource]
             )
@@ -263,22 +256,13 @@ class FlowGraph:
     return value
 
   def flowGraph(self):
-    return self._flowGraph.graph()
+    return self.graph()
 
   def flowSpec(self):
     return # a resolved Flow format JSON serialized from the Flow Graph, could merge into the input flow spec
 
-  def json(self):
-    return self._flowGraph.json()
-
-  def yaml(self):
-    return self._flowGraph.yaml()
-
-  def uml(self):
-    return # "Instance" UML format
-
   def objectFlowHeader(self):
-    return self._header( self._flowGraph.graph() ) # convert the resolved instance graph to a header file
+    return self._header( self.graph() ) # convert the resolved instance graph to a header file
 
   def _header(self):
     return
