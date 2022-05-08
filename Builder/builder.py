@@ -24,32 +24,32 @@ class Graph():
   # arrays are merged assuming uniqueItems, leaving the set union
     self._graph = self._mergeObject(self._graph, model) # kick off the recursion
 
-  def _mergeObject(self, graph, model):
-    if not isinstance(graph, dict):
-      graph = {}
+  def _mergeObject(self, base, patch):
+    if not isinstance(base, dict):
+      base = {}
 
-    if not isinstance( model, dict):
-      return model
+    if not isinstance( patch, dict):
+      return patch
 
-    for key, modelValue in model.items():
-      if isinstance(modelValue, dict): 
-        graphValue = graph.get(key) # key error safe this way
-        if isinstance(graphValue, dict): # see if there is a matching dict in the graph
-          self._mergeObject(graph[key], modelValue) # if so, merge the model value into the graph
+    for key, patchItem in patch.items():
+      if isinstance(patchItem, dict): 
+        baseValue = base.get(key) # key error safe this way
+        if isinstance(baseValue, dict): # see if there is a matching dict in the base
+          self._mergeObject(base[key], patchItem) # if so, merge the patch value into the base
           continue
-        graph[key] = {} # if there isn't a dict there, make a new empty node merge dict into it
-        self._mergeObject(graph[key], modelValue)
+        base[key] = {} # if there isn't a dict there, make a new empty node merge dict into it
+        self._mergeObject(base[key], patchItem)
         continue
-      if isinstance(modelValue, list):      
-        graphValue = graph.get(key) # key error safe this way
-        if isinstance(graphValue, list): # see if there is a matching list
-          graphValue = list(set(graphValue + modelValue)) # merge lists with unique values
+      if isinstance(patchItem, list):      
+        baseValue = base.get(key) # key error safe this way
+        if isinstance(baseValue, list): # see if there is a matching list
+          baseValue = list(set(baseValue + patchItem)) # merge lists with unique values
           continue
-      if None is modelValue: # if the model contains None, remove the matching node in the graph
-        graph.pop(key, None)
+      if None is patchItem: # if the patch contains None, remove the matching node in the base
+        base.pop(key, None)
         continue
-      graph[key] = modelValue # replace empty or plain value with value from the model
-    return graph
+      base[key] = patchItem # replace empty or plain value with value from the patch
+    return base
 
   def graph(self):
     return self._graph
@@ -136,17 +136,17 @@ class FlowGraph(Graph):
       print(file)
       self._flowSpec.add( yaml.safe_load( open(file,"r").read() ) )
 
+    print(self._flowSpec.yaml())
+
     self._resolveFlowGraph() 
 
   def _resolveFlowGraph(self):
-    # self._flowGraph = Graph()
-    print(self._flowSpec.yaml())
     # build a flow graph from the flow spec; resolve all required items and default values from the model graph
     #
     # make an instance of a flow graph template and add it to the flowGraph
     self.add(_baseFlowTemplate())
     self._flowBase = self.resolve("/sdfThing/Flow/sdfObject")
-    self._flowSpecBase = self._flowSpec._graph["Flow"]
+    self._flowSpecBase = self._flowSpec.graph()["Flow"]
     #
     # for each object in the merged flow: 
     #   add a named sdfObject with an sdfRef to the application object type, using a simple path reference
@@ -195,14 +195,15 @@ class FlowGraph(Graph):
     #   --- recursive expand-merge, follow a chain of sdfRefs refining a node and merge from the end back
   def _expandRefine(self, value):
     if isinstance(value, dict) and "sdfRef" in value:
-      print ("value:\n", value)
+      # print ("value:\n", value)
       ref = value["sdfRef"]
-      value["sdfRef"] = None
+      print("expanding ", ref)
+      value.pop("sdfRef", None) # remove and replace with sdfRefFrom array to merge
       value["sdfRefFrom"] = [ref] # this will result in set merge of sdfRef strings for breadcrumbs
        # expand all the way down the chain, making deep copies to merge into
        # then mergeRefine in reverse order on the nested closure and return the fully resolved object
       refined = self._mergeRefine(self._expandRefine(copy.deepcopy(self._resolve(ref))), value)
-      print ("refined:\n", refined)
+      print ("refined ", ref)
       return refined
     return value
 
@@ -225,35 +226,35 @@ class FlowGraph(Graph):
     print("Namespace not supported: ", sdfPointer)
     return # namespace feature
 
-  def _mergeRefine(self, value, refValue):
-    if not isinstance(value, dict):
-      value = {}
-    if not isinstance( refValue, dict):
-      return refValue
-    for key, refItem in refValue.items():
-      if isinstance(refItem, dict): # merge dict into value
-        targetValue = value.get(key) # key error safe this way
-        if isinstance(targetValue, dict): # see if there is also a dict in the target
+  def _mergeRefine(self, base, patch):
+    if not isinstance(base, dict):
+      base = {}
+    if not isinstance( patch, dict):
+      return patch
+    for key, patchItem in patch.items():
+      if isinstance(patchItem, dict): # merge dict into base
+        baseValue = base.get(key) # key error safe this way
+        if isinstance(baseValue, dict): # see if there is also a dict in the base
           if "sdfChoice" == key: # if the item is sdfChoice, refine by copying into an empty dict
-            # print("target:", key, value[key])
-            # print("replace with:", refItem)
-            value[key] = {} 
-          value[key] = self._mergeRefine(value[key], refItem) # if both are dicts, merge the item into the value
+            # print("base:", key, base[key])
+            # print("replace with:", patchItem)
+            base[key] = {} 
+          base[key] = self._mergeRefine(base[key], patchItem) # if both are dicts, merge the item into the base
           continue
-        value[key] = {} # if there isn't a dict there, or if it is sdfChoice, make a new empty node merge dict into it
-        self._mergeRefine(value[key], refItem) # merge new item or sdfChoice into empty dict
+        base[key] = {} # if there isn't a dict there, or if it is sdfChoice, make a new empty node merge dict into it
+        self._mergeRefine(base[key], patchItem) # merge new item or sdfChoice into empty dict
         continue
-      if isinstance(refItem, list):      
-        targetValue = value.get(key) # key error safe this way
-        if isinstance(targetValue, list): # see if there is a matching list
-          value[key] = list(set(targetValue + refItem)) # merge lists with unique values
+      if isinstance(patchItem, list):      
+        baseValue = base.get(key) # key error safe this way
+        if isinstance(baseValue, list): # see if there is a matching list
+          base[key] = list(set(baseValue + patchItem)) # merge lists with unique values
           continue
-      if None is refItem: # if the model contains None, remove the matching node in the graph
-        value.pop(key, None)
+      if None is patchItem: # if the model contains None, remove the matching node in the graph
+        base.pop(key, None)
         continue
-      if "description" != key:
-        value[key] = refItem # replace empty or plain value with value from the model
-    return value
+      # if "description" != key:
+      base[key] = patchItem # replace empty or plain value with value from the model
+    return base
 
   def flowGraph(self):
     return self.graph()
