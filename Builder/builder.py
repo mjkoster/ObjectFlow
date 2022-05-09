@@ -1,4 +1,5 @@
 
+from importlib import resources
 import json
 import yaml
 import glob
@@ -161,12 +162,31 @@ class FlowGraph(Graph):
       print("Resolving ",flowObject)
       # expand all sdfRefs
       self._expandAll(self._flowBase[flowObject])
-      print("Expanded:\n", self.yaml())
+
+      # transform the "required" array to resource names
+      self._flowBase[flowObject]["requiredResources"] = []
+      if "sdfRequired" in self._flowBase[flowObject]:
+        for path in self._flowBase[flowObject]["sdfRequired"]:
+          self._flowBase[flowObject]["requiredResources"].append( path.split("/")[-1] ) # last path segment is the resource name
+
+      # remove properties not required or specified in the flow object
+      toRemove = []
+      for resource in self._flowBase[flowObject]["sdfProperty"]:
+        if not resource in self._flowSpecBase[flowObject] and not resource in self._flowBase[flowObject]["requiredResources"]:
+          toRemove.append(resource)
+      for resource in toRemove:
+        self._flowBase[flowObject]["sdfProperty"].pop(resource, None)
+
+      #remove sdfAction and required lists
+      self._flowBase[flowObject].pop("sdfAction", None)
+      self._flowBase[flowObject].pop("sdfRequired", None)
+      self._flowBase[flowObject].pop("requiredResources", None)
+
       # merge the values from the flow spec resources to the graph resources
       for resource in self._flowBase[flowObject]["sdfProperty"]: # for each property in the sdf graph
-        if resource in self._flowSpecBase[flowObject]: # if there is a value in the flow spec
+        if resource in self._flowSpecBase[flowObject]: # if there is matching resource in the flow spec
           if isinstance(self._flowSpecBase[flowObject][resource], dict ): # merge in qualities verbatim from object value
-            self._flowBase[flowObject]["sdfProperty"][resource] = self._mergeObject(
+            self._flowBase[flowObject]["sdfProperty"][resource] = self._mergeRefine(
               self._flowBase[flowObject]["sdfProperty"][resource], 
               self._flowSpecBase[flowObject][resource]
             )
@@ -185,25 +205,22 @@ class FlowGraph(Graph):
     #   assign instance IDs 
     #   resolve oma objlinks from sdf object links
 
-  def _expandAll(self, value): # recursive expand-refine all nodes
+  def _expandAll(self, value): # recursive expand-refine all dictionary nodes
     if isinstance(value, dict):
       if "sdfRef" in value:
-        value = self._expandRefine(value)
+        self._mergeRefine(value, self._expandRefine(value))
       for item in value:
         self._expandAll(value[item]) 
 
     #   --- recursive expand-merge, follow a chain of sdfRefs refining a node and merge from the end back
   def _expandRefine(self, value):
     if isinstance(value, dict) and "sdfRef" in value:
-      # print ("value:\n", value)
       ref = value["sdfRef"]
-      print("expanding ", ref)
       value.pop("sdfRef", None) # remove and replace with sdfRefFrom array to merge
       value["sdfRefFrom"] = [ref] # this will result in set merge of sdfRef strings for breadcrumbs
        # expand all the way down the chain, making deep copies to merge into
        # then mergeRefine in reverse order on the nested closure and return the fully resolved object
       refined = self._mergeRefine(self._expandRefine(copy.deepcopy(self._resolve(ref))), value)
-      print ("refined ", ref)
       return refined
     return value
 
@@ -249,11 +266,11 @@ class FlowGraph(Graph):
         if isinstance(baseValue, list): # see if there is a matching list
           base[key] = list(set(baseValue + patchItem)) # merge lists with unique values
           continue
-      if None is patchItem: # if the model contains None, remove the matching node in the graph
+      if None is patchItem: # if the patch contains None, remove the matching node in the base
         base.pop(key, None)
         continue
-      # if "description" != key:
-      base[key] = patchItem # replace empty or plain value with value from the model
+      if "description" != key: # filter out descriptions from resolved models used in the builder (?)
+        base[key] = patchItem # replace empty or plain value with value from the patch
     return base
 
   def flowGraph(self):
@@ -285,7 +302,7 @@ def build():
   model = ModelGraph("../Model/")
   # print(model.json())
   flow = FlowGraph( model, "../Flow/" )
-  # print (flow.json())
+  print (flow.json())
 
 if __name__ == '__main__':
     build()

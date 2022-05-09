@@ -3,13 +3,13 @@ Flow:
   TimeSource: 
     Type: TimeSource
     IntervalTime: 1000 
-    OutputTo: AnalogInput 
+    OutputLink: AnalogInput 
 
   AnalogInput: 
     Type: AnalogInput
-    GpioPinID: 7 
+    PinID: 7 
     IntervalTime: 0
-    OutputTo: MapToCelsius 
+    OutputLink: MapToCelsius 
 
   MapToCelsius: 
     Type: ValueMap
@@ -20,7 +20,7 @@ Flow:
     CurrentValueMinimum: 0 
     CurrentValueMaximum: 100 
     CurrentValueUnit: C 
-    OutputTo: Display 
+    OutputLink: Display 
 
   Display: 
     Type: Publisher
