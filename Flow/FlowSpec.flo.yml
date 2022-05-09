@@ -24,5 +24,8 @@ Flow:
 
   Display: 
     Type: Publisher
-    InputValue: { flo:meta: { ValueType: { sdfChoice: { IntegerType: {} }}} }
+    InputValue: 
+      flo:meta: { ValueType: { sdfChoice: { IntegerType: {} }}} 
+      sdfChoice: 
+        FloatType: { default: 0 }
     

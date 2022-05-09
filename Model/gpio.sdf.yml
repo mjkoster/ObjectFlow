@@ -18,17 +18,26 @@ sdfData:
       AnalogOutput: { const: 43002 }
       BinaryInput: { const: 43003 }
       BinaryOutput: { const: 43004 }
+    ResourceType:
+      PinID: { const: 27015}
+      Pullup: { const: 27016}
 
 sdfProperty:
   GpioPinID: 
     sdfRef: /#/sdfProperty/ObjectFlowResource
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/PinID }
     flo:meta: 
-      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
+      ValueType: { sdfChoice: { IntegerType: {} } }
+    sdfChoice:
+      IntegerType: {}
 
   GpioPinPullup: 
     sdfRef: /#/sdfProperty/ObjectFlowResource
+    oma:id: { sdfRef: /#/sdfData/TypeID/ResourceType/Pullup }
     flo:meta: 
-      ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/BooleanType }
+      ValueType: { sdfChoice: { BooleanType: {} } }
+    sdfChoice:
+      BooleanType: {}
     required: true
     default: false
 
@@ -70,9 +79,10 @@ sdfObject:
 
       CurrentValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
-        ValueType: 
-          sdfChoice:
-            sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType
+        flo:meta: 
+          ValueType: { sdfChoice: { IntegerType: {} } }
+        sdfChoice:
+          IntegerType: {}
         required: true
 
       OutputLink:
@@ -117,9 +127,10 @@ sdfObject:
 
       CurrentValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
-        ValueType: 
-          sdfChoice:
-            sdfRef: /#/sdfData/ValueType/sdfChoice/BooleanType
+        flo:meta: 
+          ValueType: { sdfChoice: { BOoleanType: {} } }
+        sdfChoice:
+          BooleanType: {}
         required: true
 
       OutputLink:
@@ -148,9 +159,10 @@ sdfObject:
 
       CurrentValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
-        ValueType: 
-          sdfChoice:
-            sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType
+        flo:meta: 
+          ValueType: { sdfChoice: { IntegerType: {} } }
+        sdfChoice:
+          IntegerType: {}
         required: true
 
     sdfAction:
@@ -176,9 +188,10 @@ sdfObject:
 
       CurrentValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
-        ValueType: 
-          sdfChoice:
-            sdfRef: /#/sdfData/ValueType/sdfChoice/BooleanType
+        flo:meta: 
+          ValueType: { sdfChoice: { BooleanType: {} } }
+        sdfChoice:
+          BooleanType: {}
         required: true
 
     sdfAction:

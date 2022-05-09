@@ -32,7 +32,7 @@ sdfObject:
       OutputTime:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/OutputValue
         flo:meta: 
-          ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
+          ValueType: { sdfChoice: { TimeType: {} } }
         required: true
         sdfChoice:
           TimeType: {}
