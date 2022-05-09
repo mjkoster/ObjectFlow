@@ -30,7 +30,7 @@ sdfProperty:
     flo:meta: 
       ValueType: { sdfChoice: { FloatType: {} } }
     sdfChoice:
-      FloatType: {}
+      FloatType: {} 
 
   # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
@@ -61,12 +61,16 @@ sdfObject:
     sdfProperty:
       InputValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/InputValue
+        flo:meta: 
+          ValueType: { sdfChoice: { IntegerType: {} } }
         sdfChoice:
           IntegerType: {}
         required: true
 
       CurrentValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
+        flo:meta: 
+          ValueType: { sdfChoice: { FloatType: {} } }
         sdfChoice:
           FloatType: {}
         required: true
