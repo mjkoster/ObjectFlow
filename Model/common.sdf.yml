@@ -31,7 +31,7 @@ sdfData:
       sdfRef: /#/sdfData/IDRange
     ValueType:
       sdfRef: /#/sdfData/ValueType
-    FlowGraphLink:
+    InstanceGraphLink:
       sdfRef: /#/sdfData/SdfLink
 
   oma:id:
@@ -184,7 +184,7 @@ sdfProperty:
       ValueType: { sdfRef: /#/sdfData/ValueType }
       InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
     sdfChoice:
-      LinkType: {}
+      InstanceLinkType: {}
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
@@ -195,7 +195,7 @@ sdfProperty:
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/InstanceLinkType }
       InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
     sdfChoice:
-      LinkType: {}
+      InstanceLinkType: {}
 
   CurrentTime:
     description: Time value updated from the timer service
