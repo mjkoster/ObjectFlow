@@ -198,6 +198,10 @@ class FlowGraph(Graph):
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["StringType"]["const"] = self._flowSpecBase[flowObject][resource]
           elif "BooleanType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["BooleanType"]["const"] = self._flowSpecBase[flowObject][resource]
+          elif "TimeType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+            self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["TimeType"]["const"] = self._flowSpecBase[flowObject][resource]
+          elif "LinkType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
+            self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceGraphLink"]["properties"]["InstancePointer"] = { "const": self._flowSpecBase[flowObject][resource] }
           else:
             # print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource], "Expected type:", self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"])
             print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource])

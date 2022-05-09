@@ -49,7 +49,7 @@ sdfObject:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/LastActivationTime
         required: true
 
-      TimerOutputLink:
+      OutputLink:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/OutputLink
 
     sdfAction:
