@@ -241,7 +241,7 @@ class FlowGraph(Graph):
       for resource in self._flowBase[flowObject]["sdfProperty"]:
         if "InstanceGraphLink" in self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]:
           objectPointer = self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceGraphLink"]["properties"]["InstancePointer"]["const"]
-          targetObject = self.resolve(objectPointer)
+          targetObject = self.resolve(objectPointer) # this is the flow graph (self) resolve
           self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["InstanceLinkType"]["properties"]["TypeID"] = targetObject["flo:meta"]["TypeID"]
           self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["InstanceLinkType"]["properties"]["InstanceID"] = targetObject["flo:meta"]["InstanceID"]
 
@@ -260,11 +260,12 @@ class FlowGraph(Graph):
       value["sdfRefFrom"] = [ref] # this will result in set merge of sdfRef strings for breadcrumbs
        # expand all the way down the chain, making deep copies to merge into
        # then mergeRefine in reverse order on the nested closure and return the fully resolved object
-      refined = self._mergeRefine(self._expandRefine(copy.deepcopy(self._resolve(ref))), value)
+      refined = self._mergeRefine(self._expandRefine(copy.deepcopy(self._resolveModel(ref))), value)
       return refined
     return value
 
-  def _resolve(self, sdfPointer):
+  # Model graph resolve
+  def _resolveModel(self, sdfPointer):
     self._pointer = sdfPointer
     if self._pointer.startswith("/#"):
       self._pointer = self._pointer[2:]
