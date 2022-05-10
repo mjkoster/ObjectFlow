@@ -77,13 +77,12 @@ class ModelGraph(Graph):
       print(file)
       self.add( yaml.safe_load( open(file,"r").read() ) )
     self._checkPointers()
-  
+
+  # validate that all of the sdfRef and sdfRequired resolve to some place in the merged graph
+  # recursive scan for instances of these keys and resolve the references
+  # allow sdfRef in any object type node of the instance
+  # 
   def _checkPointers(self):
-    # validate that all of the sdfRef and other pointers resolve to some place in the merged graph
-    # sdfRef, sdfRequired, sdfInputData, sdfOutputData
-    # recursive scan for instances of these keys and resolve the references
-    # allow sdfRef in any object type node of the instance
-    # 
     self._errors = 0
     self._check(self.graph())
 
@@ -128,8 +127,35 @@ class FlowGraph(Graph):
   def __init__(self, modelGraph, flowPath):
     Graph.__init__(self)
 
-    # FlowGraph gets filled in with all required items and values defined 
-    # the ObjectFlow header can be made from the full InstanceGraph
+    # 
+    # Flow Graph construction involves three graphs
+    #
+    # The Model Graph is a merge of all the required models to build the Flow, done in the ModelGraph class
+    # 
+    # The Flow Spec is a special JSON format that contains only enough information to define the flow, by 
+    # including the necessary object types, naming the instances, defining the input and output link connections, 
+    # and setting the internal optionality of the objects, including resource profile, settings, 
+    # initial values, and constants
+    #
+    # The Flow Graph is populated in with all required items and values defined in the Flow Spec 
+    # The ObjectFlow header, JSON and YAML serializations, and documentation are made from the resolved Flow Graph
+    # 
+    # A template for the Flow Graph is constructed and populated with "SdfRef" statements that point to 
+    # templates in the model for the pre-defined object types
+    # 
+    # These references are expanded by first following each sdfRef in the Flow Spec back to its location and 
+    # recursively following references in a chain until the "root" definition is found (expandMerge) then 
+    # performing a special "refineMerge" from the root back to each refinement in the model, then finally merging
+    # the marged model back into the FLow Graph
+    # 
+    # The Flow Graph is then pruned of the unused Resources, those not required and not specified in the Flow Spec
+    #
+    # Resources in the Flow Graph are then configured from values in the Flow Spec, LWM2M IDs are assigned, 
+    # and finally the Object Link values are filled in with the target IDs
+    #
+    # When extracting values from the FLow Graph, it is necessary to override "default" values with "const" 
+    # values, if "const" is defined
+    #
 
     self._modelGraph = modelGraph
 
@@ -154,11 +180,11 @@ class FlowGraph(Graph):
     self._flowBasePath = "/sdfThing/Flow/sdfObject"
     self._flowBase = self.resolve(self._flowBasePath)
     self._flowSpecBase = self._flowSpec.graph()["Flow"]
-    #
+
     # for each object in the merged flow: 
-    #   add a named sdfObject with an sdfRef to the application object type, using a simple path reference
-    #   if there is no Type specified in the flow, the object name will be used as type
-    #
+    # add a named sdfObject with an sdfRef to the application object type, using a simple path reference
+    # if there is no Type specified in the flow, the object name will be used as type
+
     for flowObject in self._flowSpecBase:
       self._flowBase[flowObject] = {}
       if "$type" in self._flowSpecBase[flowObject]:
@@ -167,16 +193,22 @@ class FlowGraph(Graph):
       else:
         # if Type is not specified, use the name as sdfRef
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
-      print("Resolving ",flowObject)
-      # expand all sdfRefs
-      self._expandAll(self._flowBase[flowObject])
 
+      # Expand-Merge the named objects in the flow graph from corresponding objects in the model graph
+      # Expands all of the Resources in the Model graph for each object, will not add resources that are not 
+      # defined for the object type.
+      #
+      print("Resolving ",flowObject)
+      # expand all sdfRefs recursively
+      self._expandAll(self._flowBase[flowObject])
+ 
+      # Remove the unneeded resources and other noise from the flow template
+    
       # transform the "required" array to resource names
       self._flowBase[flowObject]["requiredResources"] = []
       if "sdfRequired" in self._flowBase[flowObject]:
         for path in self._flowBase[flowObject]["sdfRequired"]:
           self._flowBase[flowObject]["requiredResources"].append( path.split("/")[-1] ) # last path segment is the resource name
-
       # remove properties not required or specified in the flow object
       toRemove = []
       for resource in self._flowBase[flowObject]["sdfProperty"]:
@@ -184,13 +216,14 @@ class FlowGraph(Graph):
           toRemove.append(resource)
       for resource in toRemove:
         self._flowBase[flowObject]["sdfProperty"].pop(resource, None)
-
       #remove sdfAction and required lists
       self._flowBase[flowObject].pop("sdfAction", None)
       self._flowBase[flowObject].pop("sdfRequired", None)
       self._flowBase[flowObject].pop("requiredResources", None)
 
-      # merge the values from the flow spec resources to the graph resources
+
+      # merge the predefined resource values from the flow spec resources to the graph resources
+
       for resource in self._flowBase[flowObject]["sdfProperty"]: # for each property in the sdf graph
         if resource in self._flowSpecBase[flowObject]: # if there is matching resource in the flow spec
           if isinstance(self._flowSpecBase[flowObject][resource], dict ): # merge in qualities verbatim from object value
@@ -214,7 +247,9 @@ class FlowGraph(Graph):
           else:
             print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource])
 
-    #   assign instance IDs 
+    # assign instance IDs starting at 0, over-write any existing defaults or const 
+    # FIXME allow for pre-defined instance numbers
+
     instanceCount = {}
     for flowObject in self._flowBase:
       omaType = self._flowBase[flowObject]["oma:id"]["const"]
@@ -238,6 +273,7 @@ class FlowGraph(Graph):
         self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceID"] = { "const": instanceCount[omaType] }
 
     #   resolve oma objlinks from sdf object links
+
     for flowObject in self._flowBase:
       for resource in self._flowBase[flowObject]["sdfProperty"]:
         if "InstanceGraphLink" in self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]:
@@ -246,14 +282,18 @@ class FlowGraph(Graph):
           self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["InstanceLinkType"]["properties"]["TypeID"] = targetObject["flo:meta"]["TypeID"]
           self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["InstanceLinkType"]["properties"]["InstanceID"] = targetObject["flo:meta"]["InstanceID"]
 
-  def _expandAll(self, value): # recursive expand-refine all dictionary nodes
+    # fini
+
+
+  # recursive expand-refine all dictionary nodes
+  def _expandAll(self, value): 
     if isinstance(value, dict):
       if "sdfRef" in value:
         self._mergeRefine(value, self._expandRefine(value))
       for item in value:
         self._expandAll(value[item]) 
 
-    #   --- recursive expand-merge, follow a chain of sdfRefs refining a node and merge from the end back
+    # recursive expand-merge, follow a chain of sdfRefs refining a node and merge from the end back on the closure
   def _expandRefine(self, value):
     if isinstance(value, dict) and "sdfRef" in value:
       ref = value["sdfRef"]
@@ -265,6 +305,10 @@ class FlowGraph(Graph):
       return refined
     return value
 
+  # special refine merge that handles array set merge and sdfChoice refinement. sdfChoice is refined by replacing
+  # the entire sdfChoice with the patch value. If extension is desired, an sdfRef to the base sdfChoice contents
+  # should be included in the patch. Descriptions are also filtered out as they are encountered, to reduce noise 
+  #
   def _mergeRefine(self, base, patch):
     if not isinstance(base, dict):
       base = {}
@@ -275,8 +319,6 @@ class FlowGraph(Graph):
         baseValue = base.get(key) # key error safe this way
         if isinstance(baseValue, dict): # see if there is also a dict in the base
           if "sdfChoice" == key: # if the item is sdfChoice, refine by copying into an empty dict
-            # print("base:", key, base[key])
-            # print("replace with:", patchItem)
             base[key] = {} 
           base[key] = self._mergeRefine(base[key], patchItem) # if both are dicts, merge the item into the base
           continue
@@ -291,7 +333,7 @@ class FlowGraph(Graph):
       if None is patchItem: # if the patch contains None, remove the matching node in the base
         base.pop(key, None)
         continue
-      if "description" != key: # filter out descriptions from resolved models used in the builder (?)
+      if "description" != key: # filter out descriptions from resolved models used in the builder
         base[key] = patchItem # replace empty or plain value with value from the patch
     return base
 
@@ -324,8 +366,7 @@ class FlowGraph(Graph):
     return self._modelGraph.graph()
 
   def flowSpec(self):
-    # merge the resolved values back into the flow spec
-    return # a resolved Flow format JSON serialized from the Flow Graph, could merge into the input flow spec
+    return self._flowSpec
 
   def objectFlowHeader(self):
     return self._header( self.resolve("/sdfThing/Flow/sdfObject") ) # convert the resolved instance graph to a header file
