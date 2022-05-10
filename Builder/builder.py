@@ -84,6 +84,7 @@ class ModelGraph(Graph):
     # recursive scan for instances of these keys and resolve the references
     # allow sdfRef in any object type node of the instance
     # 
+    self._errors = 0
     self._check(self.graph())
 
   def _check(self, value):
@@ -108,6 +109,7 @@ class ModelGraph(Graph):
         target = self.resolve(self._pointer)
       except:
         print("sdfPointer doesn't resolve:", self._pointer)
+        self._errors += 1
         return
       return(target)
     else:
@@ -115,7 +117,11 @@ class ModelGraph(Graph):
 
   def _resolveNamespaceReference(self, sdfPointer):
     print("Namespace not supported: ", sdfPointer)
+    raise 
     return # feature
+
+  def errors(self):
+    return self._errors
 
 
 class FlowGraph(Graph):
@@ -145,7 +151,8 @@ class FlowGraph(Graph):
     #
     # make an instance of a flow graph template and add it to the flowGraph
     self.add(_baseFlowTemplate())
-    self._flowBase = self.resolve("/sdfThing/Flow/sdfObject")
+    self._flowBasePath = "/sdfThing/Flow/sdfObject"
+    self._flowBase = self.resolve(self._flowBasePath)
     self._flowSpecBase = self._flowSpec.graph()["Flow"]
     #
     # for each object in the merged flow: 
@@ -201,11 +208,34 @@ class FlowGraph(Graph):
           elif "TimeType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["TimeType"]["const"] = self._flowSpecBase[flowObject][resource]
           elif "InstanceLinkType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
-            self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceGraphLink"]["properties"]["InstancePointer"] = { "const": self._flowSpecBase[flowObject][resource] }
+            self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceGraphLink"]["properties"]["InstancePointer"] = { "const": self._flowBasePath + "/" + self._flowSpecBase[flowObject][resource] }
           else:
             # print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource], "Expected type:", self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"])
             print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource])
+
     #   assign instance IDs 
+    instanceCount = {}
+    for flowObject in self._flowBase:
+      omaType = self._flowBase[flowObject]["oma:id"]["const"]
+      if omaType not in instanceCount:
+        instanceCount[omaType] = 0
+      else:
+        instanceCount[omaType] += 1
+      if "flo:meta" not in self._flowBase[flowObject]:
+        self._flowBase[flowObject]["flo:meta"] = {}
+      self._flowBase[flowObject]["flo:meta"]["TypeID"] = { "const": omaType }
+      self._flowBase[flowObject]["flo:meta"]["InstanceID"] = { "const": instanceCount[omaType] }
+      # now do the resources
+      instanceCount = {}
+      for resource in self._flowBase[flowObject]["sdfProperty"]:
+        omaType = self._flowBase[flowObject]["sdfProperty"][resource]["oma:id"]["const"]
+        if omaType not in instanceCount:
+          instanceCount[omaType] = 0
+        else:
+          instanceCount[omaType] += 1
+        self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"] = { "const": omaType }
+        self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceID"] = { "const": instanceCount[omaType] }
+
     #   resolve oma objlinks from sdf object links
 
   def _expandAll(self, value): # recursive expand-refine all dictionary nodes
@@ -238,12 +268,14 @@ class FlowGraph(Graph):
         target = self._modelGraph.resolve(self._pointer)
       except:
         print("sdfPointer doesn't resolve:", self._pointer)
+        raise # Exit here because we can't refine broken pointers, traceback to this line
       return(target)
     else:
       return(self._resolveNamespaceReference(self._pointer)) # resolve curie
 
   def _resolveNamespaceReference(self, sdfPointer):
     print("Namespace not supported: ", sdfPointer)
+    raise
     return # namespace feature
 
   def _mergeRefine(self, base, patch):
@@ -300,9 +332,13 @@ def _baseFlowTemplate():
   )
 
 def build():
+  import sys
   print("FlowBuilder")
   # test with local files, make the model graph first
   model = ModelGraph("../Model/")
+  if model.errors() != 0:
+    print (model.errors(), " Errors building models")
+    sys.exit(1)
   # print(model.json())
   flow = FlowGraph( model, "../Flow/" )
   print (flow.json())

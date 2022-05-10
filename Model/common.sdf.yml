@@ -147,7 +147,7 @@ sdfProperty:
   # Template for ObjectFlow Resource class
   ObjectFlowResource:
     description: definitions for the properties of an ObjectFlow Resource
-    sdfRef: /#/sdfData/Value
+    sdfRef: /#/sdfData/Value # a resource is also a data value
     flo:meta: 
       ValueType:
         sdfRef: /#/sdfData/ValueType 
@@ -184,7 +184,7 @@ sdfProperty:
       ValueType: { sdfRef: /#/sdfData/ValueType }
       InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
     sdfChoice:
-      InstanceLinkType: {}
+      InstanceLinkType: { sdfRef: "#/sdfData/InstanceLinkData" }
 
   OutputLink:
     description: Link to another object for updating an input or present value from an output or present value
@@ -195,7 +195,7 @@ sdfProperty:
       ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/InstanceLinkType }
       InstanceGraphLink: { sdfRef: /#/sdfData/SdfLink }
     sdfChoice:
-      InstanceLinkType: {}
+      InstanceLinkType: { sdfRef: "#/sdfData/InstanceLinkData" }
 
   CurrentTime:
     description: Time value updated from the timer service
