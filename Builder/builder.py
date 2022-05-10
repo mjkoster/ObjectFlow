@@ -212,7 +212,6 @@ class FlowGraph(Graph):
           elif "InstanceLinkType" in self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]:
             self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceGraphLink"]["properties"]["InstancePointer"] = { "const": self._flowBasePath + "/" + self._flowSpecBase[flowObject][resource] }
           else:
-            # print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource], "Expected type:", self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"])
             print("non conforming value type for flow Object:", flowObject, ", Resource:", resource, ", Value:", self._flowSpecBase[flowObject][resource])
 
     #   assign instance IDs 
@@ -332,7 +331,9 @@ class FlowGraph(Graph):
     return self._header( self.resolve("/sdfThing/Flow/sdfObject") ) # convert the resolved instance graph to a header file
 
   def _header(self, Flow):
+
     headerString = "namespace ObjectFlow\n{\n  const InstanceTemplate instanceList[] = {\n"
+
     for flowObject in Flow:
       oid = Flow[flowObject]["flo:meta"]["TypeID"]
       oinst = Flow[flowObject]["flo:meta"]["InstanceID"]
@@ -340,11 +341,13 @@ class FlowGraph(Graph):
         rid = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"]
         rinst = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"]
         rtype = self._headerType(Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["ValueType"]["default"])
+
         if "const" in Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]:
           value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]["const"]
         elif "default" in Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]:
           value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]["default"]
-        else: value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]
+        else: 
+          value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]
 
         if rtype == "BooleanType":
           valueString = "%d" % value
@@ -359,7 +362,7 @@ class FlowGraph(Graph):
         if rtype == "InstanceLinkType":
           valueString = "{%d,%d}" % (value["properties"]["TypeID"]["const"], value["properties"]["InstanceID"]["const"])
 
-        headerString += "    {%d, %d, %d, %d, %s, (AnyValueType){.%s=" + valueString + "} },", (oid, oinst, rid, rinst, rtype)
+        headerString += "    {%d, %d, %d, %d, %s, (AnyValueType){.%s = " + valueString + " } },", (oid, oinst, rid, rinst, self.self._headerType(rtype), self._headerType(rtype) )
 
     headerString +=   "  };\n}"
     return headerString
