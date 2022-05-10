@@ -237,6 +237,13 @@ class FlowGraph(Graph):
         self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceID"] = { "const": instanceCount[omaType] }
 
     #   resolve oma objlinks from sdf object links
+    for flowObject in self._flowBase:
+      for resource in self._flowBase[flowObject]["sdfProperty"]:
+        if "InstanceGraphLink" in self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]:
+          objectPointer = self._flowBase[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceGraphLink"]["properties"]["InstancePointer"]["const"]
+          targetObject = self.resolve(objectPointer)
+          self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["InstanceLinkType"]["properties"]["TypeID"] = targetObject["flo:meta"]["TypeID"]
+          self._flowBase[flowObject]["sdfProperty"][resource]["sdfChoice"]["InstanceLinkType"]["properties"]["InstanceID"] = targetObject["flo:meta"]["InstanceID"]
 
   def _expandAll(self, value): # recursive expand-refine all dictionary nodes
     if isinstance(value, dict):
