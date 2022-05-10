@@ -264,28 +264,6 @@ class FlowGraph(Graph):
       return refined
     return value
 
-  # Model graph resolve
-  def _resolveModel(self, sdfPointer):
-    self._pointer = sdfPointer
-    if self._pointer.startswith("/#"):
-      self._pointer = self._pointer[2:]
-    elif self._pointer.startswith("#"):
-      self._pointer = self._pointer[1:]
-    if self._pointer.startswith("/"):
-      try:
-        target = self._modelGraph.resolve(self._pointer)
-      except:
-        print("sdfPointer doesn't resolve:", self._pointer)
-        raise # Exit here because we can't refine broken pointers, traceback to this line
-      return(target)
-    else:
-      return(self._resolveNamespaceReference(self._pointer)) # resolve curie
-
-  def _resolveNamespaceReference(self, sdfPointer):
-    print("Namespace not supported: ", sdfPointer)
-    raise
-    return # namespace feature
-
   def _mergeRefine(self, base, patch):
     if not isinstance(base, dict):
       base = {}
@@ -315,6 +293,28 @@ class FlowGraph(Graph):
       if "description" != key: # filter out descriptions from resolved models used in the builder (?)
         base[key] = patchItem # replace empty or plain value with value from the patch
     return base
+
+  # Model graph resolve
+  def _resolveModel(self, sdfPointer):
+    self._pointer = sdfPointer
+    if self._pointer.startswith("/#"):
+      self._pointer = self._pointer[2:]
+    elif self._pointer.startswith("#"):
+      self._pointer = self._pointer[1:]
+    if self._pointer.startswith("/"):
+      try:
+        target = self._modelGraph.resolve(self._pointer)
+      except:
+        print("sdfPointer doesn't resolve:", self._pointer)
+        raise # Exit here because we can't refine broken pointers, traceback to this line
+      return(target)
+    else:
+      return(self._resolveNamespaceReference(self._pointer)) # resolve curie
+
+  def _resolveNamespaceReference(self, sdfPointer):
+    print("Namespace not supported: ", sdfPointer)
+    raise
+    return # namespace feature
 
   def flowGraph(self):
     return self.graph()
