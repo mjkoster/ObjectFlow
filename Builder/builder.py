@@ -128,7 +128,7 @@ class FlowGraph(Graph):
   def __init__(self, modelGraph, flowPath):
     Graph.__init__(self)
 
-    # FLowGraph gets filled in with all required items and values defined 
+    # FlowGraph gets filled in with all required items and values defined 
     # the ObjectFlow header can be made from the full InstanceGraph
 
     self._modelGraph = modelGraph
@@ -161,9 +161,11 @@ class FlowGraph(Graph):
     #
     for flowObject in self._flowSpecBase:
       self._flowBase[flowObject] = {}
-      if "Type" in self._flowSpecBase[flowObject]:
-        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["Type"]
+      if "$type" in self._flowSpecBase[flowObject]:
+        # if $type is specified, use$type for sdfRef
+        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["$type"]
       else:
+        # if Type is not specified, use the name as sdfRef
         self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
       print("Resolving ",flowObject)
       # expand all sdfRefs
@@ -320,6 +322,7 @@ class FlowGraph(Graph):
     return self.graph()
 
   def flowSpec(self):
+    # merge the resolved values back into the flow spec
     return # a resolved Flow format JSON serialized from the Flow Graph, could merge into the input flow spec
 
   def objectFlowHeader(self):
