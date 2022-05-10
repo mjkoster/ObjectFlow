@@ -142,6 +142,12 @@ sdfData:
       IntervalTime: { const: 27007 }
       LastActivationTime: { const: 27008 }
 
+  ObjectList:
+    sdfObject: 
+      <object>:
+        sdfRef: /sdfObject/ObjectFlowObject
+        minItems: 0
+
 sdfProperty:
 
   # Template for ObjectFlow Resource class
@@ -311,7 +317,5 @@ sdfObject:
 
   # sdfThing definition for the Object List
 sdfThing:
-  ObjectList:
-    sdfObject:
-      sdfRef: /#/sdfObject/ObjectFlowObject
-      minItems: 0
+  Flow:
+    sdfRef: /sdfData/ObjectList
