@@ -321,15 +321,52 @@ class FlowGraph(Graph):
   def flowGraph(self):
     return self.graph()
 
+  def modelGraph(self):
+    return self._modelGraph.graph()
+
   def flowSpec(self):
     # merge the resolved values back into the flow spec
     return # a resolved Flow format JSON serialized from the Flow Graph, could merge into the input flow spec
 
   def objectFlowHeader(self):
-    return self._header( self.graph() ) # convert the resolved instance graph to a header file
+    return self._header( self.resolve("/sdfThing/Flow/sdfObject") ) # convert the resolved instance graph to a header file
 
-  def _header(self):
-    return
+  def _header(self, Flow):
+    headerString = "namespace ObjectFlow\n{\n  const InstanceTemplate instanceList[] = {\n"
+    for flowObject in Flow:
+      oid = Flow[flowObject]["flo:meta"]["TypeID"]
+      oinst = Flow[flowObject]["flo:meta"]["InstanceID"]
+      for resource in Flow[flowObject]["sdfProperty"]:
+        rid = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"]
+        rinst = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"]
+        rtype = self._headerType(Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["ValueType"]["default"])
+        if "const" in Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]:
+          value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]["const"]
+        elif "default" in Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]:
+          value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]["default"]
+        else: value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]
+
+        if rtype == "BooleanType":
+          valueString = "%d" % value
+        if rtype == "IntegerType":
+          valueString = "%d" % value
+        if rtype == "FloatType":
+          valueString = "%f" % value
+        if rtype == "StringType":
+          valueString = "%s" % value
+        if rtype == "TimeType":
+          valueString = "%d" % value
+        if rtype == "InstanceLinkType":
+          valueString = "{%d,%d}" % (value["properties"]["TypeID"]["const"], value["properties"]["InstanceID"]["const"])
+
+        headerString += "    {%d, %d, %d, %d, %s, (AnyValueType){.%s=" + valueString + "} },", (oid, oinst, rid, rinst, rtype)
+
+    headerString +=   "  };\n}"
+    return headerString
+
+  def _headerType(self, modelType):
+    return self.modelGraph()["sdfData"]["ValueTypeString"]["sdfChoice"][modelType]["const"]
+
 
 def _baseFlowTemplate():
   return(
