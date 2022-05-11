@@ -29,7 +29,7 @@ sdfProperty:
     flo:meta: 
       ValueType: { sdfChoice: { IntegerType: {} } }
     sdfChoice:
-      IntegerType: {}
+      IntegerType: { default: 0 }
 
   GpioPinPullup: 
     sdfRef: /#/sdfProperty/ObjectFlowResource
@@ -37,7 +37,7 @@ sdfProperty:
     flo:meta: 
       ValueType: { sdfChoice: { BooleanType: {} } }
     sdfChoice:
-      BooleanType: {}
+      BooleanType: { default: false }
     required: true
     default: false
 
@@ -82,7 +82,7 @@ sdfObject:
         flo:meta: 
           ValueType: { sdfChoice: { IntegerType: {} } }
         sdfChoice:
-          IntegerType: {}
+          IntegerType: { default: 0 }
         required: true
 
       OutputLink:
@@ -128,9 +128,9 @@ sdfObject:
       CurrentValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentValue
         flo:meta: 
-          ValueType: { sdfChoice: { BOoleanType: {} } }
+          ValueType: { sdfChoice: { BooleanType: {} } }
         sdfChoice:
-          BooleanType: {}
+          BooleanType: { default: false }
         required: true
 
       OutputLink:
@@ -162,7 +162,7 @@ sdfObject:
         flo:meta: 
           ValueType: { sdfChoice: { IntegerType: {} } }
         sdfChoice:
-          IntegerType: {}
+          IntegerType: { default: 0 }
         required: true
 
     sdfAction:
@@ -191,7 +191,7 @@ sdfObject:
         flo:meta: 
           ValueType: { sdfChoice: { BooleanType: {} } }
         sdfChoice:
-          BooleanType: {}
+          BooleanType: { default: false }
         required: true
 
     sdfAction:

@@ -78,17 +78,26 @@ sdfData:
       InstanceLinkType: { default: InstanceLinkType }
       SemanticType: { default: SemanticType }
 
-  ValueTypeString: # to use in a programming language binding, etc. 
+  #  binding to ObjectFlow C++ types 
+  # union AnyValueType {
+  #   bool booleanType;
+  #   int integerType;
+  #   double floatType;
+  #   char* stringType;
+  #   InstanceLink linkType;
+  #   time_t timeType;
+  # };
+  ValueTypeString: 
     sdfRef: /#/sdfData/ValueType
     sdfChoice:
-      BooleanType: { const: BooleanType }
-      IntegerType: { const: IntegerType }
-      FloatType: { const: FloatType }
-      StringType: { const: StringType }
-      ValueTypeType: { const: ValueTypeType }
-      TimeType: { const: TimeType }
-      InstanceLinkType: { const: InstanceLinkType }
-      SemanticType: { const: SemanticType }
+      BooleanType: { const: booleanType }
+      IntegerType: { const: integerType }
+      FloatType: { const: floatType }
+      StringType: { const: stringType }
+      ValueTypeType: { const: }
+      TimeType: { const: timeType }
+      InstanceLinkType: { const: linkType }
+      SemanticType: { const: }
 
   IDRange:
     description: integer ID for the object and resource addressing and selection scheme (LWM2M)

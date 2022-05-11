@@ -30,7 +30,7 @@ sdfProperty:
     flo:meta: 
       ValueType: { sdfChoice: { FloatType: {} } }
     sdfChoice:
-      FloatType: {} 
+      FloatType: { default: 0 } 
 
   # Unit Resource, to indicate engineering unit, using the senML unit system
   Unit:
@@ -38,7 +38,7 @@ sdfProperty:
     flo:meta: 
       ValueType: { sdfChoice: { StringType: {} } }
     sdfChoice:
-      StringType: {}
+      StringType: { default: "no-unit" }
 
 # ValueMap Object
 sdfObject:
@@ -64,7 +64,7 @@ sdfObject:
         flo:meta: 
           ValueType: { sdfChoice: { IntegerType: {} } }
         sdfChoice:
-          IntegerType: {}
+          IntegerType: { default: 0 }
         required: true
 
       CurrentValue:
@@ -72,7 +72,7 @@ sdfObject:
         flo:meta: 
           ValueType: { sdfChoice: { FloatType: {} } }
         sdfChoice:
-          FloatType: {}
+          FloatType: { default: 0 }
         required: true
 
       InputLowReference:

@@ -32,10 +32,10 @@ sdfObject:
       OutputTime:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/OutputValue
         flo:meta: 
-          ValueType: { sdfChoice: { TimeType: {} } }
+          ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/TimeType }
         required: true
         sdfChoice:
-          TimeType: {}
+          TimeType: { default: 0 }
 
       CurrentTime:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/CurrentTime

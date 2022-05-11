@@ -30,8 +30,10 @@ sdfObject:
       InputValue:
         sdfRef: /#/sdfObject/ObjectFlowObject/sdfProperty/InputValue
         flo:meta: 
-          ValueType: { sdfRef: /#/sdfData/ValueType/sdfChoice/IntegerType }
+          ValueType: { sdfChoice: { FloatType: {} }}
         required: true
+        sdfChoice:
+          IntegerType: { default: 0 }
 
     sdfAction:
       OnDefaultValueUpdate: 

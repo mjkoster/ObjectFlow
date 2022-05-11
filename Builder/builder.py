@@ -4,7 +4,6 @@ import yaml
 import glob
 from jsonpointer import resolve_pointer
 import copy
-import jsonschema
 
 class Graph():
 # class Graph(dict):
@@ -222,7 +221,8 @@ class FlowGraph(Graph):
       self._flowBase[flowObject].pop("requiredResources", None)
 
 
-      # merge the predefined resource values from the flow spec resources to the graph resources
+      # merge the predefined resource values from the flow spec resources to the graph resources 
+      # FIXME should use mergeRefine { const: <resource> } instead of assignment to overlay const on existing definition
 
       for resource in self._flowBase[flowObject]["sdfProperty"]: # for each property in the sdf graph
         if resource in self._flowSpecBase[flowObject]: # if there is matching resource in the flow spec
@@ -376,13 +376,18 @@ class FlowGraph(Graph):
     headerString = "namespace ObjectFlow\n{\n  const InstanceTemplate instanceList[] = {\n"
 
     for flowObject in Flow:
-      oid = Flow[flowObject]["flo:meta"]["TypeID"]
-      oinst = Flow[flowObject]["flo:meta"]["InstanceID"]
+      oid = Flow[flowObject]["flo:meta"]["TypeID"]["const"]
+      oinst = Flow[flowObject]["flo:meta"]["InstanceID"]["const"]
       for resource in Flow[flowObject]["sdfProperty"]:
-        rid = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"]
-        rinst = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"]
-        rtype = self._headerType(Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["ValueType"]["default"])
+        rid = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["TypeID"]["const"]
+        rinst = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["InstanceID"]["const"]
 
+        # try both patterns of resolving sdfChoice, with a choice selection or with a substituted value
+        if "default" in Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["ValueType"]:
+          rtype = Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["ValueType"]["default"]
+        else: 
+          for rtype in Flow[flowObject]["sdfProperty"][resource]["flo:meta"]["ValueType"]["sdfChoice"]: {}
+                
         if "const" in Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]:
           value = Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]["const"]
         elif "default" in Flow[flowObject]["sdfProperty"][resource]["sdfChoice"][rtype]:
@@ -403,7 +408,8 @@ class FlowGraph(Graph):
         if rtype == "InstanceLinkType":
           valueString = "{%d,%d}" % (value["properties"]["TypeID"]["const"], value["properties"]["InstanceID"]["const"])
 
-        headerString += "    {%d, %d, %d, %d, %s, (AnyValueType){.%s = " + valueString + " } },", (oid, oinst, rid, rinst, self.self._headerType(rtype), self._headerType(rtype) )
+        headerString += "    { %d, %d, %d, %d, %s, (AnyValueType){.%s = " % (oid, oinst, rid, rinst, self._headerType(rtype), self._headerType(rtype) ) 
+        headerString += valueString + " } },\n"
 
     headerString +=   "  };\n}"
     return headerString
@@ -434,6 +440,8 @@ def build():
   # print(model.json())
   flow = FlowGraph( model, "../Flow/" )
   print (flow.json())
+
+  print ( flow.objectFlowHeader() )
 
 if __name__ == '__main__':
     build()

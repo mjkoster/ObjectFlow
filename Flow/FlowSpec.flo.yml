@@ -23,7 +23,7 @@ Flow:
   Display: 
     $type: Publisher
     InputValue: 
-      flo:meta: { ValueType: { sdfChoice: { IntegerType: {} }}} 
+      flo:meta: { ValueType: { sdfChoice: { FloatType: {} }}} 
       sdfChoice: 
         FloatType: { default: 0 }
     
