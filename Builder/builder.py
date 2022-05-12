@@ -486,12 +486,11 @@ def build():
 
   # print(model.json())
   print (model.idList())
+  print ( model.objectHeader() )
+  print ( model.resourceHeader() )
 
   flow = FlowGraph( model, "../Flow/" )
   # print (flow.json())
-
-  print ( model.objectHeader() )
-  print ( model.resourceHeader() )
 
   print ( flow.objectFlowHeader() )
 
