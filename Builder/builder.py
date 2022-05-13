@@ -1,6 +1,5 @@
 
 import json
-from typing import TypedDict
 import yaml
 import glob
 from jsonpointer import resolve_pointer
@@ -175,7 +174,7 @@ Object* ObjectList::applicationObject(uint16_t type, uint16_t instance, Object* 
 
 class FlowGraph(Graph):
   def __init__(self, modelGraph, flowPath):
-    Graph.__init__(self)
+    Graph.__init__(self, self._baseFlowTemplate())
     # 
     # Flow Graph construction involves three graphs
     #
@@ -223,8 +222,7 @@ class FlowGraph(Graph):
   def _resolveFlowGraph(self):
     # build a flow graph from the flow spec; resolve all required items and default values from the model graph
     #
-    # make an instance of a flow graph template and add it to the flowGraph
-    self.add(_baseFlowTemplate())
+    # the flow graph is initialized with the base template when created
     self._flowBasePath = "/sdfThing/Flow/sdfObject"
     self._flowBase = self.resolve(self._flowBasePath)
     self._flowSpecBase = self._flowSpec.graph()["Flow"]
@@ -479,23 +477,26 @@ class FlowGraph(Graph):
     return headerString
 
   def _headerType(self, modelType):
-    return self.modelGraph()["sdfData"]["ValueTypeString"]["sdfChoice"][modelType]["const"]
+    # look up the C++ type string binding in /sdfData/ValueTypeString
+    return self._modelGraph.resolve("/sdfData/ValueTypeString/sdfChoice")[modelType]["const"]
 
 
-def _baseFlowTemplate():
-  return(
-    {
-      "sdfThing": {
-        "Flow": {
-          "sdfObject": {}
+  def _baseFlowTemplate(self):
+    return(
+      {
+        "sdfThing": {
+          "Flow": {
+            "sdfObject": {}
+          }
         }
       }
-    }
-  )
+    )
+
 
 def build():
   import sys
   print("FlowBuilder")
+
   # test with local files, make the model graph first
   model = ModelGraph("../Model/")
   if model.errors() != 0:
@@ -503,13 +504,22 @@ def build():
     sys.exit(1)
 
   # print(model.json())
+
+  # list sorted by ID for diagnostics
   print (model.idList())
+
+  # application-object.cpp
   print ( model.objectHeader() )
+
+  # resource-types.h
   print ( model.resourceHeader() )
 
-  flow = FlowGraph( model, "../Flow/" )
-  # print (flow.json())
 
+  flow = FlowGraph( model, "../Flow/" )
+
+  # print (flow.json())
+  
+  # instances.h
   print ( flow.objectFlowHeader() )
 
 if __name__ == '__main__':
