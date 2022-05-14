@@ -509,10 +509,12 @@ def build():
   modelDirectory = "../Model/"
   flowDirectory = "../Flow/"
   outputDirectory = "../Test/"
+  documentDirectory = "../Flow/"
 
   print ( "Model files in", modelDirectory )
   print ( "Flow files in", flowDirectory )
   print ( "Output files in", outputDirectory )
+  print ( "Document files in", documentDirectory )
 
   # test with local files, make the model graph first
   model = ModelGraph( modelDirectory )
@@ -525,8 +527,8 @@ def build():
   # Display the flow spec
   print( "\nFlow Spec\n", flow._flowSpec.yaml() )
 
-  print( "\nFlow Spec UML\n", flow.flowSpecUML() )
-  umlfile = open( outputDirectory + "flowSpec.uml.txt", "w" )
+  print( "\n" + outputDirectory + "flowSpec.uml.txt\n", flow.flowSpecUML() )
+  umlfile = open( documentDirectory + "flowSpec.uml.txt", "w" )
   umlfile.write(flow.flowSpecUML()) 
   umlfile.close()
 
@@ -534,25 +536,25 @@ def build():
   print ( "\nTypes by ID\n", model.idList())
 
   # application-object.cpp
-  print ( "\napplication-object.cpp\n", model.objectHeader() )
+  print ( "\n" + outputDirectory + "application-object.cpp\n", model.objectHeader() )
   objectfile = open( outputDirectory + "application-object.cpp", "w" )
   objectfile.write(model.objectHeader()) 
   objectfile.close()
 
   # resource-types.h
-  print ( "\nresource-types.h\n",model.resourceHeader() )
+  print ( "\n" + outputDirectory + "resource-types.h\n",model.resourceHeader() )
   resourcefile = open( outputDirectory + "resource-types.h", "w" )
   resourcefile.write(model.resourceHeader()) 
   resourcefile.close()
 
   # instances.h
-  print ( "\ninstances.h\n", flow.objectFlowHeader() )
+  print ( "\n" + outputDirectory + "instances.h\n", flow.objectFlowHeader() )
   instancefile = open( outputDirectory + "instances.h", "w" )
   instancefile.write(flow.objectFlowHeader()) 
   instancefile.close()
 
   # process the UML file to a graphic image
-  subprocess.run([ "plantuml", (outputDirectory + "flowSpec.uml.txt") ])
+  subprocess.run([ "plantuml", (documentDirectory + "flowSpec.uml.txt") ])
 
 if __name__ == '__main__':
     build()
