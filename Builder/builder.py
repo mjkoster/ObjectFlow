@@ -506,20 +506,24 @@ class FlowGraph(Graph):
 def build():
   import sys
   print("FlowBuilder")
+  
+  modelDirectory = "../Model/"
+  flowDirectory = "../Flow/"
+  outputDirectory = "../Test/"
 
   # test with local files, make the model graph first
-  model = ModelGraph("../Model/")
+  model = ModelGraph( modelDirectory )
   if model.errors() != 0:
     print (model.errors(), " Errors building models")
     sys.exit(1)
 
-  flow = FlowGraph( model, "../Flow/" )
+  flow = FlowGraph( model, flowDirectory )
 
   # Display the flow spec
   print(flow._flowSpec.yaml())
 
   print(flow.flowSpecUML())
-  umlfile = open("../Test/flowSpec.uml.txt","w")
+  umlfile = open( outputDirectory + "flowSpec.uml.txt", "w" )
   umlfile.write(flow.flowSpecUML()) 
   umlfile.close()
 
@@ -529,24 +533,24 @@ def build():
 
   # application-object.cpp
   print ( model.objectHeader() )
-  objectfile = open("../Test/application-object.cpp","w")
+  objectfile = open( outputDirectory + "application-object.cpp", "w" )
   objectfile.write(model.objectHeader()) 
   objectfile.close()
 
   # resource-types.h
   print ( model.resourceHeader() )
-  resourcefile = open("../Test/resource-types.h","w")
+  resourcefile = open( outputDirectory + "resource-types.h", "w" )
   resourcefile.write(model.resourceHeader()) 
   resourcefile.close()
 
   # instances.h
   print ( flow.objectFlowHeader() )
-  instancefile = open("../Test/instances.h","w")
+  instancefile = open( outputDirectory + "instances.h", "w" )
   instancefile.write(flow.objectFlowHeader()) 
   instancefile.close()
 
   # process the UML file to a graphic image
-  subprocess.run(["plantuml", "../Test/flowSpec.uml.txt"])
+  subprocess.run([ "plantuml", (outputDirectory + "flowSpec.uml.txt") ])
 
 if __name__ == '__main__':
     build()
