@@ -490,7 +490,6 @@ class FlowGraph(Graph):
     # look up the C++ type string binding in /sdfData/ValueTypeString
     return self._modelGraph.resolve("/sdfData/ValueTypeString/sdfChoice")[modelType]["const"]
 
-
   def _baseFlowTemplate(self):
     return(
       {
@@ -502,14 +501,18 @@ class FlowGraph(Graph):
       }
     )
 
-
+# ObjectFlow Builder
 def build():
   import sys
-  print("FlowBuilder")
+  print("ObjectFlow Builder")
   
   modelDirectory = "../Model/"
   flowDirectory = "../Flow/"
   outputDirectory = "../Test/"
+
+  print ( "Model files in", modelDirectory )
+  print ( "Flow files in", flowDirectory )
+  print ( "Output files in", outputDirectory )
 
   # test with local files, make the model graph first
   model = ModelGraph( modelDirectory )
@@ -520,31 +523,30 @@ def build():
   flow = FlowGraph( model, flowDirectory )
 
   # Display the flow spec
-  print(flow._flowSpec.yaml())
+  print( "\nFlow Spec\n", flow._flowSpec.yaml() )
 
-  print(flow.flowSpecUML())
+  print( "\nFlow Spec UML\n", flow.flowSpecUML() )
   umlfile = open( outputDirectory + "flowSpec.uml.txt", "w" )
   umlfile.write(flow.flowSpecUML()) 
   umlfile.close()
 
-
   # Display the object and resource list sorted by ID for diagnostics
-  print (model.idList())
+  print ( "\nTypes by ID\n", model.idList())
 
   # application-object.cpp
-  print ( model.objectHeader() )
+  print ( "\napplication-object.cpp\n", model.objectHeader() )
   objectfile = open( outputDirectory + "application-object.cpp", "w" )
   objectfile.write(model.objectHeader()) 
   objectfile.close()
 
   # resource-types.h
-  print ( model.resourceHeader() )
+  print ( "\nresource-types.h\n",model.resourceHeader() )
   resourcefile = open( outputDirectory + "resource-types.h", "w" )
   resourcefile.write(model.resourceHeader()) 
   resourcefile.close()
 
   # instances.h
-  print ( flow.objectFlowHeader() )
+  print ( "\ninstances.h\n", flow.objectFlowHeader() )
   instancefile = open( outputDirectory + "instances.h", "w" )
   instancefile.write(flow.objectFlowHeader()) 
   instancefile.close()
