@@ -216,8 +216,6 @@ class FlowGraph(Graph):
       print(file)
       self._flowSpec.add( yaml.safe_load( open(file,"r").read() ) )
 
-    print(self._flowSpec.yaml())
-
     self._resolveFlowGraph() 
 
   def _resolveFlowGraph(self):
@@ -234,20 +232,17 @@ class FlowGraph(Graph):
 
     for flowObject in self._flowSpecBase:
       self._flowBase[flowObject] = {}
-      if "$type" in self._flowSpecBase[flowObject]:
-        # if $type is specified, use$type for sdfRef
-        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["$type"]
-      else:
-        # if Type is not specified, use the name as sdfRef
-        self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + flowObject
+      if not "$type" in self._flowSpecBase[flowObject]:
+        self._flowSpecBase[flowObject]["$type"] = flowObject # use the name as type
+      self._flowBase[flowObject]["sdfRef"] = "/sdfObject/" + self._flowSpecBase[flowObject]["$type"]
 
       # Expand-Merge the named objects in the flow graph from corresponding objects in the model graph
       # Expands all of the Resources in the Model graph for each object, will not add resources that are not 
       # defined for the object type.
       #
       print("Resolving ",flowObject)
-      # expand all sdfRefs recursively
-      self._expandAll(self._flowBase[flowObject])
+      # expand and merge all sdfRefs recursively
+      self._expandMergeAll(self._flowBase[flowObject])
  
       # Remove the unneeded resources and other noise from the flow template
     
@@ -334,12 +329,12 @@ class FlowGraph(Graph):
 
 
   # recursive expand-refine all dictionary nodes
-  def _expandAll(self, value): 
+  def _expandMergeAll(self, value): 
     if isinstance(value, dict):
       if "sdfRef" in value:
         self._mergeRefine(value, self._expandReference(value))
       for item in value:
-        self._expandAll(value[item]) 
+        self._expandMergeAll(value[item]) 
 
     # recursive expand-merge, follow a chain of sdfRefs refining a node and merge from the end back on the closure
   def _expandReference(self, value):
@@ -409,6 +404,19 @@ class FlowGraph(Graph):
 
   def flowGraph(self):
     return self.graph()
+
+
+  def flowSpecUML(self):
+    umlString = "@startuml\n"
+    for flowObject in self._flowSpecBase:
+      umlString += "\nobject " + flowObject + " {\n"
+      for field in self._flowSpecBase[flowObject]:
+        umlString += "  " + field + ": " + self._flowSpecBase[flowObject][field].__repr__() + "\n"
+      umlString += "}\n"
+      for field in self._flowSpecBase[flowObject]:
+        if field == "InputLink" or field == "OutputLink":
+          umlString += flowObject + "::" + field + " --> " + self._flowSpecBase[flowObject][field] + "\n"
+    return umlString + "@enduml\n"
 
   def modelGraph(self):
     return self._modelGraph.graph()
@@ -504,9 +512,18 @@ def build():
     print (model.errors(), " Errors building models")
     sys.exit(1)
 
-  # print(model.json())
+  flow = FlowGraph( model, "../Flow/" )
 
-  # list sorted by ID for diagnostics
+  # Display the flow spec
+  print(flow._flowSpec.yaml())
+
+  print(flow.flowSpecUML())
+  umlfile = open("../Test/flowSpec.uml.txt","w")
+  umlfile.write(flow.flowSpecUML()) 
+  umlfile.close()
+
+
+  # Display the object and resource list sorted by ID for diagnostics
   print (model.idList())
 
   # application-object.cpp
@@ -521,10 +538,6 @@ def build():
   resourcefile.write(model.resourceHeader()) 
   resourcefile.close()
 
-  flow = FlowGraph( model, "../Flow/" )
-
-  # print (flow.json())
-  
   # instances.h
   print ( flow.objectFlowHeader() )
   instancefile = open("../Test/instances.h","w")
