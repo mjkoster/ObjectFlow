@@ -182,11 +182,12 @@ class FlowGraph(Graph):
     # 
     # The Flow Spec is a special JSON format that contains only enough information to define the flow, by 
     # including the necessary object types, naming the instances, defining the input and output link connections, 
-    # and setting the internal optionality of the objects, including resource profile, settings, 
-    # initial values, and constants
+    # and setting the internal optionality of the objects, including resource profile, 
+    # initial resource values, settings, and constants
     #
-    # The Flow Graph is populated in with all required items and values defined in the Flow Spec 
-    # The ObjectFlow header, JSON and YAML serializations, and documentation are made from the resolved Flow Graph
+    # The Flow Graph is resolved from the Flow Spec, and populated with all required items and values defined in the Flow Spec 
+    #
+    # The ObjectFlow header, JSON and YAML serializations, and documentation are extracted from the resolved Flow Graph
     # 
     # A template for the Flow Graph is constructed and populated with "SdfRef" statements that point to 
     # templates in the model for the pre-defined object types
@@ -336,19 +337,19 @@ class FlowGraph(Graph):
   def _expandAll(self, value): 
     if isinstance(value, dict):
       if "sdfRef" in value:
-        self._mergeRefine(value, self._expandRefine(value))
+        self._mergeRefine(value, self._expandReference(value))
       for item in value:
         self._expandAll(value[item]) 
 
     # recursive expand-merge, follow a chain of sdfRefs refining a node and merge from the end back on the closure
-  def _expandRefine(self, value):
+  def _expandReference(self, value):
     if isinstance(value, dict) and "sdfRef" in value:
       ref = value["sdfRef"]
       value.pop("sdfRef", None) # remove and replace with sdfRefFrom array to merge
       value["sdfRefFrom"] = [ref] # this will result in set merge of sdfRef strings for breadcrumbs
        # expand all the way down the chain, making deep copies to merge into
        # then mergeRefine in reverse order on the nested closure and return the fully resolved object
-      refined = self._mergeRefine(self._expandRefine(copy.deepcopy(self._resolveModel(ref))), value)
+      refined = self._mergeRefine(self._expandReference(copy.deepcopy(self._resolveModel(ref))), value)
       return refined
     return value
 
@@ -510,10 +511,15 @@ def build():
 
   # application-object.cpp
   print ( model.objectHeader() )
+  objectfile = open("../Test/application-object.cpp","w")
+  objectfile.write(model.objectHeader()) 
+  objectfile.close()
 
   # resource-types.h
   print ( model.resourceHeader() )
-
+  resourcefile = open("../Test/resource-types.h","w")
+  resourcefile.write(model.resourceHeader()) 
+  resourcefile.close()
 
   flow = FlowGraph( model, "../Flow/" )
 
@@ -521,6 +527,9 @@ def build():
   
   # instances.h
   print ( flow.objectFlowHeader() )
+  instancefile = open("../Test/instances.h","w")
+  instancefile.write(flow.objectFlowHeader()) 
+  instancefile.close()
 
 if __name__ == '__main__':
     build()
