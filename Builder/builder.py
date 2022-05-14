@@ -539,7 +539,7 @@ def build():
   flow = FlowGraph( model, flowDirectory )
 
   # Display the flow spec
-  print( "\nFlow Spec\n", flow._flowSpec.yaml() )
+  print( "\nFlow Spec\n", flow.flowSpec().yaml() )
 
   print( "\n" + documentDirectory + "flowSpec.uml.txt\n", flow.flowSpecUML() )
   umlfile = open( documentDirectory + "flowSpec.uml.txt", "w" )

@@ -3,6 +3,7 @@
 
 using namespace ObjectFlow;
 
+// #include application-object.cpp from ObejctFlow builder
 // Select an application Object based on its typeID
 Object* ObjectList::applicationObject(uint16_t type, uint16_t instance, Object* firstObject) {
   switch (type) {

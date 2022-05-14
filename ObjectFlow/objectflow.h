@@ -8,11 +8,14 @@
 #define false 0
 
 /* 
-Well-known reusable Resource Types, should be in a header made from the SDF translator 
+Well-known reusable Resource Types
+Free resource range 26231-32768
+Free object range 42769-65535 (?)
+include resource-types.h generated from ObjectFLow builder
+  #include resource-types.h
 */
-// Free resource range 26231-32768
-// Free object range 42769-65535 (?)
-// link types for pull and push data transfer
+
+// Link types for pull and push data transfer
 #define InputLinkType 27000
 #define OutputLinkType 27001
 // Value types for data connection endpoints
@@ -56,7 +59,7 @@ namespace ObjectFlow
 
   /* base classes */
 
-  /* Resource: expose values and chain together into a linked list for each object*/
+  /* Resource: expose values and chain together into a linked list for each object */
   class Resource {
     public:
       uint16_t typeID;
