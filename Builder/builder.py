@@ -527,7 +527,7 @@ def build():
   # Display the flow spec
   print( "\nFlow Spec\n", flow._flowSpec.yaml() )
 
-  print( "\n" + outputDirectory + "flowSpec.uml.txt\n", flow.flowSpecUML() )
+  print( "\n" + documentDirectory + "flowSpec.uml.txt\n", flow.flowSpecUML() )
   umlfile = open( documentDirectory + "flowSpec.uml.txt", "w" )
   umlfile.write(flow.flowSpecUML()) 
   umlfile.close()
