@@ -4,6 +4,7 @@ import yaml
 import glob
 from jsonpointer import resolve_pointer
 import copy
+import subprocess
 
 class Graph():
 # class Graph(dict):
@@ -543,6 +544,9 @@ def build():
   instancefile = open("../Test/instances.h","w")
   instancefile.write(flow.objectFlowHeader()) 
   instancefile.close()
+
+  # process the UML file to a graphic image
+  subprocess.run(["plantuml", "../Test/flowSpec.uml.txt"])
 
 if __name__ == '__main__':
     build()
