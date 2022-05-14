@@ -6,6 +6,7 @@ from jsonpointer import resolve_pointer
 import copy
 import subprocess
 
+
 class Graph():
 # class Graph(dict):
   def __init__(self, spec={}):
@@ -173,6 +174,7 @@ Object* ObjectList::applicationObject(uint16_t type, uint16_t instance, Object* 
 };"""
     return objectHeaderCode
 
+
 class FlowGraph(Graph):
   def __init__(self, modelGraph, flowPath):
     Graph.__init__(self, self._baseFlowTemplate())
@@ -328,7 +330,6 @@ class FlowGraph(Graph):
 
     # fini
 
-
   # recursive expand-refine all dictionary nodes
   def _expandMergeAll(self, value): 
     if isinstance(value, dict):
@@ -405,7 +406,6 @@ class FlowGraph(Graph):
 
   def flowGraph(self):
     return self.graph()
-
 
   def flowSpecUML(self):
     umlString = "@startuml\n"
